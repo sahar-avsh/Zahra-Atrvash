@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'profiles/outlook.css' %}">
+    <title>{% block title %} Time Street {% endblock %}</title>
+    <style>
+      h1 {
+        color: royalblue;
+      }
+
+      .work{
+        color: sienna;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    {% block content %} 
+    {% endblock %} 
+
+    {% block js %} 
+    {% endblock %}
+
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="profile-look.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <title>Profile-look</title>
+  </head> -->
+
+  <!-- nav-bar line -->
+
+<!--   <div class="topnav" id="myTopnav">
+    <a href="#" class="active" class="timeline">Profile</a>
+    <a href="#news">Followers</a>
+    <a href="#contact">Followings</a>
+    <a href="#about">Activity background</a>
+    <a href="#about">Credits</a>
+    <a href="#about">Rate & Reviews</a>
+    <a href="#about">Your profile page</a>
+    <a href="#about">Logout</a>
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+      <i class="fa fa-bars"></i>
+    </a>
+  </div> -->
+
+{% extends "base.html" %} 
+
+{% block title %}
+{{object.f_name}} - {{block.super}}
+{% endblock title %}
+
+<!-- Biography line -->
+
+{% block content %}
+  <div class="container">
+    <div class="first-column">
+      <div class="profile-picture">
+        <p class="hello">Hello,</p>
+        <h1>It's {{object.f_name}} {{object.l_name}}</h1>
+
+        {% if object.loc_long %}
+          <h3>Living in {{object.loc_long}} {{object.loc_ltd}} </h3>
+        {% else %}
+          <h3>Location unknown</h3>
+        {% endif %}
+
+        {% if object.occupation %}
+          <h3> Working as a(n) {{object.occupation}} </h3>
+        {% else %}
+          <h3>Occupation unknown</h3>
+        {% endif %}
+
+        {% if object.education %}
+          <h3> Obtained {{object.education}} </h3>
+        {% else %}
+          <h3>Education unknown</h3>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+      <!-- Self description part -->
+<!-- 
+      <div class="second-column">
+        <div class="first-part">
+          <h1 class="about-me">About Me</h1>
+        </div>
+        <div class="second-part">
+          <h3>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque quod
+            adipisci dignissimos id quam magni nemo omnis. Laboriosam voluptatum
+            sequi laudantium, pariatur ex et doloribus! Aliquam rem quis
+            reiciendis harum?
+          </h3>
+        </div>
+      </div> -->
+
+      <!-- Self interest and excel part -->
+
+<!--       <div class="info-column">
+        <div class="layer">
+          <h2 class="interest-big">I am interested in:</h2>
+          <h3 class="elements">
+            Cooking, Sweets, Christmas, Music, Concerts, Swimming, mountain
+            climbing, baking cake
+          </h3>
+          <h2 class="interest-big">I am good at:</h2>
+          <h3 class="elements">
+            Cooking, Baking, History of Arts Swimming, story telling, dancing
+          </h3>
+          <button class="save-button" type="button">Follow!</button><br />
+          <button class="save-button1" type="button">Report this user!</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html> -->

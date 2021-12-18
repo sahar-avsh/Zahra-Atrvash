@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profiles - {{block.super}}
+{% endblock title %}
+
+{% block content %}
+
+{% for object in object_list %}
+  <div>
+    {{object.f_name}}
+    {% include "profiles/detail_snippet.html" with object=object %}
+  </div>
+{% endfor %}
+
+{% endblock %}
