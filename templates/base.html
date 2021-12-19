@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'profiles/outlook.css' %}">
+    {% block styles %}
+    {% endblock %}
     <title>{% block title %} Time Street {% endblock %}</title>
     <style>
       h1 {

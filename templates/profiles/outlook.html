@@ -14,6 +14,11 @@
 
 {% extends "base.html" %} 
 
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/outlook.css' %}">
+{% endblock styles %}
+
 {% block title %}
 {{object.f_name}} - {{block.super}}
 {% endblock title %}
