@@ -1,0 +1,77 @@
+{% extends "base.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/outlook.css' %}">
+{% endblock styles %}
+
+{% block title %}
+{{object.title}} - {{block.super}}
+{% endblock title %}
+  
+{% block content %}
+  <div class="container">
+    {% if object.image %}
+      <div class="first-column">
+        <style>
+          .first-column {
+            background-image: url('{{object.image.url}}');
+            background-repeat: no-repeat;
+          }
+        </style>
+    {% endif %}
+      <div class="profile-picture">
+          <!-- interest --> 
+        <div class="title">
+          <h1> {{object.title}} </h1>
+        </div>
+      </div>
+    </div>
+    <div class="second-column">
+      <div class="first-part">
+        <h1 class="about-me">Offer description</h1>
+      </div>
+      <div class="second-part">
+        <h3> {{object.description}} </h3>
+      </div>
+    </div>
+    {% if object.image %}
+      <div class="info-column">
+        <style>
+          .info-column {
+            background-image: url('{{object.image.url}}');
+            background-repeat: no-repeat;
+          }
+        </style>
+    {% endif %}
+      <div class="layer">
+        <div class="theContainer">
+          <div class="info-part">
+            <h1>Offer details</h1>
+              <h3>Offer type:</h3>
+                <p> {{object.offer_type}} </p>
+              <h3>Offer format:</h3>
+                <p> {{object.offer_format}} </p>
+                <h3>Location:</h3>
+                <p> {{object.loc_long}}, {{object.loc_ltd}} </p>
+              <h3>Starting date:</h3>
+                <p> {{object.start_date|date:'j-M-Y, g A (e)'}} </p>
+              <h3>Ending date:</h3>
+                <p> {{object.end_date|date:'j-M-Y, g A (e)'}} </p>
+              <h3>Capacity:</h3>
+                <p> {{object.capacity}} </p>
+              <h3>Application deadline:</h3>
+                <p> {{object.app_deadline|date:'j-M-Y, g A (e)'}} </p>
+              <h3>Cancellation deadline:</h3>
+                <p> {{object.cancel_deadline|date:'j-M-Y, g A (e)'}} </p>
+          </div>
+  
+          <div class="button-parts">
+            <button class="save-button" type="button">Offerer's profile!</button>
+            <button class="save-button" type="button">Apply!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

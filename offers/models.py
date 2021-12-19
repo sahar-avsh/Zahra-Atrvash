@@ -9,7 +9,7 @@ class Offer(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
   title = models.CharField(max_length=220)
-  image = models.ImageField(blank=True)
+  image = models.ImageField(blank=True, upload_to='images/')
   loc_long = models.DecimalField(max_digits=9, decimal_places=6)
   loc_ltd = models.DecimalField(max_digits=9, decimal_places=6)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -20,15 +20,15 @@ class Offer(models.Model):
   cancel_deadline = models.DateTimeField()
 
   class OfferFormat(models.TextChoices):
-    online = 'ON', _('Online')
-    offline = 'OF', _('Offline')
+    online = 'Online', _('Online')
+    offline = 'Offline', _('Offline')
 
-  offer_format = models.CharField(max_length=2, choices=OfferFormat.choices)
+  offer_format = models.CharField(max_length=7, choices=OfferFormat.choices)
 
   class OfferType(models.TextChoices):
-    event = 'EV', _('Event')
-    service = 'SE', _('Service')
+    event = 'Event', _('Event')
+    service = 'Service', _('Service')
 
-  offer_type = models.CharField(max_length=2, choices=OfferType.choices)
+  offer_type = models.CharField(max_length=7, choices=OfferType.choices)
 
   description = models.TextField()
