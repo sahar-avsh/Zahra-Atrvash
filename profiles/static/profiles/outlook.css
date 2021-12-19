@@ -53,8 +53,6 @@ body {
 
 .first-column {
   height: 500px;
-  background-image: url("red-lady.jpeg");
-  background-repeat: no-repeat, repeat;
   background-size: cover;
 }
 
@@ -97,11 +95,12 @@ a:hover {
 }
 
 .first-part {
-  width: 2000px;
+  width: 600px;
 }
 
 .second-part {
-  margin: 20px;
+  width: 500px;
+  margin: 30px;
 }
 
 .about-me {

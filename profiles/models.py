@@ -5,7 +5,7 @@ import uuid
 # Create your models here.
 class Profile(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  image = models.ImageField(blank=True)
+  image = models.ImageField(blank=True, upload_to='images/')
   f_name = models.CharField(max_length=50)
   l_name = models.CharField(max_length=50)
   created_at = models.DateTimeField(auto_now_add=True)

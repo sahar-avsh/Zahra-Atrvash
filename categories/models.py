@@ -11,13 +11,22 @@ class Category(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   name = models.CharField(max_length=100)
 
+  def __str__(self) -> str:
+      return self.name
+
 class Skill(models.Model):
   user = models.ForeignKey(Profile, on_delete=CASCADE)
   cat = models.ForeignKey(Category, on_delete=CASCADE)
 
+  def __str__(self) -> str:
+      return self.cat.name
+
 class Interest(models.Model):
   user = models.ForeignKey(Profile, on_delete=CASCADE)
   cat = models.ForeignKey(Category, on_delete=CASCADE)
+
+  def __str__(self) -> str:
+      return self.cat.name
 
 class OfferCategory(models.Model):
   offer = models.ForeignKey(Offer, on_delete=CASCADE)

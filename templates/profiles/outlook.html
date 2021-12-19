@@ -12,22 +12,6 @@
     <title>Profile-look</title>
   </head> -->
 
-  <!-- nav-bar line -->
-
-<!--   <div class="topnav" id="myTopnav">
-    <a href="#" class="active" class="timeline">Profile</a>
-    <a href="#news">Followers</a>
-    <a href="#contact">Followings</a>
-    <a href="#about">Activity background</a>
-    <a href="#about">Credits</a>
-    <a href="#about">Rate & Reviews</a>
-    <a href="#about">Your profile page</a>
-    <a href="#about">Logout</a>
-    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-      <i class="fa fa-bars"></i>
-    </a>
-  </div> -->
-
 {% extends "base.html" %} 
 
 {% block title %}
@@ -38,7 +22,16 @@
 
 {% block content %}
   <div class="container">
+    {% if object.image %}
     <div class="first-column">
+      <style>
+        .first-column {
+          background-image: url('{{object.image.url}}');
+          background-repeat: no-repeat;
+        }
+      </style>
+      <!-- <img src="{{ object.image.url }}" > -->
+    {% endif %}
       <div class="profile-picture">
         <p class="hello">Hello,</p>
         <h1>It's {{object.f_name}} {{object.l_name}}</h1>
@@ -62,42 +55,44 @@
         {% endif %}
       </div>
     </div>
-  </div>
-{% endblock content %}
+
+
 
       <!-- Self description part -->
-<!-- 
+
       <div class="second-column">
         <div class="first-part">
           <h1 class="about-me">About Me</h1>
         </div>
         <div class="second-part">
           <h3>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque quod
-            adipisci dignissimos id quam magni nemo omnis. Laboriosam voluptatum
-            sequi laudantium, pariatur ex et doloribus! Aliquam rem quis
-            reiciendis harum?
+            {% include "profiles/detail_snippet.html" with object=object %}
           </h3>
         </div>
-      </div> -->
+      </div>
 
       <!-- Self interest and excel part -->
 
-<!--       <div class="info-column">
+      <div class="info-column">
+        {% load static %}
+        <style>
+          .info-column {
+            background-image: url('/static/profiles/brush.jpeg');
+            background-repeat: no-repeat;
+          }
+        </style>
         <div class="layer">
           <h2 class="interest-big">I am interested in:</h2>
-          <h3 class="elements">
-            Cooking, Sweets, Christmas, Music, Concerts, Swimming, mountain
-            climbing, baking cake
-          </h3>
+            <h3 class="elements">
+              {{skill_list|join:", "}}
+            </h3>
           <h2 class="interest-big">I am good at:</h2>
-          <h3 class="elements">
-            Cooking, Baking, History of Arts Swimming, story telling, dancing
-          </h3>
+            <h3 class="elements">
+              {{interest_list|join:", "}}
+            </h3>
           <button class="save-button" type="button">Follow!</button><br />
           <button class="save-button1" type="button">Report this user!</button>
         </div>
       </div>
     </div>
-  </body>
-</html> -->
+{% endblock content %}

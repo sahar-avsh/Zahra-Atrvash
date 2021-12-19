@@ -17,6 +17,9 @@ from django.contrib import admin
 from django.urls import path, re_path
 from profiles.views import profile_api_detail_view, profile_detail_view
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 from profiles.views import (
     home_view,
     profile_detail_view,
@@ -35,4 +38,4 @@ urlpatterns = [
     path('profiles/<str:pk>/look/', profile_outlook_view),
     path('api/profiles/<str:pk>/', profile_api_detail_view),
     path('admin/', admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

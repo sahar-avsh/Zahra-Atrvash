@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 
 from .forms import ProfileModelForm
 from .models import Profile
+from categories.models import Skill, Category, Interest
 
 # Create your views here.
 def home_view(request, *args, **kwargs):
@@ -47,11 +48,14 @@ def profile_detail_view(request, pk, *args, **kwargs):
 
 
 def profile_outlook_view(request, pk, *args, **kwargs):
+  skill_list = Skill.objects.filter(user=pk)
+  interest_list = Interest.objects.filter(user=pk)
   try:
     obj = Profile.objects.get(pk=pk)
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
-  return render(request, "profiles/outlook.html", {"object": obj})
+  return render(request, "profiles/outlook.html", {"object": obj,
+   "skill_list": skill_list, "interest_list": interest_list})
 
 
 def profile_list_view(request, *args, **kwargs):
