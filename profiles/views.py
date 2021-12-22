@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 
 from .forms import ProfileModelForm
 from .models import Profile
-from categories.models import Skill, Category, Interest
 
 # Create your views here.
 def home_view(request, *args, **kwargs):
@@ -24,7 +23,8 @@ def home_view(request, *args, **kwargs):
         # print('post_data', post_data)
   return render(request, 'forms.html', {}) """
 
-def profile_create_view(request, *args, **kwargs):
+def profile_edit_view(request, *args, **kwargs):
+  
   form = ProfileModelForm(request.POST or None)
   if form.is_valid():
     # obj = form.save(commit=False)
@@ -37,17 +37,17 @@ def profile_create_view(request, *args, **kwargs):
   return render(request, "forms.html", {'form': form})
 
 
-def profile_detail_view(request, pk, *args, **kwargs):
+""" def profile_detail_view(request, pk, *args, **kwargs):
   try:
       obj = Profile.objects.get(pk=pk)
   except (Profile.DoesNotExist, ValidationError):
       raise Http404  # render html page with HTTP status code of 404
   # text = f"Hello, It's {obj.f_name} {obj.l_name}. I am living at {obj.loc_ltd}, {obj.loc_long} and working as a {obj.occupation} with a {obj.education}"
   # return HttpResponse(text)
-  return render(request, "profiles/detail.html", {"object": obj})
+  return render(request, "profiles/detail.html", {"object": obj}) """
 
 
-def profile_outlook_view(request, pk, *args, **kwargs):
+""" def profile_outlook_view(request, pk, *args, **kwargs):
   skill_list = Skill.objects.filter(user=pk)
   interest_list = Interest.objects.filter(user=pk)
   try:
@@ -55,7 +55,7 @@ def profile_outlook_view(request, pk, *args, **kwargs):
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
   return render(request, "profiles/outlook.html", {"object": obj,
-   "skill_list": skill_list, "interest_list": interest_list})
+   "skill_list": skill_list, "interest_list": interest_list}) """
 
 
 def profile_list_view(request, *args, **kwargs):
@@ -64,11 +64,11 @@ def profile_list_view(request, *args, **kwargs):
   return render(request, "profiles/list.html", context)
 
 
-def profile_api_detail_view(request, pk, *args, **kwargs):
+""" def profile_api_detail_view(request, pk, *args, **kwargs):
   try:
       obj = Profile.objects.get(pk=pk)
   except (Profile.DoesNotExist, ValidationError):
       return JsonResponse(
           {"Message": "Not found!"}, status=404
       )  # render JSON with HTTP status code of 404
-  return JsonResponse({"First name": obj.f_name})
+  return JsonResponse({"First name": obj.f_name}) """

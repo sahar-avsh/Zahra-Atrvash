@@ -27,3 +27,18 @@ class Profile(models.Model):
 
   description = models.TextField(blank=True)
   credit = models.IntegerField(default=0)
+  # offers that profile has participated in
+  offers = models.ManyToManyField('offers.Offer', related_name='profiles')
+
+class ProfileFollowing(models.Model):
+  profile_id = models.ForeignKey('Profile', related_name='following', on_delete=models.CASCADE)
+  following_profile_id = models.ForeignKey('Profile', related_name='followers', on_delete=models.CASCADE)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+class ProfileReview(models.Model):
+  review_receiver_id = models.ForeignKey('Profile', related_name='review_giver', on_delete=models.CASCADE)
+  review_giver_id = models.ForeignKey('Profile', related_name='review_receiver', on_delete=models.CASCADE)
+  text = models.TextField()
+  created_at = models.DateTimeField(auto_now_add=True)
+
+

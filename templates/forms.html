@@ -1,10 +1,50 @@
 {% extends "base.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/edit.css' %}">
+{% endblock styles %}
+
+{% block title %}
+{{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
 {% block content %}
-<form method="POST" action=".">{% csrf_token %}
-  
-  {{form.as_p}}
+  <div class="container">
+    <div class="first-column">
+      <div class="profile-picture">
+        {% render_field form.image %}
+          <h4 class="name-title">First name:</h4>
+          {% render_field form.f_name %}
+          <h4 class="name-title">Last name:</h4>
+          {% render_field form.l_name %}
+      </div>
+    </div>
+
+    <div class="second-column">
+      <div class="occupation-general">
+        <h4 class="occupation-title">Occupation:</h4>
+        {% render_field form.occupation class+="occupation-box" %}
+      </div>
+      <div class="education-general">
+        <h4 class="education-title">Education:</h4>
+        {% render_field form.education class+="education-box" %}
+      </div>
+    </div>
+
+    <div class="third-column">
+      <button class="save-button" type="submit">Save</button>
+      <div class="birthday-general">
+        <h4 class="birthday-title">Date of Birth:</h4>
+        {% render_field form.birthday class+="birthday-box" %}
+      </div>
+      <div class="description-general">
+        <h4 class="description-title">Add a description:</h4>
+        {% render_field form.description class+="description-box" %}
+      </div>
+    </div>
 
 
-  <button type="submit">Send data</button>
-</form>
+  </div>
 {% endblock %}
