@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import m2m_changed
 import uuid
 
 # Create your models here.
@@ -28,12 +30,22 @@ class Profile(models.Model):
   description = models.TextField(blank=True)
   credit = models.IntegerField(default=0)
   # offers that profile has participated in
-  offers = models.ManyToManyField('offers.Offer', related_name='profiles')
+  offers = models.ManyToManyField('offers.Offer', related_name='profiles', blank=True)
+  # skills that profile has
+  skills = models.ManyToManyField('categorytags.Skill', related_name='profiles')
+  # interests that profile has
+  interests = models.ManyToManyField('categorytags.Interest', related_name='profiles')
+
+  def __str__(self) -> str:
+    return self.f_name + ' ' + self.l_name
 
 class ProfileFollowing(models.Model):
   profile_id = models.ForeignKey('Profile', related_name='following', on_delete=models.CASCADE)
   following_profile_id = models.ForeignKey('Profile', related_name='followers', on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self) -> str:
+      return self.profile_id.f_name + ' Follows ' + self.following_profile_id.f_name
 
 class ProfileReview(models.Model):
   review_receiver_id = models.ForeignKey('Profile', related_name='review_giver', on_delete=models.CASCADE)
@@ -41,4 +53,6 @@ class ProfileReview(models.Model):
   text = models.TextField()
   created_at = models.DateTimeField(auto_now_add=True)
 
+  def __str__(self) -> str:
+      return self.review_giver_id.f_name + '->' + self.review_receiver_id.f_name
 

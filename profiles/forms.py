@@ -18,11 +18,19 @@ class ProfileModelForm(forms.ModelForm):
       'loc_long',
       'loc_ltd',
       'education',
-      'description'
+      'description',
+      'offers'
     ]
 
   def clean_f_name(self):
     data = self.cleaned_data.get('f_name')
     if len(data) < 2:
       raise forms.ValidationError('This is not long enough. (That\'s what she said)')
+    return data
+
+  def clean_offers(self):
+    data = self.cleaned_data.get('offers')
+    offer_owners = [o.owner.id for o in data]
+    if self.id in offer_owners:
+      raise forms.ValidationError('User cannot participate in own offer.')
     return data

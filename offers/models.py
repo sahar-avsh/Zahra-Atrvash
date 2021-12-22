@@ -32,3 +32,8 @@ class Offer(models.Model):
   offer_type = models.CharField(max_length=7, choices=OfferType.choices)
 
   description = models.TextField()
+  # category tags that an offer has
+  tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers')
+
+  def __str__(self) -> str:
+      return self.owner.f_name + '-' + self.title
