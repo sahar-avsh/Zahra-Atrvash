@@ -14,17 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 
 from django.conf.urls.static import static
 from django.conf import settings
 from offers.models import Offer
 
+from allauth.account.views import LoginView, SignupView, LogoutView
+
 from profiles.views import (
     home_view,
     # profile_outlook_view,
     profile_outlook_view,
-    profile_list_view
+    profile_list_view,
 )
 
 from offers.views import (
@@ -42,5 +44,9 @@ urlpatterns = [
     # path('api/profiles/<str:pk>/', profile_api_detail_view),
     path('admin/', admin.site.urls),
     path('offers/<str:pk>/look/', offer_outlook_view, name='offer_look'),
-    path('offers/create/', offer_create_view, name='offer_create')
+    path('offers/create/', offer_create_view, name='offer_create'),
+    #path('accounts/logout/', LogoutView.as_view(), name='logout'),
+    #path('accounts/login/', LoginView.as_view(), name='login'),
+    #path('accounts/signup/', SignupView.as_view(), name='signup')
+    re_path(r'^accounts/', include('allauth.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

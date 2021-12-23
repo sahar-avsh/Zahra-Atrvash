@@ -1,0 +1,48 @@
+{% extends "entrance.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/signup.css' %}">
+{% endblock styles %}
+
+{% block title %}
+Sign Up - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+<form method="POST" action="."> {% csrf_token %}
+<!-- Name -->
+<div class="container">
+  <div class="intro">
+    {{ form.errors }}
+    <div>
+      <h3 class="email-general">Email:</h3>
+      {% render_field form.email class+="email-box" %}
+    </div>
+
+    <div>
+      <h3 class="name-general">First name:</h3>
+      {% render_field form.first_name class+="name-box" %}
+    </div>
+
+    <div>
+      <h3 class="surname-general">Last name:</h3>
+      {% render_field form.last_name class+="surname-box" %}
+    </div>
+
+    <div>
+      <h3 class="password-general">Password:</h3>
+      {% render_field form.password1 class+="password-box" %}
+    </div>
+
+    <div>
+      <h3 class="password-general">Confirm password:</h3>
+      {% render_field form.password2 class+="password-box" %}
+    </div>
+
+    <button class="done-button" type="submit">Sign up!</button>
+  </div>
+</div>
+  
+{% endblock content %}

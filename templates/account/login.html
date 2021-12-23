@@ -1,0 +1,39 @@
+{% extends "entrance.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/login.css' %}">
+{% endblock styles %}
+
+{% block title %}
+Login - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+<form method="POST" action="."> {% csrf_token %}
+<div class="container">
+  <div class="intro">
+    <h1>Hello and welcome to our community</h1>
+    <h2>where you can learn, teach and have fun for free!</h2>
+    <h2 class="login-offer">
+      Login or do a quick signup to start the adventure.
+    </h2>
+    <div class="email-general">
+      {% render_field form.login class+="email-box" %}
+    </div>
+    <div class="password-general">
+      {% render_field form.password class+="password-box" %}
+    </div>
+
+    <div class="error">{{ form.errors }}</div>
+
+   <!-- Button -->
+   <div class="buttons">
+     <button class="login-button" type="submit">Login!</button>
+     <button class="signup-button">Signup!</button>
+    </div>
+  </div>
+</div>
+  
+{% endblock content %}

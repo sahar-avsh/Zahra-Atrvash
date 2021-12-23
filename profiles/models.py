@@ -2,11 +2,13 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import m2m_changed
+from django.contrib.auth.models import User
 import uuid
 
 # Create your models here.
 class Profile(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.OneToOneField(User, on_delete=models.CASCADE)
   image = models.ImageField(blank=True, upload_to='images/')
   f_name = models.CharField(max_length=50)
   l_name = models.CharField(max_length=50)

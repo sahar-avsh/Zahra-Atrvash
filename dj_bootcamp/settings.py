@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'widget_tweaks',
     'django_db_constraints',
     'offers',
@@ -72,6 +76,36 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# EMAIL_BACKEND so allauth can proceed to send confirmation emails
+# ONLY for development/testing use console 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Custom allauth settings
+# Use email as the primary identifier
+ACCOUNT_AUTHENTICATION_METHOD = 'email' 
+ACCOUNT_EMAIL_REQUIRED = True
+
+# Eliminate need to provide username, as it's a very old practice
+ACCOUNT_USERNAME_REQUIRED = False
+
+LOGIN_REDIRECT_URL = '/timeline/'
+# change it to profile edit when it is ready
+ACCOUNT_SIGNUP_REDIRECT_URL = '/timeline/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+ACCOUNT_FORMS = {
+    'signup': 'profiles.forms.CustomSignupForm',
+    'login': 'profiles.forms.CustomLoginForm'
+}
 
 WSGI_APPLICATION = 'dj_bootcamp.wsgi.application'
 
@@ -123,6 +157,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+SITE_ID = 1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
