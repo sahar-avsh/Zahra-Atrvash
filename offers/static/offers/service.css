@@ -1,0 +1,489 @@
+/* columns  */
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: rgb(63, 26, 0);
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #ddd;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: rgb(63, 26, 0);
+  transition: 0.5s;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: rgb(150, 150, 150);
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+body {
+  color: rgb(63, 26, 0);
+}
+
+.container {
+  background-color: white;
+  width: 1000px;
+  height: auto;
+  position: center;
+  margin-left: 200px;
+}
+
+.first-column {
+  height: 500px;
+  background-image: url("service.jpeg");
+  background-repeat: no-repeat, repeat;
+  background-size: cover;
+}
+
+.title-general {
+  padding-top: 100px;
+}
+
+.title-box {
+  margin-top: 10px;
+  width: 200px;
+  height: 80px;
+}
+
+.save-button {
+  background-color: darkblue;
+  width: 50px;
+  height: 20px;
+}
+
+/* Picture  */
+
+.profile-picture {
+  background-color: rgb(255, 241, 224, 0.6);
+  margin: 60px;
+  padding: 20px;
+  width: 200px;
+  height: 460px;
+}
+
+.picture-text {
+  text-align: center;
+  margin-top: 60px;
+  color: rgb(90, 82, 82);
+}
+
+.second-column {
+  display: flex;
+  justify-content: space-between;
+  height: 300px;
+  background-color: rgb(255, 241, 224);
+  margin: 50px 100px;
+}
+
+.first-part {
+  width: 2000px;
+}
+
+.second-part {
+}
+
+.description {
+  width: 400px;
+  height: 100px;
+  margin-left: 10px;
+  margin-top: 100px;
+  margin-right: 10px;
+}
+
+.about-me {
+  border: rgb(71, 11, 7) solid 5px;
+  padding: 100px;
+  text-align: center;
+  margin-left: 20px;
+}
+
+.third-column {
+  background-image: url("guitar.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  align-content: flex-end;
+}
+
+.fader {
+  background-color: rgb(255, 241, 224, 0.65);
+  margin: 60px;
+  padding: 20px;
+  width: 200px;
+  height: 700px;
+  margin-left: 550px;
+}
+
+.start-date-general {
+  text-align: center;
+  padding-top: 50px;
+}
+
+.offer-time {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.info-column {
+  background-image: url("photo.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  align-content: flex-end;
+  width: 500px;
+  height: 500px;
+}
+
+.layer {
+  padding: 0;
+  margin: 0;
+  background-color: rgb(255, 241, 224, 0.7);
+  width: 500px;
+  height: 500px;
+}
+
+.offer-pic {
+  padding-top: 165px;
+  padding-left: 160px;
+}
+
+.last-part {
+  width: 800px;
+  height: 500px;
+  background-image: url("pottery.jpeg");
+  margin-left: 250px;
+}
+
+/* interest  */
+
+.participants {
+  margin-top: 50px;
+  text-align: center;
+}
+.participants-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+
+.participants-box {
+  margin-top: 5px;
+  width: 50px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+/* location  */
+.location {
+  margin-top: 30px;
+  text-align: center;
+}
+.location-general {
+  text-align: center;
+  color: rgb(71, 11, 7);
+}
+
+.location-button {
+  margin-top: 5px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+  margin-bottom: 30px;
+}
+.location-button:hover {
+  background-color: rgb(71, 11, 7);
+  transition: 0.5s;
+  color: beige;
+}
+
+/* Description  */
+
+.tag {
+  margin-top: 30px;
+  text-align: center;
+  color: rgb(71, 11, 7);
+}
+
+.tag-box {
+  margin-top: 5px;
+  width: 200px;
+  height: 70px;
+  background-color: rgb(255, 241, 224);
+}
+
+.tag-button {
+  margin-top: 5px;
+  background-color: rgb(255, 241, 224);
+}
+
+.tag-button:hover {
+  background-color: rgb(71, 11, 7);
+  transition: 0.5s;
+  color: beige;
+}
+
+.save-button {
+  margin-right: 240px;
+  margin-top: 20px;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+}
+
+.save-button:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+}
+
+/* * {
+  background-color: rgb(250, 216, 187);
+  color: rgb(90, 82, 82);
+}
+
+.image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.description {
+  width: 400px;
+  height: auto;
+  border: 2px solid rgb(83, 51, 3);
+  padding: 5px;
+  background-color: blanchedalmond;
+}
+
+.description-content {
+  background-color: blanchedalmond;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.first-column {
+  padding-left: 100px;
+}
+.second-column {
+  margin-left: 20px;
+}
+.third-column {
+  padding-right: 100px;
+}
+
+.buttons {
+  display: flex;
+  flex-flow: column;
+} */
+
+/* 
+
+* {
+  background-color: rgb(250, 216, 187);
+  color: rgb(90, 82, 82);
+}
+
+h1 {
+  margin: 30px;
+}
+
+.container {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 1000px;
+  height: 1000px;
+  margin: 100px;
+  padding: 0;
+}
+
+.first-column {
+  margin-left: 100px;
+}
+.second-column {
+  margin-top: 5px;
+  margin-left: 100px;
+}
+.third-column {
+  margin-left: 100px;
+}
+
+
+.title-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.title-box {
+  margin-top: 10px;
+  width: 200px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.date-general {
+  margin-top: 40px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.date-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.from-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.from-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.to-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.to-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.application-deadline-general {
+  margin-top: 40px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.application-deadline-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.at-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.at-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.cancelation-deadline-general {
+  margin-top: 10px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.cancelation-deadline-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.participants-general {
+  margin-top: 40px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.participants-box {
+  margin-top: 10px;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+.service-type-general {
+  margin-top: 40px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+
+
+.location {
+  margin-top: 40px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.location-general {
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+
+.location-button {
+  margin-top: 10px;
+}
+
+
+
+.service-description-general {
+  margin-top: 20px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+
+.service-description-box {
+  margin-top: 5px;
+  width: 200px;
+  height: 70px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+
+.service-tag-general {
+  margin-top: 20px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+
+.service-tag-box {
+  margin-top: 5px;
+  width: 200px;
+  height: 70px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+.save-button {
+  margin-left: 70px;
+  margin-top: 20px;
+  background-color: rgb(223, 255, 243);
+} */

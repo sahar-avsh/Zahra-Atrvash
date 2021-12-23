@@ -1,0 +1,91 @@
+{% extends "base.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/service.css' %}">
+{% endblock styles %}
+
+{% block title %}
+Create Offer - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+<form method="POST" action="."> {% csrf_token %}
+<div class="container">
+  <div class="first-column">
+    <!-- profile-picture -->
+    <div class="profile-picture">
+        <!-- interest --> 
+      <div class="title">
+        <h4 class="name-title">Add a title for your offer</h4>
+        {% render_field form.title class+="title-box" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="second-column">
+    <div class="first-part">
+      <h1 class="about-me">Tell us about your offer</h1>
+    </div>
+    <div class="second-part">
+      {% render_field form.description class+="title-box" %}
+    </div>
+  </div>
+
+  <div class="third-column">
+    <div class="fader">
+      <h4 class="start-date-general">Starting date:</h4>
+      {% render_field form.start_date %}
+      <h4 class="start-date-general">Ending date:</h4>
+      {% render_field form.end_date %}
+      <h4 class="start-date-general">Application deadline:</h4>
+      {% render_field form.app_deadline%}
+      <h4 class="start-date-general">Cancellation deadline:</h4>
+      {% render_field form.cancel_deadline %}
+    </div>
+  </div>
+
+  <div class="info-column">
+    <div class="layer">
+      <h4 class="offer-pic">Add a picture for your offer</h4>
+      {% render_field form.image %}
+    </div>
+  </div>
+ 
+  <div class="last-part">
+    <div class="profile-picture">
+      <!-- participants -->  
+      <div class="participants">
+        <h4>Capacity</h4>
+        {% render_field form.capacity %}
+      </div>
+      <!-- Location -->  
+      <div class="location">
+        <h4>Add location:</h4>
+        {% render_field form.loc_long %} {% render_field form.loc_ltd %}
+      </div>
+      <div class="service-type-general">
+        <h4>Offer format:</h4>
+        {% render_field form.offer_format %}
+      </div>
+      <div class="service-type-general">
+        <h4>Offer type:</h4>
+        {% render_field form.offer_type %}
+      </div>
+      <!-- Description -->  
+      <div class="tag">
+        <div class="tag-general">
+          <h4>Add some related tags to your offer:</h4>
+          {% render_field form.tags class+="tag-box" %}
+        </div>
+      </div>
+
+      <input type="submit" value="Submit offer!"/>
+
+    </div>
+  </div>
+</div>
+</form>
+
+{% endblock content %}

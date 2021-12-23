@@ -1,0 +1,144 @@
+/* columns  */
+
+/* columns  */
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: rgb(63, 26, 0);
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #ddd;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: rgb(63, 26, 0);
+  transition: 0.5s;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: rgb(150, 150, 150);
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+.container {
+  background-color: white;
+  width: 1000px;
+  height: auto;
+  position: center;
+  margin-left: 200px;
+}
+
+.first-column {
+  height: 550px;
+  background-color: hotpink;
+  background-image: url("camping.jpeg");
+  background-repeat: no-repeat, repeat;
+  background-size: cover;
+}
+
+.highlighted-offer {
+  margin-top: 90px;
+}
+
+/* Picture  */
+
+.profile-picture {
+  background-color: rgb(255, 241, 224, 0.6);
+  color: rgb(71, 11, 7);
+  text-align: center;
+  margin-left: 60px;
+  margin-top: 60px;
+  padding: 20px;
+  width: 300px;
+  height: 510px;
+}
+
+.picture-text {
+  text-align: center;
+  margin-top: 60px;
+  color: rgb(90, 82, 82);
+}
+
+.second-column {
+  display: flex;
+  justify-content: space-between;
+  height: 300px;
+  background-color: rgb(255, 241, 224);
+  margin: 50px 100px;
+}
+
+.first-part {
+  width: 400px;
+}
+
+.second-part {
+  margin: 20px;
+}
+
+.about-me {
+  border: rgb(71, 11, 7) solid 5px;
+  padding-bottom: 120px;
+  padding-top: 80px;
+  padding-left: 50px;
+  padding-right: 50px;
+  text-align: center;
+  margin-left: 20px;
+}
+
+.info-column {
+  background-image: url("besties.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  align-content: flex-end;
+  margin-left: 650px;
+  width: 500px;
+  height: 500px;
+}
+
+.layer {
+  padding: 0;
+  margin: 0;
+  background-color: rgb(255, 241, 224, 0.7);
+  width: 500px;
+  height: 500px;
+}
+
+.activity-head {
+  padding-top: 30px;
+  padding-left: 30px;
+}
+
+.activities {
+  padding-left: 30px;
+}
+
+.last-part {
+  width: 800px;
+  height: 500px;
+  background-image: url("mail.jpeg");
+  margin-left: 250px;
+}
+
+.Notifications-head {
+  text-align: left;
+}
+.notifications {
+  text-align: left;
+}

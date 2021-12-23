@@ -18,8 +18,7 @@ class ProfileModelForm(forms.ModelForm):
       'loc_long',
       'loc_ltd',
       'education',
-      'description',
-      'offers'
+      'description'
     ]
 
   def clean_f_name(self):

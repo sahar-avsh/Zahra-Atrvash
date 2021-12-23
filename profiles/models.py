@@ -29,8 +29,10 @@ class Profile(models.Model):
 
   description = models.TextField(blank=True)
   credit = models.IntegerField(default=0)
-  # offers that profile has participated in
-  offers = models.ManyToManyField('offers.Offer', related_name='profiles', blank=True)
+  # offers that profile has requested to join
+  outstanding_offers = models.ManyToManyField('offers.Offer', related_name='profiles_outstanding')
+  # offers that profile has been accepted to join
+  accepted_offers = models.ManyToManyField('offers.Offer', related_name='profiles_accepted')
   # skills that profile has
   skills = models.ManyToManyField('categorytags.Skill', related_name='profiles')
   # interests that profile has
