@@ -62,6 +62,7 @@ body {
 
 a {
   color: rgb(71, 11, 7);
+  text-decoration: none;
 }
 
 a:hover {
@@ -153,6 +154,10 @@ a:hover {
   color: beige;
 }
 
+.button-link {
+  color: beige;
+}
+
 .save-button:hover {
   background-color: rgb(190, 190, 190);
   transition-duration: 0.5s;
@@ -172,4 +177,14 @@ a:hover {
 .save-button1:hover {
   background-color: rgb(190, 190, 190);
   transition-duration: 0.5s;
+}
+
+.buttons{
+  display: flex;
+  margin-left: 30px;
+
+}
+
+.second-button-column{
+  padding-left: 2px;
 }

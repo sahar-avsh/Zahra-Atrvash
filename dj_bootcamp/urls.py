@@ -26,7 +26,12 @@ from profiles.views import (
     home_view,
     # profile_outlook_view,
     profile_outlook_view,
-    profile_list_view,
+    profile_notifications_view,
+    profile_friends_view,
+    send_follow_request,
+    accept_follow_request,
+    decline_follow_request,
+    unfollow
 )
 
 from offers.views import (
@@ -36,7 +41,12 @@ from offers.views import (
 
 urlpatterns = [
     path('timeline/', home_view, name='home_page'),
-    # path('profiles/', profile_list_view),
+    path('send_follow_request/<str:profileID>/', send_follow_request, name='send_follow_request'),
+    path('accept_follow_request/<int:follow_request_id>/', accept_follow_request, name='accept_follow_request'),
+    path('decline_follow_request/<int:follow_request_id>/', decline_follow_request, name='decline_follow_request'),
+    path('unfollow/<str:profileID>/', unfollow, name='unfollow'),
+    path('notifications/', profile_notifications_view, name='notifications'),
+    path('friends/', profile_friends_view, name='friends'),
     path('profiles/<str:pk>/look/', profile_outlook_view, name='profile_look'),
     # path('profiles/600cf81f-bf63-404a-9231-618e4f7d952f/', views.profile_detail_view),
     # path('profiles/<str:pk>/', profile_detail_view),

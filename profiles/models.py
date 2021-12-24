@@ -39,11 +39,13 @@ class Profile(models.Model):
   skills = models.ManyToManyField('categorytags.Skill', related_name='profiles')
   # interests that profile has
   interests = models.ManyToManyField('categorytags.Interest', related_name='profiles')
+  # friends
+  friends = models.ManyToManyField('Profile', blank=True)
 
   def __str__(self) -> str:
     return self.f_name + ' ' + self.l_name
 
-class ProfileFollowing(models.Model):
+class ProfileFollowRequest(models.Model):
   profile_id = models.ForeignKey('Profile', related_name='following', on_delete=models.CASCADE)
   following_profile_id = models.ForeignKey('Profile', related_name='followers', on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)

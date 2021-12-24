@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from profiles.models import Profile, ProfileFollowing, ProfileReview
+from profiles.models import Profile, ProfileFollowRequest, ProfileReview
 
 # Register your models here.
-admin.site.register([Profile, ProfileFollowing, ProfileReview])
+admin.site.register([Profile, ProfileFollowRequest, ProfileReview])

@@ -3,7 +3,7 @@ from django.http.response import HttpResponse, JsonResponse, Http404, HttpRespon
 from django.shortcuts import render, redirect
 
 from .forms import ProfileModelForm
-from .models import Profile
+from .models import Profile, ProfileFollowRequest
 from offers.models import Offer
 from categorytags.models import Skill, Interest
 
@@ -42,19 +42,27 @@ def profile_edit_view(request, pk, *args, **kwargs):
   return render(request, "profiles/forms.html", {'form': form})
 
 def profile_outlook_view(request, pk, *args, **kwargs):
+  current_profile = request.user.profile
+  current_profile_friend_list = current_profile.friends.all()
   try:
     obj = Profile.objects.get(pk=pk)
     skill_list = obj.skills.all()
     interest_list = obj.interests.all()
+    friend_list = obj.friends.all()
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
-  return render(request, "profiles/outlook.html", {"object": obj,
-   "skill_list": skill_list, "interest_list": interest_list})
+  return render(request, "profiles/outlook.html", {"object": obj, "user": current_profile,
+   "skill_list": skill_list, "interest_list": interest_list, 'friend_list': friend_list, 
+   'user_friend_list': current_profile_friend_list})
 
-def profile_list_view(request, *args, **kwargs):
-  qs = Profile.objects.all()
-  context = {"object_list": qs}
-  return render(request, "profiles/list.html", context)
+def profile_notifications_view(request, *args, **kwargs):
+  current_profile = request.user.profile
+  try:
+    friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
+  except ProfileFollowRequest.DoesNotExist:
+    friend_requests = None
+  content = {"object_list": friend_requests}
+  return render(request, "profiles/notifications.html", content)
 
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
   try:
@@ -64,3 +72,45 @@ def profile_list_view(request, *args, **kwargs):
           {"Message": "Not found!"}, status=404
       )  # render JSON with HTTP status code of 404
   return JsonResponse({"First name": obj.f_name}) """
+
+def send_follow_request(request, profileID):
+  from_profile = request.user.profile
+  to_profile = Profile.objects.get(pk=profileID)
+  follow_request, created = ProfileFollowRequest.objects.get_or_create(
+    profile_id=from_profile, following_profile_id=to_profile
+  )
+  if created:
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def unfollow(request, profileID):
+    from_profile = request.user.profile
+    to_profile = Profile.objects.get(pk=profileID)
+    from_profile.friends.remove(to_profile)
+    to_profile.friends.remove(from_profile)
+    return redirect('home_page')
+
+def accept_follow_request(request, follow_request_id):
+  follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
+  if follow_request.following_profile_id == request.user.profile:
+    follow_request.profile_id.friends.add(follow_request.following_profile_id)
+    follow_request.following_profile_id.friends.add(follow_request.profile_id)
+    follow_request.delete()
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def decline_follow_request(request, follow_request_id):
+  follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
+  if follow_request.following_profile_id == request.user:
+    follow_request.delete()
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def profile_friends_view(request, *args, **kwargs):
+  current_profile = request.user.profile
+  friend_list = current_profile.friends.all()
+  content = {"object_list": friend_list}
+  return render(request, "profiles/friends.html", content)

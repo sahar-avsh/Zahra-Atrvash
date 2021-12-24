@@ -11,14 +11,15 @@ Login - {{block.super}}
 
 {% load widget_tweaks %}
 {% block content %}
-<form method="POST" action="."> {% csrf_token %}
 <div class="container">
   <div class="intro">
     <h1>Hello and welcome to our community</h1>
     <h2>where you can learn, teach and have fun for free!</h2>
     <h2 class="login-offer">
-      Login or do a quick signup to start the adventure.
+      Login or do a quick <a href="/accounts/signup/">signup</a> to start the adventure.
     </h2>
+<form method="POST" action="."> {% csrf_token %}
+
     <div class="email-general">
       {% render_field form.login class+="email-box" %}
     </div>
@@ -31,7 +32,6 @@ Login - {{block.super}}
    <!-- Button -->
    <div class="buttons">
      <button class="login-button" type="submit">Login!</button>
-     <button class="signup-button">Signup!</button>
     </div>
   </div>
 </div>

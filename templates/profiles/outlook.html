@@ -81,8 +81,24 @@
             <h3 class="elements">
               {{interest_list|join:", "}}
             </h3>
-          <button class="save-button" type="button">Follow!</button><br />
-          <button class="save-button1" type="button">Report this user!</button>
+            <div class="buttons">
+              <div class="first-button-column">
+                {% if object.id not in user_friend_list %}
+                  <button class="save-button" type="button">
+                    <a class="button-link" href="{% url 'send_follow_request' profileID=object.id %}">Follow!</a>
+                  </button>
+                {% else %}
+                  <button class="save-button" type="button">
+                    <a class="button-link" href="{% url 'unfollow' profileID=object.id %}">Follow!</a>
+                  </button>
+                {% endif %}
+                <button class="save-button1" type="button">Report this user!</button>
+              </div>
+              <div class="second-button-column">
+                <button class="save-button" type="button">Friends</button><br />
+                <button class="save-button1" type="button">Rate and reviews</button>
+              </div>
+            </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/notif.css' %}">
+{% endblock styles %}
+
+
+{% block title %}
+Friends - {{block.super}}
+{% endblock title %}
+
+{% block content %}
+
+{% if object_list.count > 0 %}
+  {% for object in object_list %}
+    <div>
+      <h4>{{object.f_name}} {{object.l_name}}</h4>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'unfollow' profileID=object.id %}">Unfollow!</a>
+      </button>
+    </div>
+  {% endfor %}
+{% else %}
+    <h4>You have no friends.</h4>
+{% endif %}
+
+{% endblock content %}

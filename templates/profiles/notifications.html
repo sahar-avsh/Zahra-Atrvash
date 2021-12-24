@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/notif.css' %}">
+{% endblock styles %}
+
+
+{% block title %}
+Notifications - {{block.super}}
+{% endblock title %}
+
+{% block content %}
+
+{% if object_list != None and object_list.count > 0 %}
+  {% for object in object_list %}
+    <div>
+      <h4>{{object.profile_id.f_name}} wants to follow you!</h4>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
+      </button>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>
+      </button>
+    </div>
+  {% endfor %}
+{% else %}
+    <h4>You have no requests.</h4>
+{% endif %}
+
+{% endblock content %}
