@@ -1,0 +1,45 @@
+{% extends "base.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/activity_background.css' %}">
+{% endblock styles %}
+
+{% block title %}
+Activity Background - {{block.super}}
+{% endblock title %}
+
+{% block content %}
+<h1 class="heading">Activity Background</h1>
+  <div class="items">
+    <h3>Your offers</h3>
+      {% if created_offers.count > 0 %}
+        {% for object in created_offers %}
+          <div>
+            <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <h4>You have no created offers.</h4>
+      {% endif %}
+    <h3>Joined offers</h3>
+      {% if joined_offers.count > 0 %}
+        {% for object in joined_offers %}
+          <div>
+            <p>{{object.title}}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <h4>You have no joined offers.</h4>
+      {% endif %}
+    <h3>Requested offers</h3>
+      {% if outstanding_offers.count > 0 %}
+        {% for object in outstanding_offers %}
+          <div>
+            <p>{{object.title}}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <h4>You have not requested to join any offers.</h4>
+      {% endif %}
+{% endblock content %}

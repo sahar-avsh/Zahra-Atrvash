@@ -17,41 +17,6 @@ def home_view(request, *args, **kwargs):
   content = {'offer_list': qs_offers}
   return render(request, 'home.html', content)
 
-""" def profile_create_view(request, *args, **kwargs):
-  if request.method == 'POST':
-    post_data = request.POST or None
-    if post_data != None:
-      my_form = ProfileForm(request.POST)
-      if my_form.is_valid():
-        print(my_form.cleaned_data.get('name'))
-        name_input = my_form.cleaned_data.get('name')
-        # Profile.objects.create(name=name_input)
-        # print('post_data', post_data)
-  return render(request, 'forms.html', {}) """
-
-""" def profile_edit_view(request, *args, **kwargs):
-  form = ProfileModelForm(request.POST if request.POST else None,
-   instance=Profile.objects.get(pk=request.user.profile.id))
-
-  if request.method == 'POST':
-    # form = ProfileModelForm(request.POST, request.FILES or None)
-    if form != None:
-  # if request.method == 'POST':
-    # form = ProfileModelForm(request.POST, instance=request.user)
-      if form.is_valid():
-        form.save()
-        # data = form.cleaned_data
-        # for key, value in data.items():
-        #   if not value:
-        #     continue
-        #   else:
-        #     form.instance.key = value
-        # form.instance.save()
-      # obj = form.save(commit=False)
-        return HttpResponseRedirect(reverse('profile_look', kwargs={'pk': form.instance.id}))
-        # return redirect('profile_look', pk=request.user.profile.id) 
-  return render(request, "profiles/forms.html", {'form': form}) """
-
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
   if request.method == 'POST':
@@ -86,6 +51,16 @@ def profile_notifications_view(request, *args, **kwargs):
     friend_requests = None
   content = {"object_list": friend_requests}
   return render(request, "profiles/notifications.html", content)
+
+def profile_activity_background_view(request, *args, **kwargs):
+  obj = request.user.profile
+  created_offers = Offer.objects.all().filter(owner=obj)
+  joined_offers = obj.accepted_offers.all()
+  outstanding_offers = obj.outstanding_offers.all()
+  content = {'created_offers': created_offers, 
+  'joined_offers': joined_offers,
+  'outstanding_offers': outstanding_offers}
+  return render(request, "profiles/activity_background.html", content)
 
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
   try:
