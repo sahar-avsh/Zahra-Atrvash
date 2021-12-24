@@ -88,11 +88,19 @@ AUTHENTICATION_BACKENDS = [
 # EMAIL_BACKEND so allauth can proceed to send confirmation emails
 # ONLY for development/testing use console 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# EMAIL_USE_SSL = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 465
+# EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = ''
+# EMAIL_HOST_PASSWORD = ''
 
 # Custom allauth settings
 # Use email as the primary identifier
 ACCOUNT_AUTHENTICATION_METHOD = 'email' 
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # Eliminate need to provide username, as it's a very old practice
 ACCOUNT_USERNAME_REQUIRED = False

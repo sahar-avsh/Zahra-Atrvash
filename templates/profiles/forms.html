@@ -35,7 +35,7 @@
     </div>
 
     <div class="third-column">
-      <button class="save-button" type="submit">Save</button>
+      <input class="save-button" type="submit" value="Save"/>
       <div class="birthday-general">
         <h4 class="birthday-title">Date of Birth:</h4>
         {% render_field form.birthday class+="birthday-box" %}
@@ -43,6 +43,10 @@
       <div class="description-general">
         <h4 class="description-title">Add a description:</h4>
         {% render_field form.description class+="description-box" %}
+      </div>
+      <div class="description-general">
+        <h4 class="description-title">Add location:</h4>
+        {% render_field form.loc_long class+="description-box" %} {% render_field form.loc_ltd class+="description-box" %}
       </div>
     </div>
   </div>

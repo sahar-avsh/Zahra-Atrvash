@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 from profiles.models import Profile
 
-""" class ProfileForm(forms.Form):
-  name = forms.CharField() """
+class DateInput(forms.DateInput):
+  input_type = 'date'
 
 class ProfileModelForm(forms.ModelForm):
   class Meta:
@@ -14,7 +14,6 @@ class ProfileModelForm(forms.ModelForm):
       'image',
       'f_name',
       'l_name',
-      'email',
       'birthday',
       'occupation',
       'loc_long',
@@ -22,6 +21,10 @@ class ProfileModelForm(forms.ModelForm):
       'education',
       'description'
     ]
+
+    widgets = {
+      'birthday': DateInput(),
+    }
 
   def clean_f_name(self):
     data = self.cleaned_data.get('f_name')

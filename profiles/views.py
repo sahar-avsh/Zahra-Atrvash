@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 from .forms import ProfileModelForm
 from .models import Profile, ProfileFollowRequest
@@ -27,18 +29,39 @@ def home_view(request, *args, **kwargs):
         # print('post_data', post_data)
   return render(request, 'forms.html', {}) """
 
-def profile_edit_view(request, pk, *args, **kwargs):
-  form = ProfileModelForm(request.POST or None)
+""" def profile_edit_view(request, *args, **kwargs):
+  form = ProfileModelForm(request.POST if request.POST else None,
+   instance=Profile.objects.get(pk=request.user.profile.id))
+
+  if request.method == 'POST':
+    # form = ProfileModelForm(request.POST, request.FILES or None)
+    if form != None:
   # if request.method == 'POST':
     # form = ProfileModelForm(request.POST, instance=request.user)
-  if form.is_valid():
-    # obj = form.save(commit=False)
-    # obj.save()
-    data = form.cleaned_data
-    # Profile.objects.create(**data)
-    form = ProfileModelForm()
-    # return HttpResponseRedirect("/success") --> To let user know profile is successfully created
-    # return redirect("/success") 
+      if form.is_valid():
+        form.save()
+        # data = form.cleaned_data
+        # for key, value in data.items():
+        #   if not value:
+        #     continue
+        #   else:
+        #     form.instance.key = value
+        # form.instance.save()
+      # obj = form.save(commit=False)
+        return HttpResponseRedirect(reverse('profile_look', kwargs={'pk': form.instance.id}))
+        # return redirect('profile_look', pk=request.user.profile.id) 
+  return render(request, "profiles/forms.html", {'form': form}) """
+
+def profile_edit_view(request, *args, **kwargs):
+  profile = get_object_or_404(Profile, pk=request.user.profile.id)
+  if request.method == 'POST':
+    form = ProfileModelForm(request.POST, instance=profile)
+    if form.is_valid():
+      profile = form.save()
+      return redirect('profile_look', pk=profile.id)
+    print(form.errors)
+  else:
+    form = ProfileModelForm(instance=profile)
   return render(request, "profiles/forms.html", {'form': form})
 
 def profile_outlook_view(request, pk, *args, **kwargs):

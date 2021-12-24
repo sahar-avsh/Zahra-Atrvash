@@ -95,8 +95,15 @@
                 <button class="save-button1" type="button">Report this user!</button>
               </div>
               <div class="second-button-column">
-                <button class="save-button" type="button">Friends</button><br />
-                <button class="save-button1" type="button">Rate and reviews</button>
+                <button class="save-button" type="button">
+                  <a class="button-link" href="{% url 'friends' pk=object.id %}">Friends</a>
+                </button><br />
+                <button class="save-button1" type="button">Rate and reviews</button><br />
+                {% if object.id == user.id %}
+                  <button class="save-button" type="button">
+                    <a class="button-link" href="{% url 'edit_view' %}">Edit</a>
+                  </button>
+                {% endif %}
               </div>
             </div>
         </div>
