@@ -20,7 +20,7 @@ Home - {{block.super}}
     <div class="second-part">
       {% for offer in offer_list %}
       <h3>
-        {{offer.title}}
+        <a href="{% url 'offer_look' pk=offer.id %}"> {{offer.title}} </a>
       </h3>
       {% endfor %}
     </div>

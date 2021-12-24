@@ -11,6 +11,7 @@
 
 {% load widget_tweaks %}
 {% block content %}
+<form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
   <div class="container">
     <div class="first-column">
       <div class="profile-picture">
@@ -44,7 +45,6 @@
         {% render_field form.description class+="description-box" %}
       </div>
     </div>
-
-
   </div>
+  </form>
 {% endblock %}

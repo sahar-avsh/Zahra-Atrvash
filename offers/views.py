@@ -17,14 +17,16 @@ def offer_outlook_view(request, pk, *args, **kwargs):
 
 def offer_create_view(request, *args, **kwargs):
   if request.method == 'POST':
-    form = OfferModelForm(request.POST or None)
+    form = OfferModelForm(request.POST, request.FILES or None)
     if form != None:
       if form.is_valid():
         o = form.save(commit=False)
         o.owner = Profile.objects.get(user_id=request.user.id)
+        o.tags.set(form.cleaned_data['tags'])
+        o.save()
         # data = form.cleaned_data
         # o = Offer.objects.create(**data)
-        return HttpResponseRedirect(reverse('offer_look', pk=o.id))
+        return HttpResponseRedirect(reverse('offer_look', kwargs={'pk': o.id}))
   else:
     form = OfferModelForm()
   return render(request, 'offers/forms.html', {'form': form})

@@ -11,7 +11,7 @@ Create Offer - {{block.super}}
 
 {% load widget_tweaks %}
 {% block content %}
-<form method="POST" action="."> {% csrf_token %}
+<form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
 <div class="container">
   <div class="first-column">
     <!-- profile-picture -->

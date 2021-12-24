@@ -33,7 +33,7 @@ class Offer(models.Model):
 
   description = models.TextField()
   # category tags that an offer has
-  tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers')
+  tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers', blank=True)
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title
