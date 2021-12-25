@@ -16,13 +16,19 @@ Friends - {{block.super}}
   {% for object in object_list %}
     <div>
       <h4>{{object.f_name}} {{object.l_name}}</h4>
-      <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'unfollow' profileID=object.id %}">Unfollow!</a>
-      </button>
+      {% if object.id == request.user.profile.id %}
+        <button class="save-button" type="button">
+          <a class="button-link" href="{% url 'unfollow' profileID=object.id %}">Unfollow!</a>
+        </button>
+      {% endif %}
     </div>
   {% endfor %}
 {% else %}
+  {% if object.id == request.user.profile.id %}
     <h4>You have no friends.</h4>
+  {% else %}
+    <h4><a href="{%url 'profile_look' pk=object.id %}">{{object.f_name}}</a> has no friends.</h4>
+  {% endif %}
 {% endif %}
 
 {% endblock content %}

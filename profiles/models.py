@@ -14,11 +14,11 @@ class Profile(models.Model):
   l_name = models.CharField(max_length=50)
   created_at = models.DateTimeField(auto_now_add=True)
   email = models.EmailField()
-  birthday = models.DateField()
+  birthday = models.DateField(null=True, blank=True)
   occupation = models.CharField(blank=True, max_length=50)
 
-  loc_long = models.DecimalField(max_digits=9, decimal_places=6, blank=True)
-  loc_ltd = models.DecimalField(max_digits=9, decimal_places=6, blank=True)
+  loc_long = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+  loc_ltd = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
   class DiplomaReceived(models.TextChoices):
     other = 'Other', _('Other')

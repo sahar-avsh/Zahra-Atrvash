@@ -4,12 +4,19 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
+from allauth.account.signals import user_signed_up
+from django.dispatch import receiver
+
 from .forms import ProfileModelForm
 from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest
 from offers.models import Offer
 from categorytags.models import Skill, Interest
 
 # Create your views here.
+@receiver(user_signed_up)
+def after_user_signed_up(request, user, **kwargs):
+  profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name)
+
 def home_view(request, *args, **kwargs):
   qs_offers = Offer.objects.all()
   # get the active user with request.user
@@ -60,7 +67,7 @@ def profile_activity_background_view(request, *args, **kwargs):
   created_active_offers = Offer.objects.filter(owner=obj, offer_status='Active')
   cancelled_or_passive_offers = Offer.objects.filter(owner=obj, offer_status__in=['Cancelled', 'Passive'])
   joined_offers = obj.accepted_offers.all()
-  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(offer__in=created_active_offers)
+  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj)
   content = {'created_active_offers': created_active_offers,
   'cancelled_passive_offers': cancelled_or_passive_offers,
   'joined_offers': joined_offers,
@@ -112,10 +119,11 @@ def decline_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
-def profile_friends_view(request, *args, **kwargs):
-  current_profile = request.user.profile
-  friend_list = current_profile.friends.all()
-  content = {"object_list": friend_list}
+def profile_friends_view(request, profileID, *args, **kwargs):
+  # current_profile = request.user.profile
+  obj = Profile.objects.get(pk=profileID)
+  friend_list = obj.friends.all()
+  content = {"object": obj, "object_list": friend_list}
   return render(request, "profiles/friends.html", content)
 
 def send_join_request(request, offerID, *args, **kwargs):
@@ -174,6 +182,12 @@ def cancel_join_request(request, join_request_id):
 def leave_offer(request, offerID):
   offer = Offer.objects.get(pk=offerID)
   if request.user.profile in offer.participants.all():
+    # give profile's credits back
+    offer_creds = offer.credit
+    profile_creds = request.user.profile.credit
+    Profile.objects.filter(pk=request.user.profile.id).update(credit=offer_creds + profile_creds)
+    # remove profile from offer participants
     offer.participants.remove(request.user.profile)
+    # remove the offer from profile's accepted offers
     request.user.profile.accepted_offers.remove(offer)
     return redirect('home_page')

@@ -70,6 +70,8 @@
                 <p> {{object.credit}} </p>
               <h3>Capacity:</h3>
                 <p> {{object.capacity}} </p>
+              <h3>Number of spots left:</h3>
+                <p> {{spots_left}} </p>
               <h3>Application deadline:</h3>
                 <p> {{object.app_deadline|date:'j-M-Y, g A (e)'}} </p>
               <h3>Cancellation deadline:</h3>
@@ -84,21 +86,31 @@
             </button>
             {% if join_request != None %}
               <button class="save-button" type="button">
-                <a href="{%url 'cancel_join_request' offerID=object.id %}">Cancel request!</a>
+                <a href="{%url 'cancel_join_request' join_request_id=join_request.id %}">Cancel request!</a>
               </button>
             {% elif request.user.profile in participants %}
               <button class="save-button" type="button">
                 <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
               </button>
             {% else %}
-              <button class="save-button" type="button">
-                <a href="{%url 'send_join_request' offerID=object.id %}">Apply!</a>
-              </button>
+              {% if object.capacity > participants.count %}
+                <button class="save-button" type="button">
+                  <a href="{%url 'send_join_request' offerID=object.id %}">Apply!</a>
+                </button>
+              {% else %}
+                <h2>This offer is full!</h2>
+              {% endif %}
             {% endif %}
           {% else %}
             <button class="save-button" type="button">
               <a href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
             </button>
+            <div>
+              <h4>Participants</h4>
+                {% for obj in participants %}
+                  <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
+                {% endfor %}
+            </div>
           {% endif %}
         {% endif %}
           </div>

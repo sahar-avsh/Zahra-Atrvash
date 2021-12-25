@@ -12,6 +12,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   try:
     obj = Offer.objects.get(pk=pk)
     obj_participants = obj.participants.all()
+    num_of_spots_left = obj.capacity - obj_participants.count()
   except (Offer.DoesNotExist, ValidationError):
     raise Http404
 
@@ -20,7 +21,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
-  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants}
+  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left}
   return render(request, "offers/outlook.html", content)
 
 def offer_create_view(request, *args, **kwargs):

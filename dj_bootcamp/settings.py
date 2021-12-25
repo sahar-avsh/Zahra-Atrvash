@@ -106,8 +106,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_USERNAME_REQUIRED = False
 
 LOGIN_REDIRECT_URL = '/timeline/'
-# change it to profile edit when it is ready
-ACCOUNT_SIGNUP_REDIRECT_URL = '/timeline/'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/profiles/edit/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_LOGOUT_ON_GET = True
 

@@ -39,12 +39,12 @@ Activity Background - {{block.super}}
         <h4>You have no joined offers.</h4>
       {% endif %}
     <h3>Requested offers</h3>
-      {% if outstanding_offer_requests.count > 0 %}
-        {% for object in outstanding_offer_requests %}
+      {% if outstanding_offers.count > 0 %}
+        {% for object in outstanding_offers %}
           <div>
-            <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
+            <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
             <button class="save-button" type="button">
-              <a href="{%url 'cancel_join_request' offerID=object.id %}">Cancel request!</a>
+              <a href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
             </button>
           </div>
         {% endfor %}

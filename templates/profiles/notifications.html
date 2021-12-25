@@ -16,7 +16,7 @@ Notifications - {{block.super}}
 {% if friend_list != None and friend_list.count > 0 %}
   {% for object in friend_list %}
     <div>
-      <h4>{{object.profile_id.f_name}} wants to follow you!</h4>
+      <h4><a href="{% url 'profile_look' pk=object.profile_id.id %}">{{object.profile_id.f_name}}</a> wants to follow you!</h4>
       <button class="save-button" type="button">
         <a class="button-link" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
       </button>
@@ -33,7 +33,7 @@ Notifications - {{block.super}}
 {% if offer_list != None and offer_list.count > 0 %}
   {% for object in offer_list %}
     <div>
-      <h4>{{object.profile.f_name}} wants to join {{object.offer.title}} </h4>
+      <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
       <button class="save-button" type="button">
         <a class="button-link" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
       </button>
