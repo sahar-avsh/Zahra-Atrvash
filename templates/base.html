@@ -24,7 +24,7 @@
       <a href="{%url 'notifications' %}">Notifications</a>
       <a href="{%url 'profile_look' pk=request.user.profile.id %}">Your profile</a>
       <a href="/accounts/logout/">Logout</a>
-      <p>Outstanding credit: 7</p>
+      <p>Outstanding credit: {{request.user.profile.credit}} </p>
       <a href="javascript:void(0);" class="icon" onclick="myFunction()">
         <i class="fa fa-bars"></i>
       </a>

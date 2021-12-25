@@ -41,7 +41,10 @@ Sign Up - {{block.super}}
       {% render_field form.password2 class+="password-box" %}
     </div>
 
-    <button class="done-button" type="submit">Sign up!</button>
+    <button class="done-button" type="submit">Sign up!</button><br />
+    <button class="done-button" type="button">
+      <a class="button-link" href="{% url 'account_login' %}">Go to login!</a>
+    </button>
   </div>
 </div>
   

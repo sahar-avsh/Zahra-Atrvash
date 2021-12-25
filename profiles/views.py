@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from .forms import ProfileModelForm
-from .models import Profile, ProfileFollowRequest
+from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest
 from offers.models import Offer
 from categorytags.models import Skill, Interest
 
@@ -45,21 +45,26 @@ def profile_outlook_view(request, pk, *args, **kwargs):
 
 def profile_notifications_view(request, *args, **kwargs):
   current_profile = request.user.profile
+  offers_of_current_profile = Offer.objects.filter(owner=current_profile)
   try:
     friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
+    join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile)
   except ProfileFollowRequest.DoesNotExist:
     friend_requests = None
-  content = {"object_list": friend_requests}
+    join_requests = None
+  content = {"friend_list": friend_requests, 'offer_list': join_requests}
   return render(request, "profiles/notifications.html", content)
 
 def profile_activity_background_view(request, *args, **kwargs):
   obj = request.user.profile
-  created_offers = Offer.objects.all().filter(owner=obj)
+  created_active_offers = Offer.objects.filter(owner=obj, offer_status='Active')
+  cancelled_or_passive_offers = Offer.objects.filter(owner=obj, offer_status__in=['Cancelled', 'Passive'])
   joined_offers = obj.accepted_offers.all()
-  outstanding_offers = obj.outstanding_offers.all()
-  content = {'created_offers': created_offers, 
+  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(offer__in=created_active_offers)
+  content = {'created_active_offers': created_active_offers,
+  'cancelled_passive_offers': cancelled_or_passive_offers,
   'joined_offers': joined_offers,
-  'outstanding_offers': outstanding_offers}
+  'outstanding_offers': outstanding_offer_requests}
   return render(request, "profiles/activity_background.html", content)
 
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
@@ -101,7 +106,7 @@ def accept_follow_request(request, follow_request_id):
 
 def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
-  if follow_request.following_profile_id == request.user:
+  if follow_request.following_profile_id == request.user.profile:
     follow_request.delete()
     return redirect('home_page')
   else:
@@ -112,3 +117,63 @@ def profile_friends_view(request, *args, **kwargs):
   friend_list = current_profile.friends.all()
   content = {"object_list": friend_list}
   return render(request, "profiles/friends.html", content)
+
+def send_join_request(request, offerID, *args, **kwargs):
+  from_profile = request.user.profile
+  to_offer = Offer.objects.get(pk=offerID)
+
+  # check if profile has enough credits to join this offer
+  available_credits = from_profile.credit
+  required_credits = to_offer.credit
+  # also check if offer has enough capacity
+  num_of_participants = to_offer.participants.count()
+
+  if available_credits >= required_credits and num_of_participants < to_offer.capacity:
+    join_request, created = ProfileJoinOfferRequest.objects.get_or_create(
+    profile=from_profile, offer=to_offer
+  )
+    if created:
+      return redirect('home_page')
+    else:
+      return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def accept_join_request(request, join_request_id):
+  join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
+  if join_request.offer.owner == request.user.profile:
+    # add profile to offer's participants
+    join_request.offer.participants.add(join_request.profile)
+    # add offer to profile's accepted offers
+    join_request.profile.accepted_offers.add(join_request.offer)
+    # deduct credits from the participant
+    if join_request.profile.credit < join_request.offer.credit:
+      Profile.objects.filter(pk=join_request.profile.id).update(credit=0.00)
+    else:
+      remaining_credits = join_request.profile.credit - join_request.offer.credit
+      Profile.objects.filter(pk=join_request.profile.id).update(credit=remaining_credits)
+    join_request.delete()
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def decline_join_request(request, join_request_id):
+  join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
+  if join_request.offer.owner == request.user.profile:
+    join_request.delete()
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def cancel_join_request(request, join_request_id):
+  join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
+  if join_request.profile == request.user.profile:
+    join_request.delete()
+  return redirect('home_page')
+
+def leave_offer(request, offerID):
+  offer = Offer.objects.get(pk=offerID)
+  if request.user.profile in offer.participants.all():
+    offer.participants.remove(request.user.profile)
+    request.user.profile.accepted_offers.remove(offer)
+    return redirect('home_page')

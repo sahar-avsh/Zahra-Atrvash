@@ -109,6 +109,7 @@ LOGIN_REDIRECT_URL = '/timeline/'
 # change it to profile edit when it is ready
 ACCOUNT_SIGNUP_REDIRECT_URL = '/timeline/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_LOGOUT_ON_GET = True
 
 ACCOUNT_FORMS = {
     'signup': 'profiles.forms.CustomSignupForm',

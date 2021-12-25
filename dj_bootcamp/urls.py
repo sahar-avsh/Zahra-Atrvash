@@ -30,6 +30,11 @@ from profiles.views import (
     profile_friends_view,
     profile_edit_view,
     profile_activity_background_view,
+    send_join_request,
+    accept_join_request,
+    decline_join_request,
+    cancel_join_request,
+    leave_offer,
     send_follow_request,
     accept_follow_request,
     decline_follow_request,
@@ -39,6 +44,7 @@ from profiles.views import (
 from offers.views import (
     offer_create_view,
     offer_outlook_view,
+    cancel_offer_view
 )
 
 urlpatterns = [
@@ -56,6 +62,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('offers/<str:pk>/look/', offer_outlook_view, name='offer_look'),
     path('offers/create/', offer_create_view, name='offer_create'),
+    path('send_join_request/<str:offerID>/', send_join_request, name='send_join_request'),
+    path('accept_join_request/<int:join_request_id>/', accept_join_request, name='accept_join_request'),
+    path('decline_join_request/<int:join_request_id>/', decline_join_request, name='decline_join_request'),
+    path('cancel_join_request/<int:join_request_id>/', cancel_join_request, name='cancel_join_request'),
+    path('cancel_offer/<str:offerID>/', cancel_offer_view, name='cancel_offer'),
+    path('leave_offer/<str:offerID>/', leave_offer, name='leave_offer'),
     #path('accounts/logout/', LogoutView.as_view(), name='logout'),
     #path('accounts/login/', LoginView.as_view(), name='login'),
     #path('accounts/signup/', SignupView.as_view(), name='signup')

@@ -30,9 +30,9 @@ class Profile(models.Model):
   education = models.CharField(max_length=50, choices=DiplomaReceived.choices, blank=True)
 
   description = models.TextField(blank=True)
-  credit = models.IntegerField(default=0)
+  credit = models.DecimalField(max_digits=4, decimal_places=2, default=5.00)
   # offers that profile has requested to join
-  outstanding_offers = models.ManyToManyField('offers.Offer', related_name='profiles_outstanding', blank=True)
+  # outstanding_offers = models.ManyToManyField('offers.Offer', related_name='profiles_outstanding', blank=True)
   # offers that profile has been accepted to join
   accepted_offers = models.ManyToManyField('offers.Offer', related_name='profiles_accepted', blank=True)
   # skills that profile has
@@ -62,3 +62,10 @@ class ProfileReview(models.Model):
   def __str__(self) -> str:
       return self.review_giver_id.f_name + '->' + self.review_receiver_id.f_name
 
+class ProfileJoinOfferRequest(models.Model):
+  profile = models.ForeignKey('Profile', related_name='joiner', on_delete=models.CASCADE)
+  offer = models.ForeignKey('offers.Offer', related_name='joined_offer', on_delete=models.CASCADE)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self) -> str:
+      return self.profile.f_name + ' wants to join ' + self.offer.title

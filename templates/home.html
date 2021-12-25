@@ -19,9 +19,11 @@ Home - {{block.super}}
     </div>
     <div class="second-part">
       {% for offer in offer_list %}
+        {% if offer.offer_status == 'Active' %}
       <h3>
         <a href="{% url 'offer_look' pk=offer.id %}"> {{offer.title}} </a>
       </h3>
+        {% endif %}
       {% endfor %}
     </div>
   </div>

@@ -12,8 +12,9 @@ Notifications - {{block.super}}
 
 {% block content %}
 
-{% if object_list != None and object_list.count > 0 %}
-  {% for object in object_list %}
+<h2>Friend Requests</h2>
+{% if friend_list != None and friend_list.count > 0 %}
+  {% for object in friend_list %}
     <div>
       <h4>{{object.profile_id.f_name}} wants to follow you!</h4>
       <button class="save-button" type="button">
@@ -25,7 +26,26 @@ Notifications - {{block.super}}
     </div>
   {% endfor %}
 {% else %}
-    <h4>You have no requests.</h4>
+    <h4>You have no friend requests.</h4>
 {% endif %}
+
+<h2>Join Requests</h2>
+{% if offer_list != None and offer_list.count > 0 %}
+  {% for object in offer_list %}
+    <div>
+      <h4>{{object.profile.f_name}} wants to join {{object.offer.title}} </h4>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
+      </button>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
+      </button>
+    </div>
+  {% endfor %}
+{% else %}
+    <h4>You have no join requests.</h4>
+{% endif %}
+
+
 
 {% endblock content %}

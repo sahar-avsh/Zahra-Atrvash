@@ -15,6 +15,7 @@ class Offer(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   start_date = models.DateTimeField()
   end_date = models.DateTimeField()
+  credit = models.DecimalField(max_digits=4, decimal_places=2, default=0)
   capacity = models.IntegerField()
   app_deadline = models.DateTimeField()
   cancel_deadline = models.DateTimeField()
@@ -31,9 +32,21 @@ class Offer(models.Model):
 
   offer_type = models.CharField(max_length=7, choices=OfferType.choices)
 
+  class OfferStatus(models.TextChoices):
+    # offer is active and not given yet
+    active = 'Active', _('Active')
+    # offer is given
+    passive = 'Passive', _('Passive')
+    # offer is cancelled
+    cancelled = 'Cancelled', _('Cancelled')
+
+  offer_status = models.CharField(max_length=10, choices=OfferStatus.choices, default='Active')
+
   description = models.TextField()
   # category tags that an offer has
   tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers', blank=True)
+  # participants
+  participants = models.ManyToManyField('profiles.Profile', related_name='offer_participants', blank=True)
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title
