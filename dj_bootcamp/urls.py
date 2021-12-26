@@ -38,7 +38,8 @@ from profiles.views import (
     send_follow_request,
     accept_follow_request,
     decline_follow_request,
-    unfollow
+    unfollow,
+    cancel_follow_request
 )
 
 from offers.views import (
@@ -53,9 +54,10 @@ urlpatterns = [
     path('accept_follow_request/<int:follow_request_id>/', accept_follow_request, name='accept_follow_request'),
     path('decline_follow_request/<int:follow_request_id>/', decline_follow_request, name='decline_follow_request'),
     path('unfollow/<str:profileID>/', unfollow, name='unfollow'),
+    path('cancel_friend_request/<str:follow_request_id>', cancel_follow_request, name='cancel_follow_request'),
     path('notifications/', profile_notifications_view, name='notifications'),
     path('friends/<str:profileID>/', profile_friends_view, name='friends'),
-    path('activity-background/', profile_activity_background_view, name='activity_background'),
+    path('activity-background/<str:profileID>/', profile_activity_background_view, name='activity_background'),
     path('profiles/<str:pk>/look/', profile_outlook_view, name='profile_look'),
     path('profiles/edit/', profile_edit_view, name='edit_view'),
     # path('api/profiles/<str:pk>/', profile_api_detail_view),

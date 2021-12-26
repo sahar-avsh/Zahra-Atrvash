@@ -32,13 +32,6 @@ class ProfileModelForm(forms.ModelForm):
       raise forms.ValidationError('This is not long enough. (That\'s what she said)')
     return data
 
-  def clean_offers(self):
-    data = self.cleaned_data.get('offers')
-    offer_owners = [o.owner.id for o in data]
-    if self.id in offer_owners:
-      raise forms.ValidationError('User cannot participate in own offer.')
-    return data
-
 class CustomSignupForm(SignupForm):
   email = forms.EmailField()
   first_name = forms.CharField(max_length=30, label='First Name')

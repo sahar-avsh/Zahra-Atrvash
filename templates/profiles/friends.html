@@ -13,12 +13,12 @@ Friends - {{block.super}}
 {% block content %}
 
 {% if object_list.count > 0 %}
-  {% for object in object_list %}
+  {% for obj in object_list %}
     <div>
-      <h4>{{object.f_name}} {{object.l_name}}</h4>
+      <h4><a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a></h4>
       {% if object.id == request.user.profile.id %}
         <button class="save-button" type="button">
-          <a class="button-link" href="{% url 'unfollow' profileID=object.id %}">Unfollow!</a>
+          <a class="button-link" href="{% url 'unfollow' profileID=obj.id %}">Unfollow!</a>
         </button>
       {% endif %}
     </div>

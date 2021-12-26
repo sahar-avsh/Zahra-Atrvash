@@ -12,44 +12,50 @@ Activity Background - {{block.super}}
 {% block content %}
 <h1 class="heading">Activity Background</h1>
   <div class="items">
-    <h3>Your offers</h3>
+    <h3>Created active offers</h3>
       {% if created_active_offers.count > 0 %}
         {% for object in created_active_offers %}
           <div>
             <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-            <button class="save-button" type="button">
-              <a href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
-            </button>
+            {% if obj == request.user.profile %}
+              <button class="save-button" type="button">
+                <a href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
+              </button>
+            {% endif %}
           </div>
         {% endfor %}
       {% else %}
-        <h4>You have no created offers.</h4>
+        <h4>No created offers.</h4>
       {% endif %}
     <h3>Joined offers</h3>
       {% if joined_offers.count > 0 %}
         {% for object in joined_offers %}
           <div>
             <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-            <button class="save-button" type="button">
-              <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
-            </button>
+            {% if obj == request.user.profile %}
+              <button class="save-button" type="button">
+                <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
+              </button>
+            {% endif %}
           </div>
         {% endfor %}
       {% else %}
-        <h4>You have no joined offers.</h4>
+        <h4>No joined offers.</h4>
       {% endif %}
     <h3>Requested offers</h3>
       {% if outstanding_offers.count > 0 %}
         {% for object in outstanding_offers %}
           <div>
             <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
-            <button class="save-button" type="button">
-              <a href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
-            </button>
+            {% if obj == request.user.profile %}
+              <button class="save-button" type="button">
+                <a href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
+              </button>
+            {% endif %}
           </div>
         {% endfor %}
       {% else %}
-        <h4>You have not requested to join any offers.</h4>
+        <h4>No requests to join any offers.</h4>
       {% endif %}
   <h3>Cancelled and Passive offers</h3>
     {% if cancelled_passive_offers.count > 0 %}
@@ -59,7 +65,7 @@ Activity Background - {{block.super}}
         </div>
       {% endfor %}
     {% else %}
-      <h4>You have no cancelled or passive offers.</h4>
+      <h4>No cancelled or passive offers.</h4>
     {% endif %}
   </div>
 {% endblock content %}

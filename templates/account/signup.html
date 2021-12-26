@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/signup.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/signupDesign.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -13,27 +13,29 @@ Sign Up - {{block.super}}
 {% block content %}
 <form method="POST" action="."> {% csrf_token %}
 <!-- Name -->
-<div class="container">
+<body>
+  
+
   <div class="intro">
     {{ form.errors }}
-    <div>
-      <h3 class="email-general">Email:</h3>
-      {% render_field form.email class+="email-box" %}
+    <div class="email-general">
+      <h3 >Email:</h3>
+      {% render_field form.email class+="email-box" placeholder='Enter your Email address here'%}
     </div>
 
     <div>
       <h3 class="name-general">First name:</h3>
-      {% render_field form.first_name class+="name-box" %}
+      {% render_field form.first_name class+="name-box" placeholder='Enter your firstname here'%}
     </div>
 
     <div>
       <h3 class="surname-general">Last name:</h3>
-      {% render_field form.last_name class+="surname-box" %}
+      {% render_field form.last_name class+="surname-box" placeholder='Enter your surname here' %}
     </div>
 
     <div>
       <h3 class="password-general">Password:</h3>
-      {% render_field form.password1 class+="password-box" %}
+      {% render_field form.password1 class+="password-box" placeholder='Add a strong password' %}
     </div>
 
     <div>
@@ -42,10 +44,11 @@ Sign Up - {{block.super}}
     </div>
 
     <button class="done-button" type="submit">Sign up!</button><br />
-    <button class="done-button" type="button">
-      <a class="button-link" href="{% url 'account_login' %}">Go to login!</a>
+    <button class="button-link" type="button">
+      <a  href="{% url 'account_login' %}">Go back to login!</a>
     </button>
   </div>
-</div>
+
+</body>
   
 {% endblock content %}

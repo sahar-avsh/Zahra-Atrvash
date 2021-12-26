@@ -1,12 +1,31 @@
-.container {
-  background: url("happy-friends.jpeg");
+body {
+  background-image: url('happy-friends.jpeg');
+ 
   background-repeat: no-repeat, repeat;
   background-size: cover;
   color: rgb(73, 73, 73);
 }
 
 a {
-  color: rgb(255, 123, 0);
+  color: rgb(155, 85, 20);
+  text-decoration: none;
+}
+
+a:hover{
+  color: rgb(63, 26, 0);
+  transition-duration: 0.5s;
+
+}
+
+.signup-link{
+  color: rgb(155, 85, 20);
+  font-weight: bolder;
+  text-decoration: none;
+}
+
+.signup-link:hover{
+  color: rgb(63, 26, 0);
+  transition-duration: 0.5s;
 }
 
 .intro {
@@ -20,7 +39,7 @@ a {
 h1 {
   margin-top: 100px;
   text-align: center;
-  padding: 10px;
+  padding-top: 50px;
   color: rgb(90, 82, 82);
 }
 
@@ -51,37 +70,49 @@ h3 {
   background-color: rgb(255, 241, 224);
 }
 
+
 /* Password  */
 .password-general {
   margin-top: 10px;
   text-align: center;
+  margin-bottom: 10px;
 }
 .password-box {
   width: 200px;
   height: 20px;
   align-self: center;
   background-color: rgb(255, 241, 224);
+
 }
+
+.forgot{
+  margin-left: 590px;
+  margin-top: 100px;
+  padding-top: 50px;
+  font-size: medium;
+  
+}
+
 
 /* Button  */
 
-.buttons {
-  display: flex;
-}
+
 
 .login-button {
   text-align: center;
   width: 95px;
   height: 30px;
   margin-left: 588px;
-  margin-top: 20px;
+  margin-top: 15px;
   margin-bottom: 20px;
-  background-color: rgb(255, 123, 0);
+  background-color: rgb(243, 147, 56);
+  color: rgb(63, 26, 0);
 }
 
 .login-button:hover {
   background-color: rgb(190, 190, 190);
   transition-duration: 0.5s;
+  color: rgb(243, 147, 56);
 }
 
 .signup-button {
@@ -95,7 +126,7 @@ h3 {
 }
 
 .signup-button:hover {
-  background-color: rgb(255, 123, 0);
+  background-color: rgb(63, 26, 0);
   transition-duration: 0.5s;
 }
 

@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/login.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/loginDesign.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -10,13 +10,17 @@ Login - {{block.super}}
 {% endblock title %}
 
 {% load widget_tweaks %}
+
 {% block content %}
-<div class="container">
-  <div class="intro">
+<body>
+  
+
+<div class="intro">
+
     <h1>Hello and welcome to our community</h1>
     <h2>where you can learn, teach and have fun for free!</h2>
     <h2 class="login-offer">
-      Login or do a quick <a href="/accounts/signup/">signup</a> to start the adventure.
+      Login or do a quick <a class='signup-link' href="/accounts/signup/">signup</a> to start the adventure.
     </h2>
 <form method="POST" action="."> {% csrf_token %}
 
@@ -31,12 +35,16 @@ Login - {{block.super}}
 
    <!-- Button -->
    <div class="buttons">
-     <button class="login-button" type="submit">Login!</button>
-    <button class="login-button" type="button">
+    <a class="forgot" href="{% url 'account_reset_password' %}">Forgot password?</a>
+     <button class="login-button" type="submit">Login!</button><br>
+     
+    
+    </div>
+    <!-- <button class="login-button" type="button">
       <a class="button-link" href="{% url 'account_reset_password' %}">Forgot password!</a>
-    </button>
+    </button> -->
   </div>
   </div>
-</div>
-  
+
+</body>
 {% endblock content %}

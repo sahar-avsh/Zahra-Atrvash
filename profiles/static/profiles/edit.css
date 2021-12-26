@@ -37,6 +37,11 @@
   display: none;
 }
 
+.credit{
+  color: #ddd;
+  margin-right: 50px;
+}
+
 .container {
   background-color: white;
   width: 1000px;

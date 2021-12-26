@@ -15,7 +15,7 @@ from categorytags.models import Skill, Interest
 # Create your views here.
 @receiver(user_signed_up)
 def after_user_signed_up(request, user, **kwargs):
-  profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name)
+  profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name, email=user.email)
 
 def home_view(request, *args, **kwargs):
   qs_offers = Offer.objects.all()
@@ -27,14 +27,14 @@ def home_view(request, *args, **kwargs):
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
   if request.method == 'POST':
-    form = ProfileModelForm(request.POST, instance=profile)
+    form = ProfileModelForm(request.POST, request.FILES, instance=profile)
     if form.is_valid():
       profile = form.save()
       return redirect('profile_look', pk=profile.id)
     print(form.errors)
   else:
     form = ProfileModelForm(instance=profile)
-  return render(request, "profiles/forms.html", {'form': form})
+  return render(request, "profiles/forms.html", {'form': form, 'object': profile})
 
 def profile_outlook_view(request, pk, *args, **kwargs):
   current_profile = request.user.profile
@@ -46,9 +46,15 @@ def profile_outlook_view(request, pk, *args, **kwargs):
     friend_list = obj.friends.all()
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
+
+  try:
+    current_profile_friend_request = ProfileFollowRequest.objects.get(profile_id=current_profile, following_profile_id=obj)
+  except:
+    current_profile_friend_request = None
+
   return render(request, "profiles/outlook.html", {"object": obj, "user": current_profile,
    "skill_list": skill_list, "interest_list": interest_list, 'friend_list': friend_list, 
-   'user_friend_list': current_profile_friend_list})
+   'user_friend_list': current_profile_friend_list, 'user_friend_request': current_profile_friend_request})
 
 def profile_notifications_view(request, *args, **kwargs):
   current_profile = request.user.profile
@@ -62,8 +68,8 @@ def profile_notifications_view(request, *args, **kwargs):
   content = {"friend_list": friend_requests, 'offer_list': join_requests}
   return render(request, "profiles/notifications.html", content)
 
-def profile_activity_background_view(request, *args, **kwargs):
-  obj = request.user.profile
+def profile_activity_background_view(request, profileID, *args, **kwargs):
+  obj = Profile.objects.get(pk=profileID)
   created_active_offers = Offer.objects.filter(owner=obj, offer_status='Active')
   cancelled_or_passive_offers = Offer.objects.filter(owner=obj, offer_status__in=['Cancelled', 'Passive'])
   joined_offers = obj.accepted_offers.all()
@@ -71,7 +77,7 @@ def profile_activity_background_view(request, *args, **kwargs):
   content = {'created_active_offers': created_active_offers,
   'cancelled_passive_offers': cancelled_or_passive_offers,
   'joined_offers': joined_offers,
-  'outstanding_offers': outstanding_offer_requests}
+  'outstanding_offers': outstanding_offer_requests, 'obj': obj}
   return render(request, "profiles/activity_background.html", content)
 
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
@@ -114,6 +120,14 @@ def accept_follow_request(request, follow_request_id):
 def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.following_profile_id == request.user.profile:
+    follow_request.delete()
+    return redirect('home_page')
+  else:
+    return redirect('home_page')
+
+def cancel_follow_request(request, follow_request_id):
+  follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
+  if follow_request.profile_id == request.user.profile:
     follow_request.delete()
     return redirect('home_page')
   else:
