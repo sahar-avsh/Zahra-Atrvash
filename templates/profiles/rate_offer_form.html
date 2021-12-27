@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/rate_offer_form.css' %}">
+{% endblock styles %}
+
+
+{% block title %}
+  Rate Offer - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+
+<form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
+  <h1 class="heading">About your experience</h1>
+    <div class="items">
+
+      <h4>Do you approve that you have received <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a>?</h4>
+        {% render_field form.done %}
+
+      <h4>How do you rate your experience?</h4>
+      <h5>Please rate between 1 and 5, 1 being the worst and 5 being the best.</h5>
+
+      <div class="star-rating">
+        <div class="star-rating__wrap">
+
+          {% render_field form.rating %}
+
+          <!-- <input class="star-rating__input" id="star-rating-5" type="radio" name="rating" value="5">
+          <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-5" title="5 out of 5 stars"></label>
+          <input class="star-rating__input" id="star-rating-4" type="radio" name="rating" value="4">
+          <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-4" title="4 out of 5 stars"></label>
+          <input class="star-rating__input" id="star-rating-3" type="radio" name="rating" value="3">
+          <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-3" title="3 out of 5 stars"></label>
+          <input class="star-rating__input" id="star-rating-2" type="radio" name="rating" value="2">
+          <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-2" title="2 out of 5 stars"></label>
+          <input class="star-rating__input" id="star-rating-1" type="radio" name="rating" value="1">
+          <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-1" title="1 out of 5 stars"></label> -->
+        </div>
+      </div>
+
+      <h4 class="comment-title">Leave a comment about your experience</h4>
+        {% render_field form.text class+="comment" %}
+
+        <input class="save-button" type="submit" value="Save"/>
+    </div>
+</form>
+{% endblock content %}

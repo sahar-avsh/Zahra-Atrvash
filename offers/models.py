@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import uuid
+import datetime
+import pytz
 
 from profiles.models import Profile
 
@@ -47,6 +49,15 @@ class Offer(models.Model):
   tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers', blank=True)
   # participants
   participants = models.ManyToManyField('profiles.Profile', related_name='offer_participants', blank=True)
+
+  def update_status(self):
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    # here we check if the offer end date has passed
+    if self.end_date > now:
+      Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
+      return True
+    return False
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title

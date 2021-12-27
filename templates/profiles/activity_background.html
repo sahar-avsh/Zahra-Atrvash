@@ -12,7 +12,7 @@ Activity Background - {{block.super}}
 {% block content %}
 <h1 class="heading">Activity Background</h1>
   <div class="items">
-    <h3>Created active offers</h3>
+    <h3>Created offers - Active</h3>
       {% if created_active_offers.count > 0 %}
         {% for object in created_active_offers %}
           <div>
@@ -32,7 +32,7 @@ Activity Background - {{block.super}}
         {% for object in joined_offers %}
           <div>
             <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-            {% if obj == request.user.profile %}
+            {% if obj == request.user.profile and object.offer_status == 'Active' %}
               <button class="save-button" type="button">
                 <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
               </button>
@@ -57,7 +57,7 @@ Activity Background - {{block.super}}
       {% else %}
         <h4>No requests to join any offers.</h4>
       {% endif %}
-  <h3>Cancelled and Passive offers</h3>
+  <h3>Created offers - Cancelled or Passive</h3>
     {% if cancelled_passive_offers.count > 0 %}
       {% for object in cancelled_passive_offers %}
         <div>
@@ -65,7 +65,7 @@ Activity Background - {{block.super}}
         </div>
       {% endfor %}
     {% else %}
-      <h4>No cancelled or passive offers.</h4>
+      <h4>No created offers that are cancelled or passive.</h4>
     {% endif %}
   </div>
 {% endblock content %}

@@ -29,80 +29,27 @@ Home - {{block.super}}
   </div>
 </div>
 
-<div class="info-column">
-  <div class="layer">
-    <h2 class="activity-head">Friends' activities</h2>
-    <h3 class="activities">
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-      <p>
-        <a href="#">Sarah Juarez</a> is joining
-        <a href="#">Violon lesson</a> on 5/12/2021
-      </p>
-
-      <p>Tap <a href="#">here</a> to see all the activities</p>
-    </h3>
+{% if friend_list.count != 0 %}
+  <div class="info-column">
+    <div class="layer">
+      <h2 class="activity-head">Friends' activities</h2>
+      <h3 class="activities">
+        {% for f in friend_created_offers %}
+          {% for o in f %}
+            <p><a href="{%url 'profile_look' pk=o.owner.id %}">{{o.owner.f_name}}</a> is offering <a href="{%url 'offer_look' pk=o.id %}">{{o.title}}</a></p>
+          {% endfor %}
+        {% endfor %}
+        {% for i in friend_list %}
+          {% for j in i.accepted_offers.all %}
+            <p><a href="{%url 'profile_look' pk=i.id %}">{{i.f_name}}</a> is joining <a href="{%url 'offer_look' pk=j.id %}">{{j.title}}</a></p>
+          {% endfor %}
+        {% endfor %}
+        {% if overflow %}
+          <p>Tap <a href="#">here</a> to see all the activities</p>
+        {% endif %}
+      </h3>
+    </div>
   </div>
-</div>
-
-<div class="last-part">
-  <div class="profile-picture">
-    <h2 class="Notifications-head">Notifications</h2>
-    <h3 class="notifications">
-      <p><a href="#">Sarah Juarez</a> started Following you.</p>
-      <p>
-        <a href="#">Alex Blue</a> requested to join your<a href="#"
-          >Paint party</a
-        >
-      </p>
-      <p><a href="#">Mike Juarez</a> started Following you.</p>
-      <p><a href="#">Mike Juarez</a> started Following you.</p>
-      <p>
-        <a href="#">Alex Blue</a> requested to join your<a href="#"
-          >Paint party</a
-        >
-      </p>
-      <p><a href="#">Sarah Juarez</a> started Following you.</p>
-      <p>
-        <a href="#">Alex Blue</a> requested to join your<a href="#"
-          >Paint party</a
-        >
-      </p>
-
-      <p>Tap <a href="#">here</a> to see all the Notifications</p>
-    </h3>
-  </div>
-</div>
+{% endif %}
 
 {% endblock %}

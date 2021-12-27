@@ -2,7 +2,9 @@ from django import forms
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth.models import User
 
-from profiles.models import Profile
+from django_starfield import Stars
+
+from profiles.models import Profile, ProfileReview
 
 class DateInput(forms.DateInput):
   input_type = 'date'
@@ -31,6 +33,28 @@ class ProfileModelForm(forms.ModelForm):
     if len(data) < 2:
       raise forms.ValidationError('This is not long enough. (That\'s what she said)')
     return data
+
+class ReviewForm(forms.ModelForm):
+  CHOICES_RATING = [
+    (1, '1'),
+    (2, '2'),
+    (3, '3'),
+    (4, '4'),
+    (5, '5')
+  ]
+
+  CHOICES_DONE = [
+    (True, 'Approve'),
+    (False, 'Decline')
+  ]
+  rating = forms.ChoiceField(choices=CHOICES_RATING, widget=forms.RadioSelect)
+  done = forms.ChoiceField(choices=CHOICES_DONE, widget=forms.RadioSelect)
+  # rating = forms.IntegerField()
+  class Meta:
+    model = ProfileReview
+    fields = [
+      'text',
+    ]
 
 class CustomSignupForm(SignupForm):
   email = forms.EmailField()

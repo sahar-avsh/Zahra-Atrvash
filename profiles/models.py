@@ -54,13 +54,15 @@ class ProfileFollowRequest(models.Model):
       return self.profile_id.f_name + ' Follows ' + self.following_profile_id.f_name
 
 class ProfileReview(models.Model):
-  review_receiver_id = models.ForeignKey('Profile', related_name='review_giver', on_delete=models.CASCADE)
-  review_giver_id = models.ForeignKey('Profile', related_name='review_receiver', on_delete=models.CASCADE)
-  text = models.TextField()
+  review_giver = models.ForeignKey('Profile', related_name='review_receiver', on_delete=models.CASCADE)
+  offer = models.ForeignKey('offers.Offer', related_name='about', on_delete=models.CASCADE, null=True)
+  done = models.BooleanField(default=True)
+  rating = models.IntegerField(null=True, blank=True)
+  text = models.TextField(null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   def __str__(self) -> str:
-      return self.review_giver_id.f_name + '->' + self.review_receiver_id.f_name
+      return self.review_giver.f_name + '->' + self.offer.title + '-' + self.offer.owner.f_name
 
 class ProfileJoinOfferRequest(models.Model):
   profile = models.ForeignKey('Profile', related_name='joiner', on_delete=models.CASCADE)

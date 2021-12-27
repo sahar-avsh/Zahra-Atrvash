@@ -7,10 +7,12 @@ from django.urls import reverse
 from allauth.account.signals import user_signed_up
 from django.dispatch import receiver
 
-from .forms import ProfileModelForm
+from .forms import ProfileModelForm, ReviewForm
 from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest
 from offers.models import Offer
 from categorytags.models import Skill, Interest
+
+from django.db.models import Q
 
 # Create your views here.
 @receiver(user_signed_up)
@@ -18,10 +20,22 @@ def after_user_signed_up(request, user, **kwargs):
   profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name, email=user.email)
 
 def home_view(request, *args, **kwargs):
-  qs_offers = Offer.objects.all()
-  # get the active user with request.user
-  # get following list and list their joined offers
-  content = {'offer_list': qs_offers}
+  limit = 8
+  overflow = False
+  obj = request.user.profile
+  qs_offers = Offer.objects.filter(~Q(owner=obj), offer_status='Active')
+  qs_friends = obj.friends.all()
+  friend_created_offers = []
+  for f in qs_friends:
+    friends_offers = Offer.objects.filter(owner=f, offer_status='Active')
+    if limit >= friends_offers.count():
+      limit -= friends_offers.count()
+      friend_created_offers.append(friends_offers)
+    else:
+      friend_created_offers.append(friends_offers[:limit])
+      overflow = True
+      break
+  content = {'offer_list': qs_offers, 'friend_list': qs_friends, 'friend_created_offers': friend_created_offers, 'overflow': overflow}
   return render(request, 'home.html', content)
 
 def profile_edit_view(request, *args, **kwargs):
@@ -205,3 +219,25 @@ def leave_offer(request, offerID):
     # remove the offer from profile's accepted offers
     request.user.profile.accepted_offers.remove(offer)
     return redirect('home_page')
+
+def rate_finished_offer(request, offerID, *args, **kwargs):
+  obj = request.user.profile
+  o = Offer.objects.get(pk=offerID)
+
+  if o.update_status():
+    if request.method == 'POST':
+      form = ReviewForm(request.POST)
+      if form.is_valid():
+        review = form.save(commit=False)
+        review.review_giver = request.user.profile
+        review.offer = o
+        rate = form.cleaned_data['rating']
+        review.rating = rate
+        form.save()
+        return redirect('home_page')
+    else:
+      form = ReviewForm()
+  else:
+    return redirect('home_page')
+
+  return render(request, 'profiles/rate_offer_form.html', {'object': obj, 'offer': o, 'form': form})

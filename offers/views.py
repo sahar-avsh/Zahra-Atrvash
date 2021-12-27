@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from .models import Offer
 from .forms import OfferModelForm
-from profiles.models import Profile, ProfileJoinOfferRequest
+from profiles.models import Profile, ProfileJoinOfferRequest, ProfileReview
 
 # Create your views here.
 def offer_outlook_view(request, pk, *args, **kwargs):
@@ -13,15 +13,21 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     obj = Offer.objects.get(pk=pk)
     obj_participants = obj.participants.all()
     num_of_spots_left = obj.capacity - obj_participants.count()
+    obj.update_status()
   except (Offer.DoesNotExist, ValidationError):
     raise Http404
+
+  try:
+    is_reviewed = ProfileReview.objects.get(review_giver=request.user.profile, offer=pk)
+  except ProfileReview.DoesNotExist:
+    is_reviewed = None
 
   try:
     join_offer_request = ProfileJoinOfferRequest.objects.get(profile=request.user.profile, offer=obj)
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
-  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left}
+  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed}
   return render(request, "offers/outlook.html", content)
 
 def offer_create_view(request, *args, **kwargs):

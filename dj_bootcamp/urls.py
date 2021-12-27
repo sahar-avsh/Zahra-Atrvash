@@ -21,6 +21,7 @@ from django.conf import settings
 from offers.models import Offer
 
 from allauth.account.views import LoginView, SignupView, LogoutView
+# from django_private_chat2 import urls as django_private_chat2_urls
 
 from profiles.views import (
     home_view,
@@ -35,6 +36,7 @@ from profiles.views import (
     decline_join_request,
     cancel_join_request,
     leave_offer,
+    rate_finished_offer,
     send_follow_request,
     accept_follow_request,
     decline_follow_request,
@@ -70,8 +72,13 @@ urlpatterns = [
     path('cancel_join_request/<int:join_request_id>/', cancel_join_request, name='cancel_join_request'),
     path('cancel_offer/<str:offerID>/', cancel_offer_view, name='cancel_offer'),
     path('leave_offer/<str:offerID>/', leave_offer, name='leave_offer'),
+    path('review_offer/<str:offerID>/', rate_finished_offer, name='rate_offer'),
     #path('accounts/logout/', LogoutView.as_view(), name='logout'),
     #path('accounts/login/', LoginView.as_view(), name='login'),
     #path('accounts/signup/', SignupView.as_view(), name='signup')
-    re_path(r'^accounts/', include('allauth.urls'))
+    re_path(r'^accounts/', include('allauth.urls')),
+    re_path(r'^messages/', include('postman.urls')),
+    # re_path(r'^', include('django_private_chat2_urls')),
+    # re_path(r'^messages/', include('django_messages.urls')),
+    # re_path(r'^notifications/', include('pinax.notifications.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -89,9 +89,9 @@
                 <a href="{%url 'cancel_join_request' join_request_id=join_request.id %}">Cancel request!</a>
               </button>
             {% elif request.user.profile in participants %}
-              <button class="save-button" type="button">
-                <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
-              </button>
+                <button class="save-button" type="button">
+                  <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
+                </button>
             {% else %}
               {% if object.capacity > participants.count %}
                 <button class="save-button" type="button">
@@ -111,6 +111,18 @@
                   <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
                 {% endfor %}
             </div>
+          {% endif %}
+        {% endif %}
+        {% if object.offer_status == 'Passive' %}
+          {% if object.owner.id != request.user.profile.id %}
+            <button class="save-button" type="button">
+              <a href="{%url 'profile_look' pk=object.owner.id %}">Offerer's profile!</a>
+            </button>
+            {% if request.user.profile in participants and is_reviewed == None %}
+              <button class="save-button" type="button">
+                <a href="{%url 'rate_offer' offerID=object.id %}">Rate offer!</a>
+              </button>
+            {% endif %}
           {% endif %}
         {% endif %}
           </div>
