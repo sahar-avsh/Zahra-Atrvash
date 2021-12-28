@@ -22,7 +22,6 @@ class OfferModelForm(forms.ModelForm):
       'offer_format',
       'offer_type',
       'description',
-      'tags'
     ]
     widgets = {
       'start_date': DateTimeInput(),

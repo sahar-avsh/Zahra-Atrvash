@@ -2,7 +2,7 @@ from django import forms
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth.models import User
 
-from django_starfield import Stars
+# from django_starfield import Stars
 
 from profiles.models import Profile, ProfileReview
 

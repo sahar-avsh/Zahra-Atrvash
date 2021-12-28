@@ -41,7 +41,9 @@ Home - {{block.super}}
         {% endfor %}
         {% for i in friend_list %}
           {% for j in i.accepted_offers.all %}
-            <p><a href="{%url 'profile_look' pk=i.id %}">{{i.f_name}}</a> is joining <a href="{%url 'offer_look' pk=j.id %}">{{j.title}}</a></p>
+            {% if j.offer_status == 'Active' %}
+              <p><a href="{%url 'profile_look' pk=i.id %}">{{i.f_name}}</a> is joining <a href="{%url 'offer_look' pk=j.id %}">{{j.title}}</a></p>
+            {% endif %}
           {% endfor %}
         {% endfor %}
         {% if overflow %}

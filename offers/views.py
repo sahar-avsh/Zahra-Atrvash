@@ -2,6 +2,10 @@ from django.core.exceptions import ValidationError
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
+
+from categorytags.forms import OfferTagForm
+from categorytags.models import OfferTag
 
 from .models import Offer
 from .forms import OfferModelForm
@@ -11,6 +15,7 @@ from profiles.models import Profile, ProfileJoinOfferRequest, ProfileReview
 def offer_outlook_view(request, pk, *args, **kwargs):
   try:
     obj = Offer.objects.get(pk=pk)
+    tag_list = obj.tags.all()
     obj_participants = obj.participants.all()
     num_of_spots_left = obj.capacity - obj_participants.count()
     obj.update_status()
@@ -27,27 +32,36 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
-  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed}
+  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list}
   return render(request, "offers/outlook.html", content)
 
 def offer_create_view(request, *args, **kwargs):
   if request.method == 'POST':
-    form = OfferModelForm(request.POST, request.FILES or None)
-    if form != None:
-      if form.is_valid():
-        o = form.save(commit=False)
-        o.owner = Profile.objects.get(user_id=request.user.id)
-        end = form.cleaned_data['end_date']
-        start = form.cleaned_data['start_date']
-        o.credit = ((end - start).seconds) / 3600
-        o.save()
-        o.tags.set(form.cleaned_data['tags'])
-        # data = form.cleaned_data
-        # o = Offer.objects.create(**data)
-        return HttpResponseRedirect(reverse('offer_look', kwargs={'pk': o.id}))
+    form = OfferModelForm(request.POST, request.FILES)
+    form_offertag = OfferTagForm(request.POST)
+
+    if form.is_valid():
+      o = form.save(commit=False)
+      o.owner = Profile.objects.get(user_id=request.user.id)
+      end = form.cleaned_data['end_date']
+      start = form.cleaned_data['start_date']
+      o.credit = ((end - start).seconds) / 3600
+      o.save()
+
+    if form_offertag.is_valid():
+      entry = [word.strip() for word in form_offertag.cleaned_data['offer_tag_name'].split(',') if word.strip() != '']
+
+      for i in entry:
+        obj, created = OfferTag.objects.get_or_create(name=i.title())
+        if obj not in o.tags.all():
+          o.tags.add(obj)
+
+    messages.success(request, 'Your offer is created successfully.')
+    return redirect('offer_look', pk=o.id)
   else:
     form = OfferModelForm()
-  return render(request, 'offers/forms.html', {'form': form})
+    form_offertag = OfferTagForm()
+  return render(request, 'offers/forms.html', {'form': form, 'form_offertag': form_offertag})
 
 def cancel_offer_view(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)

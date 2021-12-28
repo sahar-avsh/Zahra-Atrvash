@@ -25,7 +25,7 @@ from allauth.account.views import LoginView, SignupView, LogoutView
 
 from profiles.views import (
     home_view,
-    # profile_outlook_view,
+    profile_rate_reviews_view,
     profile_outlook_view,
     profile_notifications_view,
     profile_friends_view,
@@ -52,6 +52,7 @@ from offers.views import (
 
 urlpatterns = [
     path('timeline/', home_view, name='home_page'),
+    path('rate-reviews/<str:profileID>/', profile_rate_reviews_view, name='rate_reviews'),
     path('send_follow_request/<str:profileID>/', send_follow_request, name='send_follow_request'),
     path('accept_follow_request/<int:follow_request_id>/', accept_follow_request, name='accept_follow_request'),
     path('decline_follow_request/<int:follow_request_id>/', decline_follow_request, name='decline_follow_request'),

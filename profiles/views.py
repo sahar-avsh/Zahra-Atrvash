@@ -3,12 +3,15 @@ from django.http.response import HttpResponse, JsonResponse, Http404, HttpRespon
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.contrib import messages
 
 from allauth.account.signals import user_signed_up
 from django.dispatch import receiver
 
+from categorytags.forms import InterestForm, SkillForm
+
 from .forms import ProfileModelForm, ReviewForm
-from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest
+from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview
 from offers.models import Offer
 from categorytags.models import Skill, Interest
 
@@ -38,17 +41,92 @@ def home_view(request, *args, **kwargs):
   content = {'offer_list': qs_offers, 'friend_list': qs_friends, 'friend_created_offers': friend_created_offers, 'overflow': overflow}
   return render(request, 'home.html', content)
 
+def profile_rate_reviews_view(request, profileID, *args, **kwargs):
+  obj = Profile.objects.get(pk=profileID)
+  passive_offers = Offer.objects.filter(owner=obj, offer_status='Passive')
+  qs_reviews = ProfileReview.objects.filter(offer__in=passive_offers)
+  no_of_reviews = qs_reviews.count()
+  # calculate average rating over all offers and reviews
+  if no_of_reviews > 0:
+    total = 0
+    for i in qs_reviews:
+      total += i.rating
+    avg_rating = total / no_of_reviews
+
+    # calc no of 5 star reviews
+    five_stars = qs_reviews.filter(rating=5).count()
+    four_stars = qs_reviews.filter(rating=4).count()
+    three_stars = qs_reviews.filter(rating=3).count()
+    two_stars = qs_reviews.filter(rating=2).count()
+    one_stars = qs_reviews.filter(rating=1).count()
+  else:
+    avg_rating = 0
+    five_stars = 0
+    four_stars = 0
+    three_stars = 0
+    two_stars = 0
+    one_stars = 0
+
+  return render(request, 'profiles/rates_reviews.html', {'object_list': qs_reviews, 
+  'no_of_reviews': no_of_reviews, 'avg_rating': avg_rating, 'five_stars': five_stars, 'four_stars': four_stars,
+  'three_stars': three_stars, 'two_stars': two_stars, 'one_stars': one_stars})
+
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
+  qs_skills = profile.skills.all()
+  qs_interests = profile.interests.all()
+
   if request.method == 'POST':
     form = ProfileModelForm(request.POST, request.FILES, instance=profile)
+    form_skill = SkillForm(request.POST)
+    form_interest = InterestForm(request.POST)
+
     if form.is_valid():
       profile = form.save()
-      return redirect('profile_look', pk=profile.id)
-    print(form.errors)
+
+    if form_skill.is_valid():
+      entry_s = [word.strip() for word in form_skill.cleaned_data['skill_name'].split(',') if word.strip() != '']
+      remove_s = [word.strip() for word in form_skill.cleaned_data['skill_name_remove'].split(',') if word.strip() != '']
+
+      for i in entry_s:
+        obj, created = Skill.objects.get_or_create(name=i.title())
+        if obj not in qs_skills:
+          profile.skills.add(obj)
+
+      for t in remove_s:
+        try:
+          obj_s_remove = Skill.objects.get(name=t.title())
+        except Skill.DoesNotExist:
+          obj_s_remove = None
+        if obj_s_remove != None and obj_s_remove in qs_skills:
+          profile.skills.remove(obj_s_remove)
+
+    if form_interest.is_valid():
+      entry_i = [word.strip() for word in form_interest.cleaned_data['interest_name'].split(',') if word.strip() != '']
+      remove_i = [word.strip() for word in form_interest.cleaned_data['interest_name_remove'].split(',') if word.strip() != '']
+
+      for j in entry_i:
+        obj_i, created = Interest.objects.get_or_create(name=j.title())
+        if obj_i not in qs_interests:
+          profile.interests.add(obj_i)
+
+      for r in remove_i:
+        try:
+          obj_i_remove = Interest.objects.get(name=r.title())
+        except Interest.DoesNotExist:
+          obj_i_remove = None
+        if obj_i_remove != None and obj_i_remove in qs_interests:
+          profile.interests.remove(obj_i_remove)
+
+    messages.success(request, 'Your profile is updated successfully.')
+    return redirect('profile_look', pk=profile.id)
   else:
     form = ProfileModelForm(instance=profile)
-  return render(request, "profiles/forms.html", {'form': form, 'object': profile})
+    form_skill = SkillForm()
+    form_interest = InterestForm()
+  return render(request, "profiles/forms.html", 
+  {'form': form, 'object': profile, 'skill_form': form_skill, 'interest_form': form_interest, 
+  'object_skills': qs_skills, 'object_interests': qs_interests})
 
 def profile_outlook_view(request, pk, *args, **kwargs):
   current_profile = request.user.profile

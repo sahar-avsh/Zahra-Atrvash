@@ -35,7 +35,7 @@
     </div>
 
     <div class="third-column">
-      <input class="save-button" type="submit" value="Save"/><br/>
+      <input class="save-button" type="submit" name="profile" value="Save"/><br/>
       <button class="save-button" type="button">
         <a class="button-link" href="{% url 'profile_look' pk=object.id %}">Cancel</a>
       </button>
@@ -51,7 +51,24 @@
         <h4 class="description-title">Add location:</h4>
         {% render_field form.loc_long class+="description-box" %} {% render_field form.loc_ltd class+="description-box" %}
       </div>
+      <div class="description-general">
+        <h4 class="description-title">Add skill and interests:</h4>
+        <h5>You can add multiple skills/interests at the same time by writing multiple with comma between them</h5>
+        {% render_field skill_form.skill_name %}
+        {% render_field interest_form.interest_name %}
+      </div>
+      <div class="description-general">
+        <h4 class="description-title">Remove skill and interests:</h4>
+        <h5>You can remove multiple skills/interests at the same time by writing multiple with comma between them</h5>
+        {% render_field skill_form.skill_name_remove %}
+        {% render_field interest_form.interest_name_remove %}
+      </div>
+      <h4>Current Skills</h4>
+      {{object_skills|join:", "}}
+      <h4>Current Interests</h4>
+      {{object_interests|join:", "}}
     </div>
   </div>
-  </form>
+</form>
+
 {% endblock %}

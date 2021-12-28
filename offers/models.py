@@ -54,7 +54,7 @@ class Offer(models.Model):
     utc = pytz.UTC
     now = datetime.datetime.now().replace(tzinfo=utc)
     # here we check if the offer end date has passed
-    if self.end_date > now:
+    if self.end_date <= now:
       Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
       return True
     return False

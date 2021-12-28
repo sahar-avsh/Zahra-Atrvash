@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/outlook.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/outlookDesign.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -10,6 +10,12 @@
 {% endblock title %}
 
 <!-- Biography line -->
+
+{% if messages %}
+  {% for message in messages %}
+    {{message}}
+  {% endfor %}
+{% endif %}
 
 {% block content %}
   <div class="container">
@@ -73,21 +79,24 @@
           }
         </style>
         <div class="layer">
-          <h2 class="interest-big">I am interested in:</h2>
+          <h2 class="interest-big">I am good at:</h2>
             <h3 class="elements">
               {{skill_list|join:", "}}
             </h3>
-          <h2 class="interest-big">I am good at:</h2>
+          <h2 class="interest-big">I am interested in:</h2>
             <h3 class="elements">
               {{interest_list|join:", "}}
             </h3>
             <div class="buttons">
-              <div class="first-button-column">
+              
                 {% if object.id == user.id %}
                 <button class="save-button" type="button">
                   <a class="button-link" href="{% url 'edit_view' %}">Edit</a>
                 </button>
                 {% else %}
+                  <button class="save-button" type="button">
+                    <a class="button-link" href="{% url 'friends' profileID=object.id %}">Friends</a>
+                  </button>
                   {% if user_friend_request != None %}
                     <button class="save-button" type="button">
                       <a class="button-link" href="{% url 'cancel_follow_request' follow_request_id=user_friend_request.id %}">Cancel friend request!</a>
@@ -101,17 +110,17 @@
                       <a class="button-link" href="{% url 'send_follow_request' profileID=object.id %}">Follow!</a>
                     </button>
                   {% endif %}
-                  <button class="save-button1" type="button">Report this user!</button>
-              </div>
-                <div class="second-button-column">
+                  <button class="save-button" type="button">Report this user!</button>
+          
+         
+             
                   <button class="save-button" type="button">
-                    <a class="button-link" href="{% url 'friends' profileID=object.id %}">Friends</a>
-                  </button><br />
-                  <button class="save-button1" type="button">Rate and reviews</button><br />
+                    <a class="button-link" href="{% url 'rate_reviews' profileID=object.id %}">Rate and Reviews</a>
+                  </button>
                   <button class="save-button" type="button">
                     <a class="button-link" href="{% url 'activity_background' profileID=object.id %}">Activities</a>
                   </button>
-                </div>
+             
                 {% endif %}
             </div>
         </div>

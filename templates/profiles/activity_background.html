@@ -61,7 +61,7 @@ Activity Background - {{block.super}}
     {% if cancelled_passive_offers.count > 0 %}
       {% for object in cancelled_passive_offers %}
         <div>
-          <p><a href="{%url 'offer_look' pk=object.id}">{{object.title}}</a></p>
+          <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
         </div>
       {% endfor %}
     {% else %}

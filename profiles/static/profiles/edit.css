@@ -39,7 +39,7 @@
 
 .credit{
   color: #ddd;
-  margin-right: 50px;
+  margin-right: 20px;
 }
 
 .container {
@@ -139,7 +139,7 @@ a:hover {
   background-repeat: no-repeat;
   background-size: cover;
   align-content: flex-end;
-  height: 700px;
+  height: auto;
 }
 
 .excel {

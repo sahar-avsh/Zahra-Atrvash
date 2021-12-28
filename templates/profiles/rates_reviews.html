@@ -1,0 +1,48 @@
+{% extends "base.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/rate_and_reviews.css' %}">
+{% endblock styles %}
+
+{% block title %}
+Rate & Reviews - {{block.super}}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+<h1 class="theHeader">Rate & reviews</h1>
+ <!-- RATE -->
+
+<h2 class="heading">User Rating</h2>
+  {% if object_list.count > 0 %}
+    <p> {{ avg_rating }} average based on {{no_of_reviews}} reviews.</p>
+      <p>5 star: {{five_stars}} reviews </p>
+      <p>4 star: {{four_stars}} reviews </p>
+      <p>3 star: {{three_stars}} reviews </p>
+      <p>2 star: {{two_stars}} reviews </p>
+      <p>1 star: {{one_stars}} reviews </p>
+  {% else %}
+    <p>There are no reviews.</p>
+  {% endif %}
+
+
+ <!-- review -->
+ <h2 class="review">Reviews</h2>
+
+  {% if object_list.count > 0 %}
+    {% for o in object_list %}
+
+    <h4 class="people">
+      <a href="{%url 'profile_look' pk=o.review_giver.id %}"> {{o.review_giver}}</a> rated {{o.rating}} star for <a href="{%url 'offer_look' pk=o.offer.id %}"> {{o.offer.title}}</a> at {{o.created_at}}<br/>
+    </h4>
+    <p class="actualReview"> {{o.text}} </p>
+
+    {% endfor %}
+  {% else %}
+    <p>There are no reviews.</p>
+  {% endif %}
+
+{% endblock content %}
+
+</div>
