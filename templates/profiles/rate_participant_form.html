@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/rate_offer_form.css' %}">
+{% endblock styles %}
+
+
+{% block title %}
+  Rate Participant - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+
+<form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
+  <h1 class="heading">About your experience</h1>
+    <div class="items">
+      <h4>How do you rate {{p.f_name}}?</h4>
+        {% render_field form.rating %}
+      <h4 class="comment-title">Leave a comment if you'd like</h4>
+        {% render_field form.text class+="comment" %}
+
+      <input class="save-button" type="submit" value="Save"/>
+    </div>
+</form>
+
+{% endblock content %}

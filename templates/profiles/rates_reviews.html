@@ -28,19 +28,33 @@ Rate & Reviews - {{block.super}}
 
 
  <!-- review -->
- <h2 class="review">Reviews</h2>
+ <h2 class="review">Reviews as a offer provider</h2>
 
   {% if object_list.count > 0 %}
     {% for o in object_list %}
+      {% if o.rating != 0 %}
 
     <h4 class="people">
       <a href="{%url 'profile_look' pk=o.review_giver.id %}"> {{o.review_giver}}</a> rated {{o.rating}} star for <a href="{%url 'offer_look' pk=o.offer.id %}"> {{o.offer.title}}</a> at {{o.created_at}}<br/>
     </h4>
     <p class="actualReview"> {{o.text}} </p>
 
+      {% endif %}
     {% endfor %}
   {% else %}
-    <p>There are no reviews.</p>
+    <p>There are no reviews of this kind.</p>
+  {% endif %}
+
+<h2 class="review">Reviews as a participant</h2>
+  {% if participant_reviews.count > 0 %}
+    {% for p in participant_reviews %}
+    <h4 class="people">
+      <a href="{%url 'profile_look' pk=p.offer.owner.id %}"> {{p.offer.owner.f_name}} {{p.offer.owner.l_name}} </a> rated {{p.rating}} star as the offer provider for <a href="{%url 'offer_look' pk=p.offer.id %}">{{p.offer.title}}</a> at {{p.created_at}}<br/>
+    </h4>
+    <p class="actualReview"> {{p.text}} </p>
+    {% endfor %}
+  {% else %}
+    <p>There are no reviews of this kind.</p>
   {% endif %}
 
 {% endblock content %}

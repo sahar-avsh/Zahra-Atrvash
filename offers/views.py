@@ -9,7 +9,7 @@ from categorytags.models import OfferTag
 
 from .models import Offer
 from .forms import OfferModelForm
-from profiles.models import Profile, ProfileJoinOfferRequest, ProfileReview
+from profiles.models import OwnerToParticipantReview, Profile, ProfileJoinOfferRequest, ProfileReview
 from profiles.views import convert_to_address
 
 # Create your views here.
@@ -20,7 +20,30 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     obj_participants = obj.participants.all()
     num_of_spots_left = obj.capacity - obj_participants.count()
     address = convert_to_address(obj.loc_ltd, obj.loc_long)
-    obj.update_status()
+
+    # check for each participant if they reviewed the offer and marked it as approved
+    participant_approvals = {}
+    for i in obj_participants:
+      try:
+        p = ProfileReview.objects.get(review_giver=i, offer=obj)
+        review = p.done
+      except ProfileReview.DoesNotExist:
+        review = None
+      participant_approvals[i] = review
+
+    # check if offer owner approved
+    owner_approval = obj.approval_status
+
+    # check if offer owner rated the participants
+    owner_to_participant_rates = {}
+    for i in obj_participants:
+      try:
+        r = OwnerToParticipantReview.objects.get(offer=obj, participant=i)
+      except OwnerToParticipantReview.DoesNotExist:
+        r = None
+      owner_to_participant_rates[i] = r
+
+    # obj.update_status()
   except (Offer.DoesNotExist, ValidationError):
     raise Http404
 
@@ -34,7 +57,10 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
-  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list, 'address': address}
+  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants,
+  'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list,
+  'address': address, 'participant_approvals': participant_approvals, 'owner_approval': owner_approval,
+  'owner_to_participant': owner_to_participant_rates}
   return render(request, "offers/outlook.html", content)
 
 def offer_create_view(request, *args, **kwargs):

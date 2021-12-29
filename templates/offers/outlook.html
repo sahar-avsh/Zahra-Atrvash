@@ -88,9 +88,24 @@
                 {% endif %}
           </div>
         
+      <div class="button-parts">
+        <div>
+          {% if object.owner.id == request.user.profile.id %}
+          <h4>Participants</h4>
+            {% for obj in participants %}
+              <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
+              {% load offer_extras %}
+              {% if owner_approval == 'Approved' and participant_approvals|get_item:obj and owner_to_participant|get_item:obj == None %}
+                <button class="save-button" type="button">
+                  <a class="button-link"  href="{%url 'rate_participant' offerID=object.id participantID=obj.id %}">Rate this participant!</a>
+                </button>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
         {% if object.offer_status == 'Active' %}
           {% if object.owner.id != request.user.profile.id %}
-          <div class="button-parts">
             <button class="save-button" type="button">
               <a class="button-link" href="{%url 'profile_look' pk=object.owner.id %}">Offerer's profile!</a>
             </button>
@@ -115,12 +130,6 @@
             <button class="save-button" type="button">
               <a class="button-link"  href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
             </button>
-            <div>
-              <h4>Participants</h4>
-                {% for obj in participants %}
-                  <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
-                {% endfor %}
-            </div>
           {% endif %}
         {% endif %}
         {% if object.offer_status == 'Passive' %}
@@ -140,4 +149,5 @@
       </div>
     </div>
   </div>
+</div>
 {% endblock content %}

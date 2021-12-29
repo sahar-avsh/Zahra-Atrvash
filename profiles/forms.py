@@ -6,7 +6,7 @@ from mapbox_location_field.forms import LocationField
 
 # from django_starfield import Stars
 
-from profiles.models import Profile, ProfileReview
+from profiles.models import OwnerToParticipantReview, Profile, ProfileReview
 
 class DateInput(forms.DateInput):
   input_type = 'date'
@@ -55,6 +55,21 @@ class ReviewForm(forms.ModelForm):
     model = ProfileReview
     fields = [
       'text',
+    ]
+
+class OwnerToParticipantReviewForm(forms.ModelForm):
+  CHOICES_RATING = [
+    (1, '1'),
+    (2, '2'),
+    (3, '3'),
+    (4, '4'),
+    (5, '5')
+  ] 
+  rating = forms.ChoiceField(choices=CHOICES_RATING, widget=forms.RadioSelect)
+  class Meta:
+    model = OwnerToParticipantReview
+    fields = [
+      'text'
     ]
 
 class CustomSignupForm(SignupForm):

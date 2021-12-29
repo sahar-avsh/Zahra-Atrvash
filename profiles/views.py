@@ -5,31 +5,41 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 
-from allauth.account.signals import user_signed_up
+from allauth.account.signals import user_signed_up, user_logged_in
 from django.dispatch import receiver
 
 from categorytags.forms import InterestForm, SkillForm
 from offers.forms import ApproveForm
 
-from .forms import ProfileModelForm, ReviewForm
-from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview
+from .forms import OwnerToParticipantReviewForm, ProfileModelForm, ReviewForm
+from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview, OwnerToParticipantReview
 from offers.models import Offer
 from categorytags.models import Skill, Interest
 
 from django.db.models import Q
+import pytz
+import datetime
 
 # Create your views here.
 @receiver(user_signed_up)
-def after_user_signed_up(request, user, **kwargs):
+def after_user_signed_up(user, **kwargs):
   profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name, email=user.email)
 
+@receiver(user_logged_in)
+def after_user_signed_in(user, **kwargs):
+  qs_offers = Offer.objects.all()
+  for i in qs_offers:
+    u = i.update_status()
+    r1 = automatic_offer_approval(i.id)
+    r2 = automatic_offer_review(user.profile, i.id)
+  
 def home_view(request, *args, **kwargs):
   limit = 8
   overflow = False
   obj = request.user.profile
   qs_offers = Offer.objects.filter(~Q(owner=obj), offer_status='Active')
-  for offer in qs_offers:
-    offer.update_status()
+  # for offer in qs_offers:
+  #   offer.update_status()
 
   qs_friends = obj.friends.all()
   friend_created_offers = []
@@ -49,20 +59,26 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
   passive_offers = Offer.objects.filter(owner=obj, offer_status='Passive')
   qs_reviews = ProfileReview.objects.filter(offer__in=passive_offers)
-  no_of_reviews = qs_reviews.count()
+  qs_participant_reviews = OwnerToParticipantReview.objects.filter(participant=obj)
+  no_of_reviews = qs_reviews.filter(~Q(rating=0)).count()
+  no_of_participant_reviews = qs_participant_reviews.count()
+  total_number_reviews = no_of_reviews + no_of_participant_reviews
   # calculate average rating over all offers and reviews
-  if no_of_reviews > 0:
+  if total_number_reviews > 0:
     total = 0
     for i in qs_reviews:
       total += i.rating
-    avg_rating = total / no_of_reviews
+    for j in qs_participant_reviews:
+      total += j.rating
+
+    avg_rating = total / total_number_reviews
 
     # calc no of 5 star reviews
-    five_stars = qs_reviews.filter(rating=5).count()
-    four_stars = qs_reviews.filter(rating=4).count()
-    three_stars = qs_reviews.filter(rating=3).count()
-    two_stars = qs_reviews.filter(rating=2).count()
-    one_stars = qs_reviews.filter(rating=1).count()
+    five_stars = qs_reviews.filter(rating=5).count() + qs_participant_reviews.filter(rating=5).count()
+    four_stars = qs_reviews.filter(rating=4).count() + qs_participant_reviews.filter(rating=4).count()
+    three_stars = qs_reviews.filter(rating=3).count() + qs_participant_reviews.filter(rating=3).count()
+    two_stars = qs_reviews.filter(rating=2).count() + qs_participant_reviews.filter(rating=2).count()
+    one_stars = qs_reviews.filter(rating=1).count() + qs_participant_reviews.filter(rating=1).count()
   else:
     avg_rating = 0
     five_stars = 0
@@ -72,8 +88,9 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
     one_stars = 0
 
   return render(request, 'profiles/rates_reviews.html', {'object_list': qs_reviews, 
-  'no_of_reviews': no_of_reviews, 'avg_rating': avg_rating, 'five_stars': five_stars, 'four_stars': four_stars,
-  'three_stars': three_stars, 'two_stars': two_stars, 'one_stars': one_stars})
+  'no_of_reviews': total_number_reviews, 'avg_rating': avg_rating, 'five_stars': five_stars, 'four_stars': four_stars,
+  'three_stars': three_stars, 'two_stars': two_stars, 'one_stars': one_stars,
+  'participant_reviews': qs_participant_reviews})
 
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
@@ -149,6 +166,7 @@ def profile_outlook_view(request, pk, *args, **kwargs):
       address_flag = True
       address = convert_to_address(obj.loc_ltd, obj.loc_long)
     else:
+      address = None
       address_flag = False
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
@@ -345,21 +363,18 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
   obj = request.user.profile
   o = Offer.objects.get(pk=offerID)
 
-  if o.update_status():
-    if request.method == 'POST':
-      form = ReviewForm(request.POST)
-      if form.is_valid():
-        review = form.save(commit=False)
-        review.review_giver = request.user.profile
-        review.offer = o
-        rate = form.cleaned_data['rating']
-        review.rating = rate
-        form.save()
-        return redirect('home_page')
-    else:
-      form = ReviewForm()
+  if request.method == 'POST':
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+      review = form.save(commit=False)
+      review.review_giver = request.user.profile
+      review.offer = o
+      rate = form.cleaned_data['rating']
+      review.rating = rate
+      form.save()
+      return redirect('home_page')
   else:
-    return redirect('home_page')
+    form = ReviewForm()
 
   return render(request, 'profiles/rate_offer_form.html', {'object': obj, 'offer': o, 'form': form})
 
@@ -377,3 +392,43 @@ def approve_finished_offer(request, offerID, *args, **kwargs):
   else:
     form = ApproveForm()
   return render(request, 'profiles/approve_offer.html', {'object': offer, 'form': form})
+
+def rate_participant(request, offerID, participantID, *args, **kwargs):
+  o = Offer.objects.get(pk=offerID)
+  p = o.participants.get(pk=participantID)
+  if request.method == 'POST':
+    form = OwnerToParticipantReviewForm(request.POST)
+    rate = form.save(commit=False)
+    rate.offer = o
+    rate.participant = p
+    r = form.cleaned_data['rating']
+    rate.rating = r
+    rate.save()
+    return redirect('offer_look', pk=offerID)
+  else:
+    form = OwnerToParticipantReviewForm()
+  return render(request, 'profiles/rate_participant_form.html', {'form': form, 'offer': o, 'participant': p})
+
+def automatic_offer_review(profile, offerID, *args, **kwargs):
+  offer = Offer.objects.get(pk=offerID)
+  day_limit = 3
+  # if day_limit days have passed since the end date of the offer and participant didn't review, review automatically
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
+  if now - offer.end_date > datetime.timedelta(days=day_limit) and profile in offer.participants.all():
+    review, created = ProfileReview.objects.get_or_create(review_giver=profile, offer=offer)
+    if created:
+      return True
+  return False
+
+def automatic_offer_approval(offerID):
+  offer = Offer.objects.get(pk=offerID)
+  day_limit = 3
+  # if day_limit days have passed since the end date of the offer and owner didn't approve, decline automatically
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
+  if now - offer.end_date > datetime.timedelta(days=day_limit):
+    if offer.approval_status == 'Outstanding':
+      Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Declined')
+      return True
+  return False

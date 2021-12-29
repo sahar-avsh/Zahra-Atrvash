@@ -59,12 +59,22 @@ class ProfileReview(models.Model):
   review_giver = models.ForeignKey('Profile', related_name='review_receiver', on_delete=models.CASCADE)
   offer = models.ForeignKey('offers.Offer', related_name='about', on_delete=models.CASCADE, null=True)
   done = models.BooleanField(default=True)
-  rating = models.IntegerField(null=True, blank=True)
+  rating = models.IntegerField(default=0)
   text = models.TextField(null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   def __str__(self) -> str:
       return self.review_giver.f_name + '->' + self.offer.title + '-' + self.offer.owner.f_name
+
+class OwnerToParticipantReview(models.Model):
+  offer = models.ForeignKey('offers.Offer', related_name='offer_owner', on_delete=models.CASCADE)
+  participant = models.ForeignKey('Profile', related_name='offer_participant', on_delete=models.CASCADE)
+  rating = models.IntegerField(null=True, blank=True)
+  text = models.TextField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self) -> str:
+      return self.offer.owner.f_name + '-->' + self.offer.title + '-' + self.participant.f_name
 
 class ProfileJoinOfferRequest(models.Model):
   profile = models.ForeignKey('Profile', related_name='joiner', on_delete=models.CASCADE)
