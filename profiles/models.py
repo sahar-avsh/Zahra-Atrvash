@@ -4,6 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import m2m_changed
 from django.contrib.auth.models import User
 import uuid
+#from location_field.models.plain import PlainLocationField
+from mapbox_location_field.models import AddressAutoHiddenField, LocationField
+
 
 # Create your models here.
 class Profile(models.Model):
@@ -13,7 +16,6 @@ class Profile(models.Model):
   f_name = models.CharField(max_length=50)
   l_name = models.CharField(max_length=50)
   created_at = models.DateTimeField(auto_now_add=True)
-  email = models.EmailField()
   birthday = models.DateField(null=True, blank=True)
   occupation = models.CharField(blank=True, max_length=50)
 

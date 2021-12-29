@@ -44,6 +44,16 @@ class Offer(models.Model):
 
   offer_status = models.CharField(max_length=10, choices=OfferStatus.choices, default='Active')
 
+  class ApprovalStatus(models.TextChoices):
+    # approved
+    approve = 'Approved', _('Approved')
+    # not approved
+    decline = 'Declined', _('Declined')
+    # outstanding
+    outstanding = 'Outstanding', _('Outstanding')
+
+  approval_status = models.CharField(max_length=11, choices=ApprovalStatus.choices, default='Outstanding')
+
   description = models.TextField()
   # category tags that an offer has
   tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers', blank=True)
@@ -57,7 +67,8 @@ class Offer(models.Model):
     if self.end_date <= now:
       Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
       return True
-    return False
+    else:
+      return False
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title

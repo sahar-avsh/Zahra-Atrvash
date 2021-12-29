@@ -159,7 +159,7 @@
 }
 
 .save-button:hover {
-  background-color: rgb(192, 191, 189);
+  background-color: rgb(255, 241, 224);
   transition: 0.5s;
   color: rgb(71, 11, 7);
 }

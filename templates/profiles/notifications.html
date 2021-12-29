@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/notif.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/notifications.css' %}">
 {% endblock styles %}
 
 
@@ -46,6 +46,33 @@ Notifications - {{block.super}}
     <h4>You have no join requests.</h4>
 {% endif %}
 
+<h2>Outstanding Offer Reviews</h2>
+{% if len_outstanding_reviews > 0 %}
+  {% for offer in outstanding_offer_reviews %}
+    <div>
+      <h4> You have an outstanding review for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'rate_offer' offerID=offer.id %}">Review!</a>
+      </button>
+    </div>
+  {% endfor %}
+{% else %}
+    <h4>You have no outstanding reviews.</h4>
+{% endif %}
 
+
+<h2>Outstanding Offer Approvals</h2>
+{% if outstanding_approvals.count > 0 %}
+    {% for offer in outstanding_approvals %}
+    <div>
+      <h4> You have an outstanding approval for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'approve_offer' offerID=offer.id %}">Go to approval!</a>
+      </button>
+    </div>
+    {% endfor %}
+{% else %}
+    <h4>You have no outstanding approvals.</h4>
+{% endif %}
 
 {% endblock content %}

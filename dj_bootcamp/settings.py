@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'jquery',
+    #'location_field.apps.DefaultConfig',
+    'mapbox_location_field',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -61,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_ip_geolocation.middleware.IpGeolocationMiddleware',
 ]
 
 ROOT_URLCONF = 'dj_bootcamp.urls'
@@ -83,6 +87,14 @@ TEMPLATES = [
         },
     },
 ]
+
+# LOCATION_FIELD = {
+#     'provider.mapbox.access_token': 'pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ',
+#     'provider.mapbox.max_zoom': 18,
+#     'provider.mapbox.id': 'mapbox.streets',
+# }
+
+MAPBOX_KEY = "pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ"  
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`

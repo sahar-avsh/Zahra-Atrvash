@@ -1,8 +1,8 @@
-{% extends "base.html" %} 
+{% extends "base_geo.html" %} 
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'offers/service.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/forms_Design.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -29,7 +29,7 @@ Create Offer - {{block.super}}
       <h1 class="about-me">Tell us about your offer</h1>
     </div>
     <div class="second-part">
-      {% render_field form.description class+="title-box" %}
+      {% render_field form.description class+="title-box1" %}
     </div>
   </div>
 
@@ -63,7 +63,7 @@ Create Offer - {{block.super}}
       <!-- Location -->  
       <div class="location">
         <h4>Add location:</h4>
-        {% render_field form.loc_long %} {% render_field form.loc_ltd %}
+          {% render_field form.location %}
       </div>
       <div class="service-type-general">
         <h4>Offer format:</h4>
@@ -82,10 +82,14 @@ Create Offer - {{block.super}}
       </div>
 
       <input type="submit" value="Submit offer!"/>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'home_page' %}">Cancel</a>
+      </button>
 
     </div>
   </div>
 </div>
 </form>
+{{form.media}}
 
 {% endblock content %}

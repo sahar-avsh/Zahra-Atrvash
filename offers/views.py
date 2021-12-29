@@ -10,6 +10,7 @@ from categorytags.models import OfferTag
 from .models import Offer
 from .forms import OfferModelForm
 from profiles.models import Profile, ProfileJoinOfferRequest, ProfileReview
+from profiles.views import convert_to_address
 
 # Create your views here.
 def offer_outlook_view(request, pk, *args, **kwargs):
@@ -18,6 +19,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     tag_list = obj.tags.all()
     obj_participants = obj.participants.all()
     num_of_spots_left = obj.capacity - obj_participants.count()
+    address = convert_to_address(obj.loc_ltd, obj.loc_long)
     obj.update_status()
   except (Offer.DoesNotExist, ValidationError):
     raise Http404
@@ -32,7 +34,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
-  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list}
+  content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants, 'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list, 'address': address}
   return render(request, "offers/outlook.html", content)
 
 def offer_create_view(request, *args, **kwargs):
@@ -45,7 +47,16 @@ def offer_create_view(request, *args, **kwargs):
       o.owner = Profile.objects.get(user_id=request.user.id)
       end = form.cleaned_data['end_date']
       start = form.cleaned_data['start_date']
-      o.credit = ((end - start).seconds) / 3600
+      offer_type = form.cleaned_data['offer_type']
+      if offer_type == 'Service':
+        o.credit = ((end - start).seconds) / 3600
+      else:
+        o.credit = 0
+
+      loc = form.cleaned_data['location']
+      loc_elements = loc.split(',')
+      o.loc_long = loc_elements[0]
+      o.loc_ltd = loc_elements[1]
       o.save()
 
     if form_offertag.is_valid():

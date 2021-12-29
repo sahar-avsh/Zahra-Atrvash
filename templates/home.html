@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/timeline.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/home_design.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -18,13 +18,13 @@ Home - {{block.super}}
       <h1 class="about-me">Recommended events and services for you</h1>
     </div>
     <div class="second-part">
+    {% if offer_list.count > 0 %}
       {% for offer in offer_list %}
-        {% if offer.offer_status == 'Active' %}
       <h3>
-        <a href="{% url 'offer_look' pk=offer.id %}"> {{offer.title}} </a>
+        <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a>
       </h3>
-        {% endif %}
       {% endfor %}
+    {% endif %}
     </div>
   </div>
 </div>

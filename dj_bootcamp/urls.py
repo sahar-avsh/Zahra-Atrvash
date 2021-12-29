@@ -41,7 +41,8 @@ from profiles.views import (
     accept_follow_request,
     decline_follow_request,
     unfollow,
-    cancel_follow_request
+    cancel_follow_request,
+    approve_finished_offer
 )
 
 from offers.views import (
@@ -74,6 +75,7 @@ urlpatterns = [
     path('cancel_offer/<str:offerID>/', cancel_offer_view, name='cancel_offer'),
     path('leave_offer/<str:offerID>/', leave_offer, name='leave_offer'),
     path('review_offer/<str:offerID>/', rate_finished_offer, name='rate_offer'),
+    path('approve_offer/<str:offerID>/', approve_finished_offer, name='approve_offer'),
     #path('accounts/logout/', LogoutView.as_view(), name='logout'),
     #path('accounts/login/', LoginView.as_view(), name='login'),
     #path('accounts/signup/', SignupView.as_view(), name='signup')

@@ -1,8 +1,9 @@
-{% extends "base.html" %} 
+{% extends "base_geo.html" %}
 
 {% load static %}
 {% block styles %}
   <link rel="stylesheet" type="text/css" href="{% static 'profiles/edit.css' %}">
+  <!-- <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' /> -->
 {% endblock styles %}
 
 {% block title %}
@@ -49,7 +50,17 @@
       </div>
       <div class="description-general">
         <h4 class="description-title">Add location:</h4>
-        {% render_field form.loc_long class+="description-box" %} {% render_field form.loc_ltd class+="description-box" %}
+          <!-- <div id='map' style='width: 400px; height: 300px;'></div>
+          {% block js %}
+            <script>
+              mapboxgl.accessToken = 'pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ';
+              var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11'
+              });
+            </script>
+          {% endblock js %} -->
+          {% render_field form.location %}
       </div>
       <div class="description-general">
         <h4 class="description-title">Add skill and interests:</h4>
@@ -70,5 +81,6 @@
     </div>
   </div>
 </form>
+{{ form.media }}
 
 {% endblock %}

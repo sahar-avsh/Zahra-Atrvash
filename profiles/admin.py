@@ -1,4 +1,5 @@
 from django.contrib import admin
+# from mapbox_location_field.admin import MapAdmin
 
 from profiles.models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview
 

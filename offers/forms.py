@@ -1,19 +1,20 @@
 from django import forms
 from django.forms.widgets import DateTimeInput
 
+from mapbox_location_field.forms import LocationField
+
 from offers.models import Offer
 
 class DateTimeInput(forms.DateTimeInput):
   input_type = 'datetime-local'
 
 class OfferModelForm(forms.ModelForm):
+  location = LocationField()
   class Meta:
     model = Offer
     fields = [
       'image',
       'title',
-      'loc_long',
-      'loc_ltd',
       'start_date',
       'end_date',
       'capacity',
@@ -59,3 +60,13 @@ class OfferModelForm(forms.ModelForm):
     if cancel_deadline < app_deadline:
       raise forms.ValidationError('Cancellation deadline must be later than application deadline.')
     return cancel_deadline
+
+class ApproveForm(forms.ModelForm):
+  CHOICES_DONE = [
+  ('Approve', 'Approve'),
+  ('Decline', 'Decline')
+  ]
+  offer_done = forms.ChoiceField(choices=CHOICES_DONE, widget=forms.RadioSelect)
+  class Meta:
+    model = Offer
+    fields = []

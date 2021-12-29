@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/rate_offer_form.css' %}">
+{% endblock styles %}
+
+
+{% block title %}
+  Approve Finished Offer - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+
+<form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
+  <div class="items">
+    <h4>Do you approve that you have provided <a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a>?</h4>
+    {% render_field form.offer_done %}
+    <input class="save-button" type="submit" value="Save"/>
+  </div>
+</form>
+
+{% endblock content %}

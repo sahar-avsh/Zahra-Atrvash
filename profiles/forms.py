@@ -2,6 +2,8 @@ from django import forms
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth.models import User
 
+from mapbox_location_field.forms import LocationField
+
 # from django_starfield import Stars
 
 from profiles.models import Profile, ProfileReview
@@ -10,6 +12,7 @@ class DateInput(forms.DateInput):
   input_type = 'date'
 
 class ProfileModelForm(forms.ModelForm):
+  location = LocationField()
   class Meta:
     model = Profile
     fields = [
@@ -18,10 +21,8 @@ class ProfileModelForm(forms.ModelForm):
       'l_name',
       'birthday',
       'occupation',
-      'loc_long',
-      'loc_ltd',
       'education',
-      'description'
+      'description',
     ]
 
     widgets = {

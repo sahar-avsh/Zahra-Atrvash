@@ -9,6 +9,7 @@ from allauth.account.signals import user_signed_up
 from django.dispatch import receiver
 
 from categorytags.forms import InterestForm, SkillForm
+from offers.forms import ApproveForm
 
 from .forms import ProfileModelForm, ReviewForm
 from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview
@@ -27,6 +28,9 @@ def home_view(request, *args, **kwargs):
   overflow = False
   obj = request.user.profile
   qs_offers = Offer.objects.filter(~Q(owner=obj), offer_status='Active')
+  for offer in qs_offers:
+    offer.update_status()
+
   qs_friends = obj.friends.all()
   friend_created_offers = []
   for f in qs_friends:
@@ -82,7 +86,12 @@ def profile_edit_view(request, *args, **kwargs):
     form_interest = InterestForm(request.POST)
 
     if form.is_valid():
-      profile = form.save()
+      profile = form.save(commit=False)
+      loc = form.cleaned_data['location']
+      loc_elements = loc.split(',')
+      profile.loc_long = loc_elements[0]
+      profile.loc_ltd = loc_elements[1]
+      profile.save()
 
     if form_skill.is_valid():
       entry_s = [word.strip() for word in form_skill.cleaned_data['skill_name'].split(',') if word.strip() != '']
@@ -136,6 +145,11 @@ def profile_outlook_view(request, pk, *args, **kwargs):
     skill_list = obj.skills.all()
     interest_list = obj.interests.all()
     friend_list = obj.friends.all()
+    if obj.loc_ltd != None and obj.loc_long != None:
+      address_flag = True
+      address = convert_to_address(obj.loc_ltd, obj.loc_long)
+    else:
+      address_flag = False
   except (Profile.DoesNotExist, ValidationError):
     raise Http404
 
@@ -146,18 +160,47 @@ def profile_outlook_view(request, pk, *args, **kwargs):
 
   return render(request, "profiles/outlook.html", {"object": obj, "user": current_profile,
    "skill_list": skill_list, "interest_list": interest_list, 'friend_list': friend_list, 
-   'user_friend_list': current_profile_friend_list, 'user_friend_request': current_profile_friend_request})
+   'user_friend_list': current_profile_friend_list, 'user_friend_request': current_profile_friend_request,
+  'address_flag': address_flag, 'address': address})
+
+def convert_to_address(lat, long):
+  from geopy.geocoders import Nominatim
+  from functools import partial
+  geolocator = Nominatim(user_agent='profiles')
+  reverse = partial(geolocator.reverse, language="en")
+  coords = str(lat) + ', ' + str(long)
+  location = reverse(coords)
+  #address = location.raw['address']
+  if location != None:
+    address = location.address
+  else:
+    address = None
+  return address
 
 def profile_notifications_view(request, *args, **kwargs):
   current_profile = request.user.profile
   offers_of_current_profile = Offer.objects.filter(owner=current_profile)
+
+  offers_outstanding_approvals = Offer.objects.filter(owner=current_profile, offer_status='Passive', approval_status='Outstanding')
+
+  finished_joined_offers = current_profile.accepted_offers.filter(offer_status='Passive')
+  outstanding_offer_reviews = []
+  for o in finished_joined_offers:
+    try:
+      review = ProfileReview.objects.get(review_giver=current_profile, offer=o)
+    except ProfileReview.DoesNotExist:
+      review = None
+    if review == None:
+      outstanding_offer_reviews.append(o)
+
   try:
     friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
     join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile)
   except ProfileFollowRequest.DoesNotExist:
     friend_requests = None
     join_requests = None
-  content = {"friend_list": friend_requests, 'offer_list': join_requests}
+  content = {"friend_list": friend_requests, 'offer_list': join_requests,
+   'outstanding_offer_reviews': outstanding_offer_reviews, 'len_outstanding_reviews': len(outstanding_offer_reviews), 'outstanding_approvals': offers_outstanding_approvals}
   return render(request, "profiles/notifications.html", content)
 
 def profile_activity_background_view(request, profileID, *args, **kwargs):
@@ -319,3 +362,18 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
     return redirect('home_page')
 
   return render(request, 'profiles/rate_offer_form.html', {'object': obj, 'offer': o, 'form': form})
+
+def approve_finished_offer(request, offerID, *args, **kwargs):
+  offer = Offer.objects.get(pk=offerID)
+  if request.method == 'POST':
+    form = ApproveForm(request.POST)
+    if form.is_valid():
+      approval = form.cleaned_data['offer_done']
+      if approval == 'Approve':
+        Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Approved')
+      else:
+        Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Declined')
+      return redirect('home_page')
+  else:
+    form = ApproveForm()
+  return render(request, 'profiles/approve_offer.html', {'object': offer, 'form': form})

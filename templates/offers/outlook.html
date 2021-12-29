@@ -61,11 +61,15 @@
               <h3>Offer format:</h3>
                 <p> {{object.offer_format}} </p>
                 <h3>Location:</h3>
-                <p> {{object.loc_long}}, {{object.loc_ltd}} </p>
+                {% if address != None %}
+                  <p> {{address}} </p>
+                {% else %}
+                  <p> Location unknown </p>
+                {% endif %}
               <h3>Starting date:</h3>
-                <p> {{object.start_date|date:'j-M-Y, g A (e)'}} </p>
+                <p> {{object.start_date|date:'j-M-Y, g:i A (e)'}} </p>
               <h3>Ending date:</h3>
-                <p> {{object.end_date|date:'j-M-Y, g A (e)'}} </p>
+                <p> {{object.end_date|date:'j-M-Y, g:i A (e)'}} </p>
               <h3>Required credits:</h3>
                 <p> {{object.credit}} </p>
               <h3>Capacity:</h3>
@@ -73,9 +77,9 @@
               <h3>Number of spots left:</h3>
                 <p> {{spots_left}} </p>
               <h3>Application deadline:</h3>
-                <p> {{object.app_deadline|date:'j-M-Y, g A (e)'}} </p>
+                <p> {{object.app_deadline|date:'j-M-Y, g:i A (e)'}} </p>
               <h3>Cancellation deadline:</h3>
-                <p> {{object.cancel_deadline|date:'j-M-Y, g A (e)'}} </p>
+                <p> {{object.cancel_deadline|date:'j-M-Y, g:i A (e)'}} </p>
               <h3>Related tags:</h3>
                 {% if tag_list.count > 0 %}
                   <p> {{tag_list|join:', '}} </p>

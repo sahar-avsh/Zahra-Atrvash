@@ -33,8 +33,8 @@
         <p class="hello">Hello,</p>
         <h1>It's {{object.f_name}} {{object.l_name}}</h1>
 
-        {% if object.loc_long %}
-          <h3>Living in {{object.loc_long}} {{object.loc_ltd}} </h3>
+        {% if address_flag and address != None %}
+          <h3>Living in {{address}} </h3>
         {% else %}
           <h3>Location unknown</h3>
         {% endif %}
