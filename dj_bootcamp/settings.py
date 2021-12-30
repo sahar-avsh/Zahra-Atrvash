@@ -39,13 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.gis',
     'jquery',
     #'location_field.apps.DefaultConfig',
     'mapbox_location_field',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'postman',
+    # 'postman',
     # 'django_messages',
     # 'pinax.notifications',
     # 'django_private_chat2.apps.DjangoPrivateChat2Config',
@@ -53,7 +54,8 @@ INSTALLED_APPS = [
     'django_db_constraints',
     'offers',
     'profiles',
-    'categorytags'
+    'categorytags',
+    'profilemessages',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +82,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'postman.context_processors.inbox',
                 # 'django-starfield'
                 # 'django_messages.context_processors.inbox',
             ],

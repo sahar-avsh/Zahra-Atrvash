@@ -32,7 +32,12 @@ def after_user_signed_in(user, **kwargs):
     u = i.update_status()
     r1 = automatic_offer_approval(i.id)
     r2 = automatic_offer_review(user.profile, i.id)
-  
+
+  qs_join_requests = ProfileJoinOfferRequest.objects.filter(profile=user.profile)
+  for r in qs_join_requests:
+    unanswered_join_request(r.id)
+
+@login_required
 def home_view(request, *args, **kwargs):
   limit = 8
   overflow = False
@@ -55,6 +60,7 @@ def home_view(request, *args, **kwargs):
   content = {'offer_list': qs_offers, 'friend_list': qs_friends, 'friend_created_offers': friend_created_offers, 'overflow': overflow}
   return render(request, 'home.html', content)
 
+@login_required
 def profile_rate_reviews_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
   passive_offers = Offer.objects.filter(owner=obj, offer_status='Passive')
@@ -92,6 +98,7 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
   'three_stars': three_stars, 'two_stars': two_stars, 'one_stars': one_stars,
   'participant_reviews': qs_participant_reviews})
 
+@login_required
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
   qs_skills = profile.skills.all()
@@ -154,6 +161,7 @@ def profile_edit_view(request, *args, **kwargs):
   {'form': form, 'object': profile, 'skill_form': form_skill, 'interest_form': form_interest, 
   'object_skills': qs_skills, 'object_interests': qs_interests})
 
+@login_required
 def profile_outlook_view(request, pk, *args, **kwargs):
   current_profile = request.user.profile
   current_profile_friend_list = current_profile.friends.all()
@@ -195,6 +203,7 @@ def convert_to_address(lat, long):
     address = None
   return address
 
+@login_required
 def profile_notifications_view(request, *args, **kwargs):
   current_profile = request.user.profile
   offers_of_current_profile = Offer.objects.filter(owner=current_profile)
@@ -214,23 +223,52 @@ def profile_notifications_view(request, *args, **kwargs):
   try:
     friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
     join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile)
-  except ProfileFollowRequest.DoesNotExist:
+
+    # check if app deadline has passed for each offer from join request object
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    join_request_dict = {}
+    for j in join_requests:
+      if now > j.offer.app_deadline:
+        join_request_dict[j] = False
+      else:
+        join_request_dict[j] = True
+
+    declined_join_requests = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=False)
+
+  except (ProfileFollowRequest.DoesNotExist, ProfileJoinOfferRequest.DoesNotExist):
     friend_requests = None
     join_requests = None
+    declined_join_requests = None
+
+
   content = {"friend_list": friend_requests, 'offer_list': join_requests,
-   'outstanding_offer_reviews': outstanding_offer_reviews, 'len_outstanding_reviews': len(outstanding_offer_reviews), 'outstanding_approvals': offers_outstanding_approvals}
+   'outstanding_offer_reviews': outstanding_offer_reviews, 'len_outstanding_reviews': len(outstanding_offer_reviews),
+  'outstanding_approvals': offers_outstanding_approvals, 'join_request_dict': join_request_dict, 'declined_join_requests': declined_join_requests}
   return render(request, "profiles/notifications.html", content)
 
+@login_required
 def profile_activity_background_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
   created_active_offers = Offer.objects.filter(owner=obj, offer_status='Active')
   cancelled_or_passive_offers = Offer.objects.filter(owner=obj, offer_status__in=['Cancelled', 'Passive'])
   joined_offers = obj.accepted_offers.all()
-  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj)
+
+  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj, is_accepted=False)
+  # check if app deadline has passed for each offer from join request object
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
+  join_request_dict = {}
+  for j in outstanding_offer_requests:
+    if now > j.offer.app_deadline:
+      join_request_dict[j] = False
+    else:
+      join_request_dict[j] = True
+
   content = {'created_active_offers': created_active_offers,
   'cancelled_passive_offers': cancelled_or_passive_offers,
   'joined_offers': joined_offers,
-  'outstanding_offers': outstanding_offer_requests, 'obj': obj}
+  'outstanding_offers': outstanding_offer_requests, 'obj': obj, 'join_request_dict': join_request_dict}
   return render(request, "profiles/activity_background.html", content)
 
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
@@ -242,6 +280,7 @@ def profile_activity_background_view(request, profileID, *args, **kwargs):
       )  # render JSON with HTTP status code of 404
   return JsonResponse({"First name": obj.f_name}) """
 
+@login_required
 def send_follow_request(request, profileID):
   from_profile = request.user.profile
   to_profile = Profile.objects.get(pk=profileID)
@@ -249,10 +288,12 @@ def send_follow_request(request, profileID):
     profile_id=from_profile, following_profile_id=to_profile
   )
   if created:
+    messages.success(request, 'Your follow request is sent successfully.')
     return redirect('home_page')
   else:
     return redirect('home_page')
 
+@login_required
 def unfollow(request, profileID):
     from_profile = request.user.profile
     to_profile = Profile.objects.get(pk=profileID)
@@ -260,6 +301,7 @@ def unfollow(request, profileID):
     to_profile.friends.remove(from_profile)
     return redirect('home_page')
 
+@login_required
 def accept_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.following_profile_id == request.user.profile:
@@ -270,6 +312,7 @@ def accept_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+@login_required
 def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.following_profile_id == request.user.profile:
@@ -278,6 +321,7 @@ def decline_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+@login_required
 def cancel_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.profile_id == request.user.profile:
@@ -286,6 +330,7 @@ def cancel_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+@login_required
 def profile_friends_view(request, profileID, *args, **kwargs):
   # current_profile = request.user.profile
   obj = Profile.objects.get(pk=profileID)
@@ -293,6 +338,7 @@ def profile_friends_view(request, profileID, *args, **kwargs):
   content = {"object": obj, "object_list": friend_list}
   return render(request, "profiles/friends.html", content)
 
+@login_required
 def send_join_request(request, offerID, *args, **kwargs):
   from_profile = request.user.profile
   to_offer = Offer.objects.get(pk=offerID)
@@ -308,12 +354,17 @@ def send_join_request(request, offerID, *args, **kwargs):
     profile=from_profile, offer=to_offer
   )
     if created:
+      spend_participant_credit(from_profile.id, to_offer.id)
+      messages.success(request, 'Your join request is sent successfully.')
       return redirect('home_page')
     else:
+      messages.info(request, 'You cannot send a join request to this offer')
       return redirect('home_page')
   else:
+    messages.info(request, 'You cannot send a join request to this offer')
     return redirect('home_page')
 
+@login_required
 def accept_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
   if join_request.offer.owner == request.user.profile:
@@ -321,44 +372,70 @@ def accept_join_request(request, join_request_id):
     join_request.offer.participants.add(join_request.profile)
     # add offer to profile's accepted offers
     join_request.profile.accepted_offers.add(join_request.offer)
+
     # deduct credits from the participant
-    if join_request.profile.credit < join_request.offer.credit:
-      Profile.objects.filter(pk=join_request.profile.id).update(credit=0.00)
-    else:
-      remaining_credits = join_request.profile.credit - join_request.offer.credit
-      Profile.objects.filter(pk=join_request.profile.id).update(credit=remaining_credits)
-    join_request.delete()
+    # if join_request.profile.credit < join_request.offer.credit:
+    #   Profile.objects.filter(pk=join_request.profile.id).update(credit=0.00)
+    # else:
+    #   remaining_credits = join_request.profile.credit - join_request.offer.credit
+    #   Profile.objects.filter(pk=join_request.profile.id).update(credit=remaining_credits)
+
+    # join_request.delete()
+    join_request.is_accepted = True
+    join_request.save()
     return redirect('home_page')
   else:
     return redirect('home_page')
 
+@login_required
 def decline_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
   if join_request.offer.owner == request.user.profile:
-    join_request.delete()
+    retract_participant_credit(join_request.profile.id, join_request.offer.id)
+    join_request.is_accepted = False
+    # join_request.delete()
     return redirect('home_page')
   else:
     return redirect('home_page')
 
+@login_required
 def cancel_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
   if join_request.profile == request.user.profile:
+    retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.delete()
   return redirect('home_page')
 
+def unanswered_join_request(join_request_id):
+  join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
+  if now > join_request.offer.app_deadline:
+    retract_participant_credit(join_request.profile.id, join_request.offer.id)
+    join_request.delete()
+
+@login_required
 def leave_offer(request, offerID):
   offer = Offer.objects.get(pk=offerID)
   if request.user.profile in offer.participants.all():
-    # give profile's credits back
-    offer_creds = offer.credit
-    profile_creds = request.user.profile.credit
-    Profile.objects.filter(pk=request.user.profile.id).update(credit=offer_creds + profile_creds)
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    # check if cancellation deadline has passed if we do not handle it anywhere else
+    if now < offer.cancel_deadline:
+      # give profile's credits back
+      retract_participant_credit(request.user.profile.id, offer.id)
+    # offer_creds = offer.credit
+    # profile_creds = request.user.profile.credit
+    # Profile.objects.filter(pk=request.user.profile.id).update(credit=offer_creds + profile_creds)
+
+
     # remove profile from offer participants
     offer.participants.remove(request.user.profile)
     # remove the offer from profile's accepted offers
     request.user.profile.accepted_offers.remove(offer)
     return redirect('home_page')
 
+@login_required
 def rate_finished_offer(request, offerID, *args, **kwargs):
   obj = request.user.profile
   o = Offer.objects.get(pk=offerID)
@@ -378,6 +455,7 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
 
   return render(request, 'profiles/rate_offer_form.html', {'object': obj, 'offer': o, 'form': form})
 
+@login_required
 def approve_finished_offer(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
   if request.method == 'POST':
@@ -386,13 +464,16 @@ def approve_finished_offer(request, offerID, *args, **kwargs):
       approval = form.cleaned_data['offer_done']
       if approval == 'Approve':
         Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Approved')
+        messages.info(request, 'You approved that you provided this offer.')
       else:
         Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Declined')
+        messages.info(request, 'You declined that you provided this offer.')
       return redirect('home_page')
   else:
     form = ApproveForm()
   return render(request, 'profiles/approve_offer.html', {'object': offer, 'form': form})
 
+@login_required
 def rate_participant(request, offerID, participantID, *args, **kwargs):
   o = Offer.objects.get(pk=offerID)
   p = o.participants.get(pk=participantID)
@@ -432,3 +513,35 @@ def automatic_offer_approval(offerID):
       Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Declined')
       return True
   return False
+
+def spend_participant_credit(profileID, offerID):
+  offer = Offer.objects.get(pk=offerID)
+  profile = Profile.objects.get(pk=profileID)
+  current_cred = profile.credit
+  Profile.objects.filter(pk=profileID).update(credit=current_cred - offer.credit)
+
+def retract_participant_credit(profileID, offerID):
+  offer = Offer.objects.get(pk=offerID)
+  profile = Profile.objects.get(pk=profileID)
+  current_cred = profile.credit
+  Profile.objects.filter(pk=profileID).update(credit=current_cred + offer.credit)
+
+def handle_credit_after_offer(offerID):
+  offer = Offer.objects.get(pk=offerID)
+  participants = offer.participants.all()
+  # if offer is finished and it is a service and owner approved it
+  if offer.offer_type == 'Service' and offer.offer_status == 'Passive' and offer.approval_status == 'Approved':
+  # check for each participant if he/she approved the offer as well
+    for p in participants:
+      review = ProfileReview.objects.get(review_giver=p, offer=offer)
+      # if there is a mutual handshake, transfer the credits from participant to owner
+      if review.done:
+        # add credits to offer owner
+        current_offer_owner_credits = offer.owner.credit
+        Profile.objects.filter(pk=offer.owner.id).update(credit=current_offer_owner_credits + offer.credit)
+      # if participant did not approve it, give credits back
+      else:
+        retract_participant_credit(p.id, offer.id)
+
+def waste_credit():
+  pass

@@ -1,5 +1,10 @@
 {% if messages %}
   {% for message in messages %}
-    {{message}}
+    {% if "signed" in message|safe %}
+
+    {% else %}
+
+      {{message|safe}}
+    {% endif %}
   {% endfor %}
 {% endif %}

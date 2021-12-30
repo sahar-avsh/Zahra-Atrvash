@@ -18,6 +18,7 @@ from django.urls import path, re_path, include
 
 from django.conf.urls.static import static
 from django.conf import settings
+from profilemessages.views import inbox_view, send_message_view, sent_messages_view
 from offers.models import Offer
 
 from allauth.account.views import LoginView, SignupView, LogoutView
@@ -82,7 +83,10 @@ urlpatterns = [
     #path('accounts/login/', LoginView.as_view(), name='login'),
     #path('accounts/signup/', SignupView.as_view(), name='signup')
     re_path(r'^accounts/', include('allauth.urls')),
-    re_path(r'^messages/', include('postman.urls')),
+    path('send_message/<str:profileID>/', send_message_view, name='send_message'),
+    path('inbox/', inbox_view, name='inbox'),
+    path('sent_messages/', sent_messages_view, name='sent_messages'),
+    # re_path(r'^messages/', include('postman.urls')),
     # re_path(r'^', include('django_private_chat2_urls')),
     # re_path(r'^messages/', include('django_messages.urls')),
     # re_path(r'^notifications/', include('pinax.notifications.urls'))

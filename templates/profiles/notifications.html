@@ -32,15 +32,18 @@ Notifications - {{block.super}}
 <h2>Join Requests</h2>
 {% if offer_list != None and offer_list.count > 0 %}
   {% for object in offer_list %}
-    <div>
-      <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
-      <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
-      </button>
-      <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
-      </button>
-    </div>
+    {% load offer_extras %}
+    {% if join_request_dict|get_item:object %}
+      <div>
+        <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
+        <button class="save-button" type="button">
+          <a class="button-link" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
+        </button>
+        <button class="save-button" type="button">
+          <a class="button-link" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
+        </button>
+      </div>
+    {% endif %}
   {% endfor %}
 {% else %}
     <h4>You have no join requests.</h4>
@@ -73,6 +76,15 @@ Notifications - {{block.super}}
     {% endfor %}
 {% else %}
     <h4>You have no outstanding approvals.</h4>
+{% endif %}
+
+{% if declined_join_requests.count > 0 %}
+  <h2>Declined Join Requests</h2>
+    <div>
+      {% for d in declined_join_requests %}
+        <h4>Unfortunately, you have not been accepted for <a href="{%url 'offer_look' pk=d.offer.id %}">{{d.offer.title}}</a></h4>
+      {% endfor %}
+    </div>
 {% endif %}
 
 {% endblock content %}

@@ -22,7 +22,7 @@
       <a href="{%url 'rate_reviews' profileID=request.user.profile.id %}">Rate & Reviews</a>
       <a href="{%url 'notifications' %}">Notifications</a>
       <a href="{%url 'profile_look' pk=request.user.profile.id %}">Your profile</a>
-      <a href="{% url 'postman:inbox' %}">Inbox</a>
+      <a href="{%url 'inbox' %}">Inbox</a>
       <a href="/accounts/logout/">Logout</a>
       <p class="credit">Outstanding credit: {{request.user.profile.credit}} </p>
       <a href="javascript:void(0);" class="icon" onclick="myFunction()">

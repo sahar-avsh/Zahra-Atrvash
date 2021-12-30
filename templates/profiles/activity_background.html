@@ -45,6 +45,8 @@ Activity Background - {{block.super}}
     <h3>Requested offers</h3>
       {% if outstanding_offers.count > 0 %}
         {% for object in outstanding_offers %}
+          {% load offer_extras %}
+          {% if join_request_dict|get_item:object %}
           <div>
             <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
             {% if obj == request.user.profile %}
@@ -52,6 +54,7 @@ Activity Background - {{block.super}}
                 <a href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
               </button>
             {% endif %}
+          {% endif %}
           </div>
         {% endfor %}
       {% else %}

@@ -3,6 +3,7 @@ from django.http.response import HttpResponse, JsonResponse, Http404, HttpRespon
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from categorytags.forms import OfferTagForm
 from categorytags.models import OfferTag
@@ -10,9 +11,13 @@ from categorytags.models import OfferTag
 from .models import Offer
 from .forms import OfferModelForm
 from profiles.models import OwnerToParticipantReview, Profile, ProfileJoinOfferRequest, ProfileReview
-from profiles.views import convert_to_address
+from profiles.views import convert_to_address, retract_participant_credit
+
+import pytz
+import datetime
 
 # Create your views here.
+@login_required
 def offer_outlook_view(request, pk, *args, **kwargs):
   try:
     obj = Offer.objects.get(pk=pk)
@@ -20,6 +25,22 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     obj_participants = obj.participants.all()
     num_of_spots_left = obj.capacity - obj_participants.count()
     address = convert_to_address(obj.loc_ltd, obj.loc_long)
+
+    # check start date to handle cancel offer button
+    start_date = obj.start_date
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    if now > start_date:
+      offer_started = True
+    else:
+      offer_started = False
+
+    # check application deadline to handle apply button
+    application_deadline = obj.app_deadline
+    if now > application_deadline:
+      app_deadline_passed = True
+    else:
+      app_deadline_passed = False
 
     # check for each participant if they reviewed the offer and marked it as approved
     participant_approvals = {}
@@ -60,9 +81,11 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants,
   'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list,
   'address': address, 'participant_approvals': participant_approvals, 'owner_approval': owner_approval,
-  'owner_to_participant': owner_to_participant_rates}
+  'owner_to_participant': owner_to_participant_rates, 'offer_started': offer_started, 
+  'app_deadline_passed': app_deadline_passed}
   return render(request, "offers/outlook.html", content)
 
+@login_required
 def offer_create_view(request, *args, **kwargs):
   if request.method == 'POST':
     form = OfferModelForm(request.POST, request.FILES)
@@ -100,10 +123,21 @@ def offer_create_view(request, *args, **kwargs):
     form_offertag = OfferTagForm()
   return render(request, 'offers/forms.html', {'form': form, 'form_offertag': form_offertag})
 
+@login_required
 def cancel_offer_view(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
   offer.offer_status = 'Cancelled'
   offer.save()
+
+  # give all participants their credits back
+  participants = offer.participants.all()
+  for p in participants:
+    retract_participant_credit(p.id, offer.id)
+  # give profiles who had a join request their credits back
+  join_requests = ProfileJoinOfferRequest.objects.filter(offer=offer)
+  for j in join_requests:
+    retract_participant_credit(j.profile.id, offer.id)
+
   # remove all participants
   offer.participants.clear()
   # delete all join requests

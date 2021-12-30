@@ -79,6 +79,7 @@ class OwnerToParticipantReview(models.Model):
 class ProfileJoinOfferRequest(models.Model):
   profile = models.ForeignKey('Profile', related_name='joiner', on_delete=models.CASCADE)
   offer = models.ForeignKey('offers.Offer', related_name='joined_offer', on_delete=models.CASCADE)
+  is_accepted = models.BooleanField(null=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   def __str__(self) -> str:
