@@ -6,7 +6,7 @@
 {% endblock styles %}
 
 {% block title %}
-Inbox - {{block.super}}
+  Inbox - {{block.super}}
 {% endblock title %}
 
 {% load widget_tweaks %}
@@ -16,6 +16,15 @@ Inbox - {{block.super}}
   <div class="empty">
   </div>
   <div class="content">
+    <h2>Search for specific messages</h2>
+    <form method="POST" action="."> {% csrf_token %}
+      {% render_field form.text %}
+      <input class="search_button" type="submit" value="Search messages!"/>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{%url 'inbox' %}">Remove filters</a>
+      </button>
+    </form>
+
     <h1>Inbox</h1>
     {% if object_list.count > 0 %}
       {% for message in object_list %}
@@ -25,7 +34,11 @@ Inbox - {{block.super}}
         <h5>Sent at: {{message.sent_at|date:'j-M-Y, g:i A (e)'}} </h5>
       {% endfor %}
     {% else %}
-      <h2>You have no messages.</h2>
+      {% if not flag %}
+        <h2>You have no messages.</h2>
+      {% else %}
+        <h2>No matches.</h2>
+      {% endif %}
     {% endif %}
 
     <div class="button">

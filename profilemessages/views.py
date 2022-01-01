@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
-from profilemessages.forms import ProfileMessageForm
+from profilemessages.forms import MessageSearchForm, ProfileMessageForm
 
 from profilemessages.models import ProfileMessage
 
@@ -26,10 +27,46 @@ def send_message_view(request, profileID, *args, **kwargs):
 
 @login_required
 def inbox_view(request, *args, **kwargs):
-  qs_received_messages = ProfileMessage.objects.filter(message_to=request.user.profile)
-  return render(request, 'messages/inbox_view.html', {'object_list': qs_received_messages})
+  if request.method == 'POST':
+    form = MessageSearchForm(request.POST)
+    if form.is_valid():
+      search_flag = True
+      arg = form.cleaned_data['text']
+      if arg:
+        qs = ProfileMessage.objects.filter(Q(message_from__f_name__icontains=arg) | Q(message_from__l_name__icontains=arg) | Q(title__icontains=arg) | Q(body__icontains=arg)).exclude(message_from=request.user.profile)
+      else:
+        qs = ProfileMessage.objects.filter(message_to=request.user.profile)
+  else:
+    form = MessageSearchForm()
+    qs = ProfileMessage.objects.filter(message_to=request.user.profile)
+    search_flag = False
+
+  content = {
+    'object_list': qs,
+    'form': form,
+    'flag': search_flag
+  }
+  return render(request, 'messages/inbox_view.html', content)
 
 @login_required
 def sent_messages_view(request, *args, **kwargs):
-  qs_sent_messages = ProfileMessage.objects.filter(message_from=request.user.profile)
-  return render(request, 'messages/sent_messages_view.html', {'object_list': qs_sent_messages})
+  if request.method == 'POST':
+    form = MessageSearchForm(request.POST)
+    if form.is_valid():
+      search_flag = True
+      arg = form.cleaned_data['text']
+      if arg:
+        qs = ProfileMessage.objects.filter(Q(message_to__f_name__icontains=arg) | Q(message_to__l_name__icontains=arg) | Q(title__icontains=arg) | Q(body__icontains=arg)).exclude(message_to=request.user.profile)
+      else:
+        qs = ProfileMessage.objects.filter(message_from=request.user.profile)
+  else:
+    form = MessageSearchForm()
+    qs = ProfileMessage.objects.filter(message_from=request.user.profile)
+    search_flag = False
+
+  content = {
+    'object_list': qs,
+    'form': form,
+    'flag': search_flag
+  }
+  return render(request, 'messages/sent_messages_view.html', content)
