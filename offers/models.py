@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 import datetime
 import pytz
+from geopy.distance import great_circle
+from django.contrib.gis.db import models as gis_models
 
 from profiles.models import Profile
 
@@ -12,8 +14,11 @@ class Offer(models.Model):
   owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
   title = models.CharField(max_length=220)
   image = models.ImageField(blank=True, upload_to='images/')
+
   loc_long = models.DecimalField(max_digits=9, decimal_places=6)
   loc_ltd = models.DecimalField(max_digits=9, decimal_places=6)
+  location = gis_models.PointField(null=True, blank=True, srid=4326, verbose_name='Location')
+
   created_at = models.DateTimeField(auto_now_add=True)
   start_date = models.DateTimeField()
   end_date = models.DateTimeField()

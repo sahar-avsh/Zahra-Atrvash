@@ -35,7 +35,7 @@ class InterestForm(forms.ModelForm):
     return interest
 
 class OfferTagForm(forms.ModelForm):
-  offer_tag_name = forms.CharField(required=False)
+  offer_tag_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Add as many tags as you want with a comma'}))
   class Meta:
     model = OfferTag
     exclude = [

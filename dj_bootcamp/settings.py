@@ -125,7 +125,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 # Eliminate need to provide username, as it's a very old practice
 ACCOUNT_USERNAME_REQUIRED = False
 
-LOGIN_REDIRECT_URL = '/timeline/'
+LOGIN_REDIRECT_URL = '/home/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/profiles/edit/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_LOGOUT_ON_GET = True
@@ -143,7 +143,7 @@ WSGI_APPLICATION = 'dj_bootcamp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'NAME': 'mydb',
         'USER': 'root',
         'PASSWORD': '37373737scR7',

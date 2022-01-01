@@ -1,0 +1,65 @@
+{% extends "base_geo.html" %} 
+
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/all_offers.css' %}">
+{% endblock styles %}
+
+{% block title %}
+  Timeline - {{block.super}}
+{% endblock title %}
+
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+  <form method="POST" action="."> {% csrf_token %}
+    <div class="left">
+      <div class="location">
+        <h3>If you are looking for offers from another country, city or a specific district, pick a new location from the map </h3>
+        <h3>Search within a defined kilometer radius</h3>
+          {{form.within}}
+      </div>
+      <div class="search"> 
+        <h3>Search by keyword</h3>
+          {{form.title}}
+        <h3>Search by tags</h3>
+          {{form.tags}}
+        <h3>Search by start date</h3>
+          {{form.start_date}}
+        <h3>Search by required credits</h3>
+          {{form.credit}}
+      </div> <br>
+      {% if form.errors %}
+        {{form.errors}}
+      {% endif %}
+      <input class="save-button" type="submit" value="See offers!"/>
+      <button class="save-button" type="button">
+        <a class="button-link" href="{%url 'timeline' %}">Remove filters</a>
+      </button>
+    </div>
+  </form>
+  
+  <div class="right">
+    {% if flag %}
+      <h1 class="offers">Displayed offers are based on your location</h1>
+    {% else %}
+      <h1 class="offers">Displayed offers are based on your preferences</h1>
+    {% endif %}
+    <h2 class="event">Offers</h2>
+    {% if qs.count > 0 %}
+      {% for o in qs %}
+        {% load offer_extras %}
+        <img src="{{ o.image.url }}" height="200px" width="300px"/><br>
+        <a href="{%url 'offer_look' pk=o.id %}">{{o.title}}</a> by <a href="{%url 'profile_look' pk=o.owner.id %}">{{o.owner.f_name}} {{o.owner.l_name}}</a><br>
+        <h4>{{qs_dist|get_item:o}} kms away</h4>
+        <h4> Starts at {{o.start_date|date:'j-M-Y, g:i A (e)'}} </h4>
+        <h4> Requires {{o.credit}} credits </h4>
+      {% endfor %}
+    {% else %}
+      <h4>No matches</h4>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}

@@ -10,9 +10,13 @@ Activity Background - {{block.super}}
 {% endblock title %}
 
 {% block content %}
+<body>
+ 
+  <div class="fader">
 <h1 class="heading">Activity Background</h1>
   <div class="items">
-    <h3>Created offers - Active</h3>
+    <div class="created-offers">
+    <h3>Active created offers</h3>
       {% if created_active_offers.count > 0 %}
         {% for object in created_active_offers %}
           <div>
@@ -27,6 +31,11 @@ Activity Background - {{block.super}}
       {% else %}
         <h4>No created offers.</h4>
       {% endif %}
+    </div>
+
+    <div class="joined-offers">
+
+
     <h3>Joined offers</h3>
       {% if joined_offers.count > 0 %}
         {% for object in joined_offers %}
@@ -42,6 +51,10 @@ Activity Background - {{block.super}}
       {% else %}
         <h4>No joined offers.</h4>
       {% endif %}
+
+    </div> 
+
+    <div class="requested-offer">
     <h3>Requested offers</h3>
       {% if outstanding_offers.count > 0 %}
         {% for object in outstanding_offers %}
@@ -60,6 +73,9 @@ Activity Background - {{block.super}}
       {% else %}
         <h4>No requests to join any offers.</h4>
       {% endif %}
+    </div>
+
+<div class="passive-offer">
   <h3>Created offers - Cancelled or Passive</h3>
     {% if cancelled_passive_offers.count > 0 %}
       {% for object in cancelled_passive_offers %}
@@ -71,4 +87,9 @@ Activity Background - {{block.super}}
       <h4>No created offers that are cancelled or passive.</h4>
     {% endif %}
   </div>
+</div>
+</div>
+
+
+</body>
 {% endblock content %}

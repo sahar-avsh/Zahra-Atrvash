@@ -50,11 +50,13 @@ from profiles.views import (
 from offers.views import (
     offer_create_view,
     offer_outlook_view,
-    cancel_offer_view
+    cancel_offer_view,
+    timeline_view
 )
 
 urlpatterns = [
-    path('timeline/', home_view, name='home_page'),
+    path('home/', home_view, name='home_page'),
+    path('timeline/', timeline_view, name='timeline'),
     path('rate-reviews/<str:profileID>/', profile_rate_reviews_view, name='rate_reviews'),
     path('send_follow_request/<str:profileID>/', send_follow_request, name='send_follow_request'),
     path('accept_follow_request/<int:follow_request_id>/', accept_follow_request, name='accept_follow_request'),

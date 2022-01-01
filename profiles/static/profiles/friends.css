@@ -6,6 +6,7 @@
 .topnav {
   background-color: rgb(63, 26, 0);
   overflow: hidden;
+  background-attachment: fixed;
 }
 
 /* Style the links inside the navigation bar */
@@ -38,50 +39,104 @@
 }
 
 body{
+
+  background-image: url('drinking.jpeg');
   text-align: center;
   color: rgb(90, 82, 82);
-  background-color: rgb(255, 241, 224);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+
 }
 
 
-.heading{
-  margin-top: 80px;
+.search{
+  text-align: left;
+  padding-bottom: 20px;
+  border-bottom: 3px dotted rgb(71, 11, 7);
 }
 
-a{
-  color: rgb(129, 127, 127);
-  text-decoration: none;
+
+.search_box{
+  padding-top: 0;
+  margin-top: 0px;
+  margin-bottom: 20px;
 }
 
-a:hover{
-  color: rgb(71, 11, 7);
+.container{
+  display: flex;
+
 }
 
-.items{
-  margin-top: 50px;
-  width: 500px;
-  text-align: start;
-  margin-left: 580px;
-  margin-right: auto;
-  
+.search-general{
+  border-bottom: 3px dotted rgb(71, 11, 7);
+  margin-bottom: 20px;
+}
+
+.content{
+  margin-top: 30px;
 }
 
 
 .save-button {
-  background-color: rgb(71, 11, 7);
-  color: beige;
-}
-
-.button-link {
+  
   color: rgb(255, 241, 224);
-}
+  background-color: rgb(71, 11, 7);
 
-.button-link:hover{
-  color: rgb(71, 11, 7);
 }
 
 .save-button:hover {
-  background-color: rgb(190, 190, 190);
-  transition-duration: 0.5s;
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
   color: rgb(71, 11, 7);
 }
+
+.search_description{
+  margin-bottom: 10px;
+  margin-top: 50px;
+}
+
+.search_button{
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+}
+
+.search_button:hover{
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+}
+
+
+a{
+  color: rgb(243, 213, 176);
+  text-decoration: none;
+  font-size: bold;
+}
+
+a:hover{
+  color:rgb(63, 26, 0);
+  transition: 0.5s;
+}
+ 
+
+.empty{
+  width: 800px;
+}
+
+.the-content{
+
+  padding: 10px;
+  width: 450px;
+   background-color:  rgb(255, 241, 224, 0.5);
+   min-height: 1000px;
+   max-height: auto;
+}
+
+
+.container{
+  display: flex;
+
+}
+
+

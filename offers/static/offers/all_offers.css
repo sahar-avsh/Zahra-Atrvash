@@ -1,4 +1,3 @@
-
 .topnav {
   background-color: rgb(63, 26, 0);
   overflow: hidden;
@@ -33,66 +32,85 @@
   display: none;
 }
 
-a{
-  color: rgb(129, 127, 127);
-  text-decoration: none;
-  font-size: bold;
-}
-
-a:hover{
-  color:rgb(63, 26, 0);
-  transition: 0.5s;
-}
- 
-
-
 body{
-  background-image: url('binocular.jpeg');
   text-align: center;
   color: rgb(90, 82, 82);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
+  background-color: rgb(255, 241, 224);
 }
 
 
-.fader{
+.container{
+  display: flex;
+  text-align: center;
+  color: rgb(90, 82, 82);
+  background-color: rgb(255, 241, 224);
+  height: 1000px;
+}
+
+.left{
+  background-color: rgb(243, 187, 135);
+  width: 500px;
+  padding: 20px;
+  text-align: center;
+  
+}
+
+.location{
+  border-bottom: 3px dotted rgb(71, 11, 7);
+  padding-bottom: 40px;
+}
+
+
+.search{
+  padding-top: 30px;
+}
+
+
+.search_box{
+  background-color: rgb(255, 241, 224);
+
+}
+
+.location_button{
+  margin-top: 0;
+  margin: 5px;
+  margin-left: 30px;
+  width: 150px;
+  height: 25px;
+  align-content: flex-start;
+  background-color: rgb(71, 11, 7);
+  color: beige;
+}
+
+
+.location_button:hover {
+  background-color: rgb(190, 190, 190);
+  transition-duration: 0.5s;
+}
+
+
+.right{
+  width: 1000px;
   padding: 10px;
-  width: 350px;
-   background-color:  rgb(255, 241, 224, 0.7);
-   min-height: 700px;
-   max-height: 100%;
-   text-align: center;
-   margin-left: 800px;
 }
 
-.friend-request  {
-  padding-top: 30px;
-  border-bottom: 3px dotted rgb(71, 11, 7);
-  text-align: left;
-}
 
-.join-request{
-  padding-top: 30px;
-  border-bottom: 3px dotted rgb(71, 11, 7);
-  text-align: left;
-}
-
-.outstanding-offer{
-  padding-top: 30px;
+.offers{
+  padding-top: 20px;
   padding-bottom: 20px;
-  text-align: left;
-}
-
-.outsatnding-review{
-  padding-top: 30px;
   border-bottom: 3px dotted rgb(71, 11, 7);
-  text-align: left;
 }
 
-.heading{
-  margin-top: 80px;
+.event{
+  margin-top: 50px;
+
 }
+
+.service{
+  margin-top: 50px;
+}
+
+
 
 a{
   color: rgb(129, 127, 127);
@@ -106,17 +124,4 @@ a{
   margin-left: 580px;
   margin-right: auto;
   
-}
-
-
-.save-button {
-
-
-  background-color: rgb(71, 11, 7);
-  color: beige;
-}
-
-.save-button:hover {
-  background-color: rgb(190, 190, 190);
-  transition-duration: 0.5s;
 }

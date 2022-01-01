@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'offers/forms_Design.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/forms_design.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -35,36 +35,44 @@ Create Offer - {{block.super}}
 
   <div class="third-column">
     <div class="fader">
-      <h4 class="start-date-general">Starting date:</h4>
-      {% render_field form.start_date %}
-      <h4 class="start-date-general">Ending date:</h4>
-      {% render_field form.end_date %}
-      <h4 class="start-date-general">Application deadline:</h4>
-      {% render_field form.app_deadline%}
-      <h4 class="start-date-general">Cancellation deadline:</h4>
-      {% render_field form.cancel_deadline %}
-    </div>
-  </div>
-
-  <div class="info-column">
-    <div class="layer">
-      <h4 class="offer-pic">Add a picture for your offer</h4>
-      {% render_field form.image %}
-    </div>
-  </div>
- 
-  <div class="last-part">
-    <div class="profile-picture">
-      <!-- participants -->  
-      <div class="participants">
-        <h4>Capacity</h4>
-        {% render_field form.capacity %}
+      <div class="start-date-general">
+        <h4 class="date_description">Starting date:</h4>
+        {% render_field form.start_date class+="date_box" %}
       </div>
+      <div class="start-date-general">
+        <h4 class="date_description">Ending date:</h4>
+        {% render_field form.end_date class+="date_box" %}
+      </div>
+      <div class="start-date-general">
+        <h4 class="date_description">Application deadline:</h4>
+        {% render_field form.app_deadline class+="date_box" %}
+      </div>
+      <div class="start-date-general">
+        <h4 class="date_description">Cancellation deadline:</h4>
+        {% render_field form.cancel_deadline class+="date_box" %}
+    </div>
+  </div>
+</div>
+  <div class="info-column">
       <!-- Location -->  
       <div class="location">
         <h4>Add location:</h4>
           {% render_field form.location %}
       </div>
+  </div>
+ 
+  <div class="last-part">
+    <div class="profile-picture-last">
+      <!-- participants -->  
+      <div class="participants">
+        <h4>Capacity</h4>
+        {% render_field form.capacity %}
+      </div>
+<!-- picture -->  
+      <div class="offer-pic">
+        <h4>Add a picture for your offer</h4>
+      {% render_field form.image class="picture_pick" %}
+    </div>
       <div class="service-type-general">
         <h4>Offer format:</h4>
         {% render_field form.offer_format %}
@@ -75,15 +83,15 @@ Create Offer - {{block.super}}
       </div>
       <!-- Description -->  
       <div class="tag">
-        <div class="tag-general">
-          <h4>Add some related tags to your offer:</h4>
-            {% render_field form_offertag.offer_tag_name %}
-        </div>
+          <h4 data-toggle="tooltip" title="Tip: You can add as many tags, just separate them with comma(,)!">Add some related tags to your offer:</h4>
+            {% render_field form_offertag.offer_tag_name class="tag_box" %}
       </div>
 
-      <input type="submit" value="Submit offer!"/>
+      <input class="save-button" type="submit" value="Submit offer!"/>
+
+
       <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'home_page' %}">Cancel</a>
+        <a class="save-button" href="{% url 'home_page' %}">Cancel</a>
       </button>
 
     </div>

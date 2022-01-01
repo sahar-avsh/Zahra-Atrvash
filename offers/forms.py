@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import widgets
 from django.forms.widgets import DateTimeInput
 
 from mapbox_location_field.forms import LocationField
@@ -70,3 +71,10 @@ class ApproveForm(forms.ModelForm):
   class Meta:
     model = Offer
     fields = []
+
+class OfferFilterForm(forms.Form):
+  title = forms.CharField(widget=forms.TextInput(), required=False)
+  start_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}), required=False)
+  distance = forms.IntegerField(required=False)
+  credit = forms.IntegerField(required=False)
+  tags = forms.CharField(required=False)

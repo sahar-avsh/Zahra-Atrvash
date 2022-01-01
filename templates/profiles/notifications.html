@@ -11,7 +11,9 @@ Notifications - {{block.super}}
 {% endblock title %}
 
 {% block content %}
-
+<body>
+  <div class="fader">
+    <div class="friend-request">
 <h2>Friend Requests</h2>
 {% if friend_list != None and friend_list.count > 0 %}
   {% for object in friend_list %}
@@ -28,7 +30,8 @@ Notifications - {{block.super}}
 {% else %}
     <h4>You have no friend requests.</h4>
 {% endif %}
-
+</div>
+<div class="join-request">
 <h2>Join Requests</h2>
 {% if offer_list != None and offer_list.count > 0 %}
   {% for object in offer_list %}
@@ -48,7 +51,8 @@ Notifications - {{block.super}}
 {% else %}
     <h4>You have no join requests.</h4>
 {% endif %}
-
+</div>
+<div class="outsatnding-review">
 <h2>Outstanding Offer Reviews</h2>
 {% if len_outstanding_reviews > 0 %}
   {% for offer in outstanding_offer_reviews %}
@@ -63,7 +67,8 @@ Notifications - {{block.super}}
     <h4>You have no outstanding reviews.</h4>
 {% endif %}
 
-
+</div>
+<div class="outstanding-offer">
 <h2>Outstanding Offer Approvals</h2>
 {% if outstanding_approvals.count > 0 %}
     {% for offer in outstanding_approvals %}
@@ -86,5 +91,7 @@ Notifications - {{block.super}}
       {% endfor %}
     </div>
 {% endif %}
-
+</div>
+</div>
+</body>
 {% endblock content %}

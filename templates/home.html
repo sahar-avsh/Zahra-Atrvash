@@ -6,52 +6,54 @@
 {% endblock styles %}
 
 {% block title %}
-Home - {{block.super}}
+  Home - {{block.super}}
 {% endblock title %}
 
 
 {% block content %}
-
-<div class="container">
-  <div class="second-column">
-    <div class="first-part">
-      <h1 class="about-me">Recommended events and services for you</h1>
-    </div>
-    <div class="second-part">
-    {% if offer_list.count > 0 %}
-      {% for offer in offer_list %}
-      <h3>
-        <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a>
-      </h3>
-      {% endfor %}
-    {% endif %}
-    </div>
-  </div>
+<div class="first">
+  <h1>Our community is based on good will and trust.</h1>
+  <h1>Make friends, have fun and enjoy variety of services and events</h1>
+  <h3>Here you can learn and teach for free!</h3>
 </div>
 
-{% if friend_list.count != 0 %}
-  <div class="info-column">
-    <div class="layer">
-      <h2 class="activity-head">Friends' activities</h2>
-      <h3 class="activities">
-        {% for f in friend_created_offers %}
-          {% for o in f %}
-            <p><a href="{%url 'profile_look' pk=o.owner.id %}">{{o.owner.f_name}}</a> is offering <a href="{%url 'offer_look' pk=o.id %}">{{o.title}}</a></p>
-          {% endfor %}
-        {% endfor %}
-        {% for i in friend_list %}
-          {% for j in i.accepted_offers.all %}
-            {% if j.offer_status == 'Active' %}
-              <p><a href="{%url 'profile_look' pk=i.id %}">{{i.f_name}}</a> is joining <a href="{%url 'offer_look' pk=j.id %}">{{j.title}}</a></p>
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-        {% if overflow %}
-          <p>Tap <a href="#">here</a> to see all the activities</p>
-        {% endif %}
-      </h3>
-    </div>
-  </div>
-{% endif %}
+<div class="second">
+  <h1>Offer</h1>
+  <h3>By pushing 'create offer' button on the navbar you can start creating an offer</h3>
+  <h3>You should create offers whenever you feel like sharing one of your skills with some people</h3>
+  <h3>Offers are divided into 2 types, 'Service' and 'Event'</h3>
+  <h3>By offering a service, you should teach something to people. That is why this type of offer requires credit to join for other users</h3>
+  <h3>Each hour of teaching is worth one credit, which gets calculated by our server</h3>
+  <h3>People can send a request to join your offer and you can either accept or decline them. But bear in mind that you only have time to do so, till the application deadline</h3>
+  <h3>After accepting people, you should send them a message by going to theri profile and pushing 'Send message' button, containing the specific location of your offer, as users usually share the district of offer only </h3>
+  <h3>People that had been accepted to your offer, can cancel their application till the cancelation deadline, so that they can save their credits.</h3>
+  <h3>Take into account that your participants can leave your offer anytime before start time, they will just lose their promised credits to the server</h3>
+  <h3>When your service is finished, both you and your participant need to confirm for credits to transfer</h3>
+  <h3>Credits wont transfer if only your participants dont confirm taking your service.</h3>
+  <h3>Your participants have 3 days to confirm, in case they ignore it, the server would automatically confirm and send the promised credits to you</h3>
+  <h3>Another type of offer is event, where it is not necessarily about teaching, you usually create it for people to have fun </h3>
+  <h3>Note: After reaching 15 credits, you can no longer offer, so you better start taking services </h3>
+  <h3>Default offers are displayed based on your location, but you can filter them based on a new location, interests, date and etc</h3>
+  <h3>Please feel responsible for our community and push the 'Report' button in case you see any inappropriate offer</h3>
+</div>
+
+<div class="third">
+  <h1>Rate</h1>
+  <h3>When both you and your offer participant confirm taking the offer</h3>
+  <h3>Then you can go to your participant's profile and click on the 'Rate & Review' button </h3>
+  <h3>There you can both rate your participants and leave a comment, based on their behavior</h3>
+  <h3>Bear in mind that your participants can rate you, as well as leaving a review on your profile</h3>
+  <h3>These rates and reviews are one of the factors for people to be either willing or hesitant in accepting you for their offers or sending a request to join your offer </h3>
+  <h3>Please feel responsible for our community and push the 'Report' button in case you see any inappropriate comments</h3>
+</div>
+
+<div class="forth">
+  <h1>Share</h1>
+  <h3>Just take some time, and improve your profile</h3>
+  <h3>Since other users usually send friend requests to those that share the same location, interests and skills</h3>
+  <h3>When you accept a friend request, both of you will become each others friends automatically</h3>
+  <h3>You can send your friends a message by going to their profiles and keep track of their activities</h3>
+  <h3>Please feel responsible for our community and push the 'Report' button in case you see any inappropriate profile</h3>
+</div>
 
 {% endblock %}

@@ -34,11 +34,68 @@
 .topnav .icon {
   display: none;
 }
+
+a{
+  color: rgb(100, 82, 90);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+
+a:hover{
+  color: rgb(71, 11, 7);
+  transition: 0.5s;
+}
  
 body{
+  background-image: url('field_day.jpeg');
   text-align: center;
   color: rgb(90, 82, 82);
   background-color: rgb(255, 241, 224);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.fader{
+  padding: 10px;
+  width: 350px;
+   background-color:  rgb(255, 241, 224, 0.7);
+   min-height: 700px;
+   max-height: 100%;
+   text-align: center;
+   margin-left: auto;
+   margin-right: auto;
+
+}
+
+.created-offers{
+  padding-top: 20px;
+  border-bottom: 3px dotted rgb(71, 11, 7);
+  text-align: left;
+}
+
+
+.joined-offers{
+  padding-top: 20px;
+  border-bottom: 3px dotted rgb(71, 11, 7);
+  text-align: left;
+}
+
+
+
+
+.requested-offer{
+  padding-top: 20px;
+  border-bottom: 3px dotted rgb(71, 11, 7);
+  text-align: left;
+}
+
+
+.passive-offer{
+  padding-top: 20px;
+ 
+  text-align: left;
 }
 
 

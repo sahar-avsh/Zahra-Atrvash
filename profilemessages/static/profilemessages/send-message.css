@@ -1,8 +1,3 @@
-/* columns  */
-
-/* columns  */
-
-/* Add a black background color to the top navigation */
 .topnav {
   background-color: rgb(63, 26, 0);
   overflow: hidden;
@@ -37,43 +32,67 @@
   display: none;
 }
 
-.first{
-  line-height: 18px;
-  padding-left: 200px;
-  text-align: start;
+
+body{
+  background-image: url('letters.jpeg');
+  text-align: center;
   color: rgb(90, 82, 82);
   background-color: rgb(255, 241, 224);
-  padding-top: 100px;
-  padding-bottom: 100px;
-
-}
-
-.second{
-  margin-top: 30px;
-  width: 700px;
-  height: auto;
-  background-color: rgb(182, 109, 21);
-  margin-right: 400px;
-  padding: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 
-.third{
-  margin-top: 30px;
-  width: 700px;
-  height: auto;
+.container{
+  display: flex;
+
+}
+
+.title{
+  text-align: left;
+}
+
+.title-box{
+  height: 20px;
+}
+
+.body{
+  text-align: left;
+}
+
+.body-box{
+  width: 250px;
+  height: 70px;
+}
+
+.empty{
+  width: 800px;
+}
+
+.content{
+  padding: 30px;
+  width: 400px;
+  background-color:  rgb(255, 241, 224, 0.8);
+  height: 700px;
+}
+
+
+
+.button{
+  text-align: start;
+  margin-top: 10px;
+}
+
+.save-button {
+
+  text-align: start;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+
+}
+
+.save-button:hover {
   background-color: rgb(255, 241, 224);
-  padding-top: 100px;
-  margin-left: 600px;
-  padding: 20px;
-}
-
-.forth{
-  margin-top: 30px;
-  width: 700px;
-  height: auto;
-  background-color: rgb(160, 159, 158);
-  padding-top: 100px;
-  margin-right: 400px;
-  padding: 20px;
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
 }

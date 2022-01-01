@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static '' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profilemessages/send-message.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -11,19 +11,29 @@ Inbox - {{block.super}}
 
 {% load widget_tweaks %}
 {% block content %}
-  <h1>Inbox</h1>
-  {% if object_list.count > 0 %}
-    {% for message in object_list %}
-      <h3>From: <a href="{%url 'profile_look' pk=message.message_from.id %}">{{message.message_from.f_name}} {{message.message_from.l_name}}</a></h3>
-      <h3>Title: {{message.title}} </h3>
-      <h4>Body: {{message.body}} </h4>
-      <h5>Sent at: {{message.sent_at|date:'j-M-Y, g:i A (e)'}} </h5>
-    {% endfor %}
-  {% else %}
-    <h2>You have no messages.</h2>
-  {% endif %}
 
-<button class="save-button" type="button">
-  <a class="button-link" href="{% url 'sent_messages' %}">Sent messages</a>
-</button>
+<div class="container">
+  <div class="empty">
+  </div>
+  <div class="content">
+    <h1>Inbox</h1>
+    {% if object_list.count > 0 %}
+      {% for message in object_list %}
+        <h3>From: <a href="{%url 'profile_look' pk=message.message_from.id %}">{{message.message_from.f_name}} {{message.message_from.l_name}}</a></h3>
+        <h3>Title: {{message.title}} </h3>
+        <h4>Body: {{message.body}} </h4>
+        <h5>Sent at: {{message.sent_at|date:'j-M-Y, g:i A (e)'}} </h5>
+      {% endfor %}
+    {% else %}
+      <h2>You have no messages.</h2>
+    {% endif %}
+
+    <div class="button">
+      <button class="save-button" type="button">
+        <a class="button-link" href="{% url 'sent_messages' %}">Sent messages</a>
+      </button>
+    </div>
+  </div>  
+</div>
+
 {% endblock content %}

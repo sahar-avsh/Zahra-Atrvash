@@ -10,11 +10,14 @@ Rate & Reviews - {{block.super}}
 {% endblock title %}
 
 {% block content %}
-<div class="container">
-<h1 class="theHeader">Rate & reviews</h1>
- <!-- RATE -->
+<body>
+  
 
-<h2 class="heading">User Rating</h2>
+<div class="fader">
+
+ <!-- RATE -->
+<h1 class="big-header">User rating</h1>
+<div class="rate">
   {% if object_list.count > 0 %}
     <p> {{ avg_rating }} average based on {{no_of_reviews}} reviews.</p>
       <p>5 star: {{five_stars}} reviews </p>
@@ -25,10 +28,13 @@ Rate & Reviews - {{block.super}}
   {% else %}
     <p>There are no reviews.</p>
   {% endif %}
-
+</div>
 
  <!-- review -->
- <h2 class="review">Reviews as a offer provider</h2>
+ <h1 class="big-header">Received reviews</h1>
+ <div class="review-general">
+   <div class="provider">
+ <h2 class="review ">As a offer provider</h2>
 
   {% if object_list.count > 0 %}
     {% for o in object_list %}
@@ -44,8 +50,8 @@ Rate & Reviews - {{block.super}}
   {% else %}
     <p>There are no reviews of this kind.</p>
   {% endif %}
-
-<h2 class="review">Reviews as a participant</h2>
+</div>
+<h2 class="review">As a participant</h2>
   {% if participant_reviews.count > 0 %}
     {% for p in participant_reviews %}
     <h4 class="people">
@@ -56,7 +62,8 @@ Rate & Reviews - {{block.super}}
   {% else %}
     <p>There are no reviews of this kind.</p>
   {% endif %}
-
+</div>
+</div>
+</body>
 {% endblock content %}
 
-</div>

@@ -12,10 +12,27 @@ Friends - {{block.super}}
 
 {% block content %}
 
+
+<body>
+  <div class="container">
+    <div class="empty">
+  </div>
+    <div class="the-content">
+      <div class="search-general"> 
+        <h2 class="search_description">Search for a specific friend</h2>
+        <div class="search_function">
+        <input class="search_box" type="text" placeholder="Search...">
+        <button class="search_button">Go!</button>
+      </div>  
+  
+      </div>  
+  
+
+ <div class="content">
 {% if object_list.count > 0 %}
   {% for obj in object_list %}
     <div>
-      <h4><a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a></h4>
+      <h3><a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a></h3>
       {% if object.id == request.user.profile.id %}
         <button class="save-button" type="button">
           <a class="button-link" href="{% url 'unfollow' profileID=obj.id %}">Unfollow!</a>
@@ -31,4 +48,12 @@ Friends - {{block.super}}
   {% endif %}
 {% endif %}
 
+
+
+</div>
+</div>
+</div>
+</body>
 {% endblock content %}
+
+

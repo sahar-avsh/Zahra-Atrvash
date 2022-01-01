@@ -19,6 +19,7 @@ from categorytags.models import Skill, Interest
 from django.db.models import Q
 import pytz
 import datetime
+from geopy.distance import great_circle
 
 # Create your views here.
 @receiver(user_signed_up)
@@ -39,26 +40,7 @@ def after_user_signed_in(user, **kwargs):
 
 @login_required
 def home_view(request, *args, **kwargs):
-  limit = 8
-  overflow = False
-  obj = request.user.profile
-  qs_offers = Offer.objects.filter(~Q(owner=obj), offer_status='Active')
-  # for offer in qs_offers:
-  #   offer.update_status()
-
-  qs_friends = obj.friends.all()
-  friend_created_offers = []
-  for f in qs_friends:
-    friends_offers = Offer.objects.filter(owner=f, offer_status='Active')
-    if limit >= friends_offers.count():
-      limit -= friends_offers.count()
-      friend_created_offers.append(friends_offers)
-    else:
-      friend_created_offers.append(friends_offers[:limit])
-      overflow = True
-      break
-  content = {'offer_list': qs_offers, 'friend_list': qs_friends, 'friend_created_offers': friend_created_offers, 'overflow': overflow}
-  return render(request, 'home.html', content)
+  return render(request, 'home.html')
 
 @login_required
 def profile_rate_reviews_view(request, profileID, *args, **kwargs):
