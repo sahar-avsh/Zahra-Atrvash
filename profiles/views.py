@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from categorytags.forms import InterestForm, SkillForm
 from offers.forms import ApproveForm
 
-from .forms import OwnerToParticipantReviewForm, ProfileModelForm, ReviewForm
+from .forms import OwnerToParticipantReviewForm, ProfileModelForm, ProfileSearchForm, ReviewForm
 from .models import Profile, ProfileFollowRequest, ProfileJoinOfferRequest, ProfileReview, OwnerToParticipantReview
 from offers.models import Offer
 from categorytags.models import Skill, Interest
@@ -314,10 +314,32 @@ def cancel_follow_request(request, follow_request_id):
 
 @login_required
 def profile_friends_view(request, profileID, *args, **kwargs):
-  # current_profile = request.user.profile
   obj = Profile.objects.get(pk=profileID)
   friend_list = obj.friends.all()
-  content = {"object": obj, "object_list": friend_list}
+  if request.method == 'POST':
+    form = ProfileSearchForm(request.POST)
+    if form.is_valid():
+      search_flag = True
+      arg = form.cleaned_data['name']
+      if arg:
+        if obj.id == request.user.profile.id:
+          qs = Profile.objects.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg)).exclude(pk=profileID)
+        else:
+          qs = friend_list.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg))
+      else:
+        qs = []
+  else:
+    form = ProfileSearchForm()
+    qs = []
+    search_flag = False
+
+  content = {
+    'object': obj,
+    'object_list': qs,
+    'friend_list': friend_list,
+    'form': form,
+    'flag': search_flag
+  }
   return render(request, "profiles/friends.html", content)
 
 @login_required

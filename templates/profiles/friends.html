@@ -7,53 +7,67 @@
 
 
 {% block title %}
-Friends - {{block.super}}
+  Friends - {{block.super}}
 {% endblock title %}
 
+{% load widget_tweaks %}
 {% block content %}
 
-
-<body>
-  <div class="container">
-    <div class="empty">
+<div class="container">
+  <div class="empty">
   </div>
-    <div class="the-content">
-      <div class="search-general"> 
-        <h2 class="search_description">Search for a specific friend</h2>
-        <div class="search_function">
-        <input class="search_box" type="text" placeholder="Search...">
-        <button class="search_button">Go!</button>
-      </div>  
-  
-      </div>  
+  <div class="the-content">
+      <div class="search-general">
+        <h2 class="search_description">Search for a specific profile</h2>
+        <form method="POST" action="."> {% csrf_token %}
+          <div class="search_function">
+            {% render_field form.name class+="search_box" %}
+            <input class="search_button" type="submit" value="Search profiles!"/>
+            <button class="save-button" type="button">
+              <a class="button-link" href="{%url 'friends' profileID=object.id %}">Remove filters</a>
+            </button>
+          </div>
+        </form>
+      </div>
   
 
- <div class="content">
-{% if object_list.count > 0 %}
-  {% for obj in object_list %}
-    <div>
-      <h3><a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a></h3>
-      {% if object.id == request.user.profile.id %}
-        <button class="save-button" type="button">
-          <a class="button-link" href="{% url 'unfollow' profileID=obj.id %}">Unfollow!</a>
-        </button>
-      {% endif %}
+  <div class="content">
+    {% if flag and object_list.count > 0 %}
+      {% for obj in object_list %}
+        <div>
+          <h3><a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a></h3>
+          {% if object.id == request.user.profile.id and obj in friend_list %}
+            <button class="save-button" type="button">
+              <a class="button-link" href="{% url 'unfollow' profileID=obj.id %}">Unfollow!</a>
+            </button>
+          {% elif object.id == request.user.profile.id and obj not in friend_list %}
+            <button class="save-button" type="button">
+              <a class="button-link" href="{% url 'send_follow_request' profileID=obj.id %}">Follow!</a>
+            </button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% elif not flag and friend_list.count > 0 %}
+      {% for f in friend_list %}
+        <h3><a href="{%url 'profile_look' pk=f.id %}"> {{f.f_name}} {{f.l_name}} </a></h3>
+        {% if object.id == request.user.profile.id %}
+          <button class="save-button" type="button">
+            <a class="button-link" href="{% url 'unfollow' profileID=f.id %}">Unfollow!</a>
+          </button>
+        {% endif %}
+      {% endfor %}
+    {% elif flag and object_list.count == 0 %}
+        <h4>No matches.</h4>
+    {% elif not flag and friend_list.count == 0 %}
+        {% if object.id == request.user.profile.id %}
+          <h4>You have no friends.</h4>
+        {% else %}
+          <h4><a href="{%url 'profile_look' pk=object.id %}">{{object.f_name}}</a> has no friends.</h4>
+        {% endif %}
+    {% endif %}
     </div>
-  {% endfor %}
-{% else %}
-  {% if object.id == request.user.profile.id %}
-    <h4>You have no friends.</h4>
-  {% else %}
-    <h4><a href="{%url 'profile_look' pk=object.id %}">{{object.f_name}}</a> has no friends.</h4>
-  {% endif %}
-{% endif %}
-
-
-
+  </div>
 </div>
-</div>
-</div>
-</body>
 {% endblock content %}
 
 

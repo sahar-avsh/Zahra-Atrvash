@@ -72,6 +72,9 @@ class OwnerToParticipantReviewForm(forms.ModelForm):
       'text'
     ]
 
+class ProfileSearchForm(forms.Form):
+  name = forms.CharField(widget=forms.TextInput(), required=False)
+
 class CustomSignupForm(SignupForm):
   email = forms.EmailField()
   first_name = forms.CharField(max_length=30, label='First Name')
