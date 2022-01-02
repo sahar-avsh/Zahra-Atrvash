@@ -16,11 +16,14 @@
   <div class="container">
     <div class="first-column">
       <div class="profile-picture">
+        {{test}}
+        <h4 class="name-title">First name:</h4>
+        {% render_field form.f_name %}
+        <h4 class="name-title">Last name:</h4>
+        {% render_field form.l_name %}
+        <!-- image -->
         {% render_field form.image %}
-          <h4 class="name-title">First name:</h4>
-          {% render_field form.f_name %}
-          <h4 class="name-title">Last name:</h4>
-          {% render_field form.l_name %}
+
       </div>
     </div>
 
@@ -36,7 +39,7 @@
     </div>
 
     <div class="third-column">
-      <input class="save-button" type="submit" name="profile" value="Save"/><br/>
+      <input class="save-button" type="submit" value="Save"/><br/>
       <button class="save-button" type="button">
         <a class="button-link" href="{% url 'profile_look' pk=object.id %}">Cancel</a>
       </button>
@@ -48,37 +51,45 @@
         <h4 class="description-title">Add a description:</h4>
         {% render_field form.description class+="description-box" %}
       </div>
+
       <div class="description-general">
-        <h4 class="description-title">Add location:</h4>
-          <!-- <div id='map' style='width: 400px; height: 300px;'></div>
-          {% block js %}
-            <script>
-              mapboxgl.accessToken = 'pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ';
-              var map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/mapbox/streets-v11'
-              });
-            </script>
-          {% endblock js %} -->
-          {% render_field form.location %}
+        <h4 class="description-title" data-toggle="tooltip" title="You can add multiple skills and interests, just separate them with comma(,)">Add skill and interests:</h4>
+        {% render_field skill_form.skill_name  class+="skill-box" data-toggle="tooltip" title="You can add multiple skills and interests, just separate them with comma(,)" %}
+        {% render_field interest_form.interest_name class+="skill-box" data-toggle="tooltip" title="You can add multiple skills and interests, just separate them with comma(,)" %}
       </div>
       <div class="description-general">
-        <h4 class="description-title">Add skill and interests:</h4>
-        <h5>You can add multiple skills/interests at the same time by writing multiple with comma between them</h5>
-        {% render_field skill_form.skill_name %}
-        {% render_field interest_form.interest_name %}
+        <h4 class="description-title" data-toggle="tooltip" title="You can remove multiple skills and interests, just separate them with comma(,)">Remove skill and interests:</h4>
+
+        {% render_field skill_form.skill_name_remove class+="skill-box" data-toggle="tooltip" title="You can remove multiple skills and interests, just separate them with comma(,)"%}
+        {% render_field interest_form.interest_name_remove class+="skill-box" data-toggle="tooltip" title="You can remove multiple skills and interests, just separate them with comma(,)"%}
+
+        <div class="current">
+        <h4>Current Skills</h4>
+        {{object_skills|join:", "}}
+        <h4>Current Interests</h4>
+        {{object_interests|join:", "}}
+       </div>
       </div>
-      <div class="description-general">
-        <h4 class="description-title">Remove skill and interests:</h4>
-        <h5>You can remove multiple skills/interests at the same time by writing multiple with comma between them</h5>
-        {% render_field skill_form.skill_name_remove %}
-        {% render_field interest_form.interest_name_remove %}
-      </div>
-      <h4>Current Skills</h4>
-      {{object_skills|join:", "}}
-      <h4>Current Interests</h4>
-      {{object_interests|join:", "}}
+ 
     </div>
+
+<div class="forth-column"> 
+  <div class="location-general">
+    <h4 class="description-title">Add location:</h4>
+      <!-- <div id='map' style='width: 400px; height: 300px;'></div>
+      {% block js %}
+        <script>
+          mapboxgl.accessToken = 'pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ';
+          var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11'
+          });
+        </script>
+      {% endblock js %} -->
+      {% render_field form.location %}
+  </div>
+
+</div>
   </div>
 </form>
 {{ form.media }}

@@ -16,14 +16,16 @@ Sent Messages - {{block.super}}
   <div class="empty">
   </div>
   <div class="content">
+    <div class="top">
     <h2>Search for specific messages</h2>
     <form method="POST" action="."> {% csrf_token %}
       {% render_field form.text %}
-      <input class="search_button" type="submit" value="Search messages!"/>
+      <input class="save-button" type="submit" value="Go!"/>
       <button class="save-button" type="button">
-        <a class="button-link" href="{%url 'sent_messages' %}">Remove filters</a>
+        <a class="save-button" href="{%url 'sent_messages' %}">Reset filters</a>
       </button>
     </form>
+  </div>
 
     <h1>Sent Messages</h1>
     {% if object_list.count > 0 %}

@@ -91,7 +91,7 @@
       <div class="button-parts">
         <div>
           {% if object.owner.id == request.user.profile.id %}
-          <h4>Participants</h4>
+          <h3 class="participants">Participants:</h3>
             {% for obj in participants %}
               <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
               {% load offer_extras %}

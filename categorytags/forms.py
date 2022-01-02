@@ -3,8 +3,8 @@ from django import forms
 from categorytags.models import Skill, Interest, OfferTag
 
 class SkillForm(forms.ModelForm):
-  skill_name = forms.CharField(required=False)
-  skill_name_remove = forms.CharField(required=False)
+  skill_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'skill-box', 'placeholder': 'Add skill'}), required=False)
+  skill_name_remove = forms.CharField(widget=forms.TextInput(attrs={'class': 'skill-box', 'placeholder': 'Remove skill'}), required=False)
   class Meta:
     model = Skill
     exclude = [
@@ -19,8 +19,8 @@ class SkillForm(forms.ModelForm):
     return skill
 
 class InterestForm(forms.ModelForm):
-  interest_name = forms.CharField(required=False)
-  interest_name_remove = forms.CharField(required=False)
+  interest_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'skill-box', 'placeholder': 'Add interest'}), required=False)
+  interest_name_remove = forms.CharField(widget=forms.TextInput(attrs={'class': 'skill-box', 'placeholder': 'Remove interest'}), required=False)
   class Meta:
     model = Interest
     exclude = [

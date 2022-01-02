@@ -12,7 +12,7 @@ class DateInput(forms.DateInput):
   input_type = 'date'
 
 class ProfileModelForm(forms.ModelForm):
-  location = LocationField()
+  location = LocationField(required=False)
   class Meta:
     model = Profile
     fields = [

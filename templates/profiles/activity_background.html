@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/activity_background.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/activity_Background.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -23,7 +23,7 @@ Activity Background - {{block.super}}
             <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
             {% if obj == request.user.profile %}
               <button class="save-button" type="button">
-                <a href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
+                <a class="save-button" href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
               </button>
             {% endif %}
           </div>
@@ -43,7 +43,7 @@ Activity Background - {{block.super}}
             <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
             {% if obj == request.user.profile and object.offer_status == 'Active' %}
               <button class="save-button" type="button">
-                <a href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
+                <a class="save-button" href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
               </button>
             {% endif %}
           </div>
@@ -64,7 +64,7 @@ Activity Background - {{block.super}}
             <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
             {% if obj == request.user.profile %}
               <button class="save-button" type="button">
-                <a href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
+                <a class="save-button" href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
               </button>
             {% endif %}
           {% endif %}

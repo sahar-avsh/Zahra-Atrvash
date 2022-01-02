@@ -16,16 +16,17 @@
   <div class="empty">
   </div>
   <div class="content">
+    <div class="top">
     <h2>Search for specific messages</h2>
     <form method="POST" action="."> {% csrf_token %}
       {% render_field form.text %}
-      <input class="search_button" type="submit" value="Search messages!"/>
+      <input class="save-button" type="submit" value="Go!"/>
       <button class="save-button" type="button">
-        <a class="button-link" href="{%url 'inbox' %}">Remove filters</a>
+        <a class="save-button" href="{%url 'inbox' %}">Reset filters</a>
       </button>
     </form>
-
-    <h1>Inbox</h1>
+  </div>
+    <h1 class="inbox">Inbox</h1>
     {% if object_list.count > 0 %}
       {% for message in object_list %}
         <h3>From: <a href="{%url 'profile_look' pk=message.message_from.id %}">{{message.message_from.f_name}} {{message.message_from.l_name}}</a></h3>
@@ -42,8 +43,8 @@
     {% endif %}
 
     <div class="button">
-      <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'sent_messages' %}">Sent messages</a>
+      <button class="sent-messages" type="button">
+        <a class="sent-messages" href="{% url 'sent_messages' %}">Sent messages</a>
       </button>
     </div>
   </div>  

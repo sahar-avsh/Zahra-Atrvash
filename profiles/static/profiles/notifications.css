@@ -33,6 +33,11 @@
   display: none;
 }
 
+.topnav a:nth-of-type(11){
+  color: #ddd;
+  background-color:rgb(63, 26, 0);
+}
+
 a{
   color: rgb(129, 127, 127);
   text-decoration: none;
@@ -67,25 +72,28 @@ body{
 }
 
 .friend-request  {
-  padding-top: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-bottom: 3px dotted rgb(71, 11, 7);
   text-align: left;
 }
 
 .join-request{
-  padding-top: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-bottom: 3px dotted rgb(71, 11, 7);
   text-align: left;
 }
 
 .outstanding-offer{
-  padding-top: 30px;
+  padding-top: 20px;
   padding-bottom: 20px;
   text-align: left;
 }
 
 .outsatnding-review{
-  padding-top: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-bottom: 3px dotted rgb(71, 11, 7);
   text-align: left;
 }
@@ -94,10 +102,7 @@ body{
   margin-top: 80px;
 }
 
-a{
-  color: rgb(129, 127, 127);
-  text-decoration: none;
-}
+
 
 .items{
   margin-top: 50px;
@@ -109,14 +114,19 @@ a{
 }
 
 
+
 .save-button {
-
-
+  height: 20px;
+  width: 100px;
+  margin-top: 0;
+  color: rgb(255, 241, 224);
   background-color: rgb(71, 11, 7);
-  color: beige;
 }
 
 .save-button:hover {
-  background-color: rgb(190, 190, 190);
-  transition-duration: 0.5s;
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
 }
+
+

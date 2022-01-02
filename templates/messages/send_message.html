@@ -17,7 +17,7 @@ Send Message - {{block.super}}
     </div>
 
     <div class="content">
-      <h1>To: <a href="{%url 'profile_look' pk=to.id %}">{{to.f_name}} {{to.l_name}}</a> </h1>
+      <h2 class="to">To: <a href="{%url 'profile_look' pk=to.id %}">{{to.f_name}} {{to.l_name}}</a> </h2>
       <div class="title">
         <h3>Title:</h3>
         {% render_field form.title class+="title-box" %}
@@ -29,7 +29,7 @@ Send Message - {{block.super}}
       </div>
 
       <div class="button">
-        <input class="save-button" type="submit" value="Send!"/>
+        <input class="send-button" type="submit" value="Send!"/>
       </div>
     </div>  
   </div>

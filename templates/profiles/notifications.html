@@ -20,10 +20,10 @@ Notifications - {{block.super}}
     <div>
       <h4><a href="{% url 'profile_look' pk=object.profile_id.id %}">{{object.profile_id.f_name}}</a> wants to follow you!</h4>
       <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
+        <a class="bsave-button" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
       </button>
       <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>
+        <a class="save-button" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>
       </button>
     </div>
   {% endfor %}
@@ -37,13 +37,13 @@ Notifications - {{block.super}}
   {% for object in offer_list %}
     {% load offer_extras %}
     {% if join_request_dict|get_item:object %}
-      <div>
+      <div class="join-offers">
         <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
         <button class="save-button" type="button">
-          <a class="button-link" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
+          <a class="save-button" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
         </button>
         <button class="save-button" type="button">
-          <a class="button-link" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
+          <a class="save-button" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
         </button>
       </div>
     {% endif %}
@@ -59,7 +59,7 @@ Notifications - {{block.super}}
     <div>
       <h4> You have an outstanding review for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
       <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'rate_offer' offerID=offer.id %}">Review!</a>
+        <a class="save-button" href="{% url 'rate_offer' offerID=offer.id %}">Review!</a>
       </button>
     </div>
   {% endfor %}
@@ -75,7 +75,7 @@ Notifications - {{block.super}}
     <div>
       <h4> You have an outstanding approval for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
       <button class="save-button" type="button">
-        <a class="button-link" href="{% url 'approve_offer' offerID=offer.id %}">Go to approval!</a>
+        <a class="save-button" href="{% url 'approve_offer' offerID=offer.id %}">Go to approval!</a>
       </button>
     </div>
     {% endfor %}

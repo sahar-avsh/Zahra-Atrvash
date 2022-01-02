@@ -32,6 +32,10 @@
   display: none;
 }
 
+.topnav a:nth-of-type(11){
+  color: #ddd;
+  background-color:rgb(63, 26, 0);
+}
 
 body{
   background-image: url('letters.jpeg');
@@ -40,6 +44,10 @@ body{
   background-color: rgb(255, 241, 224);
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+a{
+  text-decoration: none;
 }
 
 
@@ -54,6 +62,7 @@ body{
 
 .title-box{
   height: 20px;
+  width: 250px;
 }
 
 .body{
@@ -79,7 +88,7 @@ body{
 
 
 .button{
-  text-align: start;
+  text-align: left;
   margin-top: 10px;
 }
 
@@ -88,6 +97,7 @@ body{
   text-align: start;
   color: rgb(255, 241, 224);
   background-color: rgb(71, 11, 7);
+  text-decoration: none;
 
 }
 
@@ -95,4 +105,67 @@ body{
   background-color: rgb(255, 241, 224);
   transition: 0.5s;
   color: rgb(71, 11, 7);
+  text-decoration: none;
+}
+
+
+.top{
+  border-bottom: dotted rgb(71, 11, 7) 3px;
+  padding: 30px;
+  margin-bottom: 50px;
+}
+
+
+a{
+  color: rgb(129, 127, 127);
+  text-decoration: none;
+  font-size: bold;
+}
+
+a:hover{
+  color:rgb(63, 26, 0);
+  transition: 0.5s;
+}
+ 
+.to{
+  text-align: start;
+  margin-top: 50px;
+}
+
+
+
+.sent-messages {
+
+  text-align: center;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+  text-decoration: none;
+  width: 100px;
+
+}
+
+.sent-messages:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+  text-decoration: none;
+}
+
+
+.send-button{
+  text-align: left;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+  text-decoration: none;
+  width: 50px;
+
+}
+
+
+
+.send-button:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+  text-decoration: none;
 }

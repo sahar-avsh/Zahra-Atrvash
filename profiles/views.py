@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.forms.fields import NullBooleanField
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
@@ -93,10 +94,11 @@ def profile_edit_view(request, *args, **kwargs):
 
     if form.is_valid():
       profile = form.save(commit=False)
-      loc = form.cleaned_data['location']
-      loc_elements = loc.split(',')
-      profile.loc_long = loc_elements[0]
-      profile.loc_ltd = loc_elements[1]
+      if form.cleaned_data['location']:
+        loc = form.cleaned_data['location']
+        loc_elements = loc.split(',')
+        profile.loc_long = loc_elements[0]
+        profile.loc_ltd = loc_elements[1]
       profile.save()
 
     if form_skill.is_valid():
@@ -204,7 +206,7 @@ def profile_notifications_view(request, *args, **kwargs):
 
   try:
     friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
-    join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile)
+    join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile, is_accepted=None)
 
     # check if app deadline has passed for each offer from join request object
     utc = pytz.UTC
