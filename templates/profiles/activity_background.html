@@ -6,90 +6,81 @@
 {% endblock styles %}
 
 {% block title %}
-Activity Background - {{block.super}}
+  Activity Background - {{block.super}}
 {% endblock title %}
 
 {% block content %}
-<body>
  
-  <div class="fader">
-<h1 class="heading">Activity Background</h1>
-  <div class="items">
-    <div class="created-offers">
-    <h3>Active created offers</h3>
-      {% if created_active_offers.count > 0 %}
-        {% for object in created_active_offers %}
-          <div>
-            <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-            {% if obj == request.user.profile %}
-              <button class="save-button" type="button">
-                <a class="save-button" href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
-              </button>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <h4>No created offers.</h4>
-      {% endif %}
-    </div>
-
-    <div class="joined-offers">
-
-
-    <h3>Joined offers</h3>
-      {% if joined_offers.count > 0 %}
-        {% for object in joined_offers %}
-          <div>
-            <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-            {% if obj == request.user.profile and object.offer_status == 'Active' %}
-              <button class="save-button" type="button">
-                <a class="save-button" href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
-              </button>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <h4>No joined offers.</h4>
-      {% endif %}
-
-    </div> 
-
-    <div class="requested-offer">
-    <h3>Requested offers</h3>
-      {% if outstanding_offers.count > 0 %}
-        {% for object in outstanding_offers %}
-          {% load offer_extras %}
-          {% if join_request_dict|get_item:object %}
-          <div>
-            <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
-            {% if obj == request.user.profile %}
-              <button class="save-button" type="button">
-                <a class="save-button" href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
-              </button>
-            {% endif %}
+<div class="fader">
+  <h1 class="heading">Activity Background</h1>
+    <div class="items">
+      <div class="created-offers">
+        <h3>Created offers - Active</h3>
+          {% if created_active_offers.count > 0 %}
+            {% for object in created_active_offers %}
+              <div>
+                <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
+                {% if obj == request.user.profile and object.can_cancel %}
+                  <button class="save-button" type="button">
+                    <a class="save-button" href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
+                  </button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <h4>No created offers.</h4>
           {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <h4>No requests to join any offers.</h4>
-      {% endif %}
+      </div>
+
+      <div class="passive-offer">
+        <h3>Created offers - Cancelled or Passive</h3>
+          {% if cancelled_passive_offers.count > 0 %}
+            {% for object in cancelled_passive_offers %}
+              <div>
+                <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
+              </div>
+            {% endfor %}
+          {% else %}
+            <h4>No created offers that are cancelled or passive.</h4>
+          {% endif %}
+      </div>
+
+      <div class="joined-offers">
+        <h3>Joined offers</h3>
+          {% if joined_offers.count > 0 %}
+            {% for object in joined_offers %}
+              <div>
+                <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
+                {% if obj == request.user.profile and object.can_cancel%}
+                  <button class="save-button" type="button">
+                    <a class="save-button" href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
+                  </button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <h4>No joined offers.</h4>
+          {% endif %}
+      </div> 
+
+      <div class="requested-offer">
+        <h3>Requested offers</h3>
+          {% if outstanding_offers.count > 0 %}
+            {% for object in outstanding_offers %}
+              <div>
+                <p><a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></p>
+                {% if obj == request.user.profile %}
+                  <button class="save-button" type="button">
+                    <a class="save-button" href="{%url 'cancel_join_request' join_request_id=object.id %}">Cancel request!</a>
+                  </button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <h4>No requests to join any offers.</h4>
+          {% endif %}
+      </div>
     </div>
-
-<div class="passive-offer">
-  <h3>Created offers - Cancelled or Passive</h3>
-    {% if cancelled_passive_offers.count > 0 %}
-      {% for object in cancelled_passive_offers %}
-        <div>
-          <p><a href="{%url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-        </div>
-      {% endfor %}
-    {% else %}
-      <h4>No created offers that are cancelled or passive.</h4>
-    {% endif %}
-  </div>
-</div>
 </div>
 
-
-</body>
 {% endblock content %}

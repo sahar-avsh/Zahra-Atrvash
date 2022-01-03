@@ -21,6 +21,7 @@ from django.db.models import Q
 import pytz
 import datetime
 from geopy.distance import great_circle
+from itertools import chain
 
 # Create your views here.
 
@@ -38,7 +39,6 @@ def after_user_signed_up(user, **kwargs):
 def after_user_signed_in(user, **kwargs):
   qs_offers = Offer.objects.all()
   for i in qs_offers:
-    u = i.update_status()
     r1 = automatic_offer_approval(i.id)
     r2 = automatic_offer_review(user.profile, i.id)
 
@@ -63,8 +63,11 @@ def home_view(request, *args, **kwargs):
 #  ****************************** Rate & Review page functionality ****************************************************
 @login_required
 def profile_rate_reviews_view(request, profileID, *args, **kwargs):
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
+
   obj = Profile.objects.get(pk=profileID)
-  passive_offers = Offer.objects.filter(owner=obj, offer_status='Passive')
+  passive_offers = Offer.objects.filter(owner=obj, is_cancelled=False, end_date__lt=now)
   qs_reviews = ProfileReview.objects.filter(offer__in=passive_offers)
   qs_participant_reviews = OwnerToParticipantReview.objects.filter(participant=obj)
   no_of_reviews = qs_reviews.filter(~Q(rating=0)).count()
@@ -222,46 +225,33 @@ def convert_to_address(lat, long):
 #****************************** Notification page functionality *********************************
 @login_required
 def profile_notifications_view(request, *args, **kwargs):
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
   current_profile = request.user.profile
-  offers_of_current_profile = Offer.objects.filter(owner=current_profile)
+  active_offers_of_current_profile = Offer.objects.filter(owner=current_profile, is_cancelled=False, app_deadline__gt=now)
 
-  offers_outstanding_approvals = Offer.objects.filter(owner=current_profile, offer_status='Passive', approval_status='Outstanding')
+  # friend requests
+  friend_requests = ProfileFollowRequest.objects.filter(following_profile_id=current_profile)
+  # join requests to your offers
+  join_requests_to_profile = ProfileJoinOfferRequest.objects.filter(offer__in=active_offers_of_current_profile, is_accepted=None)
+  # outstanding approvals for offers finished as an offer provider
+  outstanding_approvals = Offer.objects.filter(owner=current_profile, end_date__lt=now, approval_status='Outstanding', is_cancelled=False)
+  # outstanding reviews for offers finished as a participant
+  reviews_done = ProfileReview.objects.filter(review_giver=current_profile).select_related('offer')
+  outstanding_reviews = Offer.objects.exclude(pk__in=[o.pk for o in reviews_done])
+  # join requests that current profile has sent and that got accepted
+  join_requests_accepted = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=True, offer__start_date__gt=now)
+  # join requests that current profile has sent and that got declined
+  join_requests_declined = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=False, offer__start_date__gt=now)
+  # joined or requested offers that got cancelled
+  join_requests_offer_cancelled = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=None, offer__is_cancelled=True, offer__start_date__gt=now)
+  joined_offers_cancelled = current_profile.accepted_offers.filter(is_cancelled=True, start_date__gt=now)
 
-  finished_joined_offers = current_profile.accepted_offers.filter(offer_status='Passive')
-  outstanding_offer_reviews = []
-  for o in finished_joined_offers:
-    try:
-      review = ProfileReview.objects.get(review_giver=current_profile, offer=o)
-    except ProfileReview.DoesNotExist:
-      review = None
-    if review == None:
-      outstanding_offer_reviews.append(o)
-
-  try:
-    friend_requests = ProfileFollowRequest.objects.all().filter(following_profile_id=current_profile)
-    join_requests = ProfileJoinOfferRequest.objects.all().filter(offer__in=offers_of_current_profile, is_accepted=None)
-
-    # check if app deadline has passed for each offer from join request object
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
-    join_request_dict = {}
-    for j in join_requests:
-      if now > j.offer.app_deadline:
-        join_request_dict[j] = False
-      else:
-        join_request_dict[j] = True
-
-    declined_join_requests = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=False)
-
-  except (ProfileFollowRequest.DoesNotExist, ProfileJoinOfferRequest.DoesNotExist):
-    friend_requests = None
-    join_requests = None
-    declined_join_requests = None
-
-
-  content = {"friend_list": friend_requests, 'offer_list': join_requests,
-   'outstanding_offer_reviews': outstanding_offer_reviews, 'len_outstanding_reviews': len(outstanding_offer_reviews),
-  'outstanding_approvals': offers_outstanding_approvals, 'join_request_dict': join_request_dict, 'declined_join_requests': declined_join_requests}
+  content = {"friend_list": friend_requests, 'join_requests_to_profile': join_requests_to_profile,
+  'outstanding_approvals': outstanding_approvals,
+  'outstanding_reviews': outstanding_reviews, 'join_requests_accepted': join_requests_accepted,
+  'join_requests_declined': join_requests_declined, 'join_requests_offer_cancelled': join_requests_offer_cancelled,
+  'joined_offers_cancelled': joined_offers_cancelled}
   return render(request, "profiles/notifications.html", content)
 
 
@@ -271,37 +261,23 @@ def profile_notifications_view(request, *args, **kwargs):
 #************************** Activity background page functionality *******************************
 @login_required
 def profile_activity_background_view(request, profileID, *args, **kwargs):
-  obj = Profile.objects.get(pk=profileID)
-  created_active_offers = Offer.objects.filter(owner=obj, offer_status='Active')
-  cancelled_or_passive_offers = Offer.objects.filter(owner=obj, offer_status__in=['Cancelled', 'Passive'])
-  joined_offers = obj.accepted_offers.all()
-
-  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj, is_accepted=False)
-  # check if app deadline has passed for each offer from join request object
   utc = pytz.UTC
   now = datetime.datetime.now().replace(tzinfo=utc)
-  join_request_dict = {}
-  for j in outstanding_offer_requests:
-    if now > j.offer.app_deadline:
-      join_request_dict[j] = False
-    else:
-      join_request_dict[j] = True
+
+  obj = Profile.objects.get(pk=profileID)
+  created_active_offers = Offer.objects.filter(owner=obj, start_date__gt=now)
+  cancelled_or_passive_offers = Offer.objects.filter(Q(owner=obj) & Q(end_date__lt=now) | Q(is_cancelled=True))
+  joined_offers = obj.accepted_offers.all()
+
+  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj, is_accepted=None, offer__app_deadline__gt=now)
 
   content = {'created_active_offers': created_active_offers,
   'cancelled_passive_offers': cancelled_or_passive_offers,
   'joined_offers': joined_offers,
-  'outstanding_offers': outstanding_offer_requests, 'obj': obj, 'join_request_dict': join_request_dict}
+  'outstanding_offers': outstanding_offer_requests, 'obj': obj}
   return render(request, "profiles/activity_background.html", content)
 
 
-""" def profile_api_detail_view(request, pk, *args, **kwargs):
-  try:
-      obj = Profile.objects.get(pk=pk)
-  except (Profile.DoesNotExist, ValidationError):
-      return JsonResponse(
-          {"Message": "Not found!"}, status=404
-      )  # render JSON with HTTP status code of 404
-  return JsonResponse({"First name": obj.f_name}) """
 
 
 #**************************** Follow request functionality ******************************
@@ -372,22 +348,23 @@ def profile_friends_view(request, profileID, *args, **kwargs):
     form = ProfileSearchForm(request.POST)
     if form.is_valid():
       search_flag = True
-      arg = form.cleaned_data['name']
-      if arg:
-        if obj.id == request.user.profile.id:
-          qs = Profile.objects.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg)).exclude(pk=profileID)
-        else:
-          qs = friend_list.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg))
-      else:
-        qs = []
+      keywords = [word.strip() for word in form.cleaned_data['name'].split() if word.strip() != '']
+      all_hits = Profile.objects.none()
+      if len(keywords) > 0:
+        for arg in keywords:
+          if obj.id == request.user.profile.id:
+            all_hits = all_hits | Profile.objects.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg)).exclude(pk=profileID)
+          else:
+            all_hits = all_hits | friend_list.filter(Q(f_name__icontains=arg) | Q(l_name__icontains=arg))
+        all_hits = all_hits.distinct()
   else:
     form = ProfileSearchForm()
-    qs = []
+    all_hits = Profile.objects.none()
     search_flag = False
 
   content = {
     'object': obj,
-    'object_list': qs,
+    'object_list': all_hits,
     'friend_list': friend_list,
     'form': form,
     'flag': search_flag
@@ -407,7 +384,7 @@ def send_join_request(request, offerID, *args, **kwargs):
   # also check if offer has enough capacity
   num_of_participants = to_offer.participants.count()
 
-  if available_credits >= required_credits and num_of_participants < to_offer.capacity:
+  if available_credits >= required_credits and num_of_participants < to_offer.capacity and to_offer.can_apply:
     join_request, created = ProfileJoinOfferRequest.objects.get_or_create(
     profile=from_profile, offer=to_offer
   )
@@ -427,7 +404,7 @@ def send_join_request(request, offerID, *args, **kwargs):
 @login_required
 def accept_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
-  if join_request.offer.owner == request.user.profile:
+  if join_request.offer.owner == request.user.profile and join_request.offer.can_apply:
     # add profile to offer's participants
     join_request.offer.participants.add(join_request.profile)
     # add offer to profile's accepted offers
@@ -467,7 +444,7 @@ def decline_join_request(request, join_request_id):
 @login_required
 def cancel_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
-  if join_request.profile == request.user.profile:
+  if join_request.profile == request.user.profile and join_request.offer.can_cancel:
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.delete()
   return redirect('home_page')
@@ -487,15 +464,13 @@ def unanswered_join_request(join_request_id):
 def leave_offer(request, offerID):
   offer = Offer.objects.get(pk=offerID)
   if request.user.profile in offer.participants.all():
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
     # check if cancellation deadline has passed if we do not handle it anywhere else
-    if now < offer.cancel_deadline:
+    if offer.can_cancel:
       # give profile's credits back
       retract_participant_credit(request.user.profile.id, offer.id)
-    # offer_creds = offer.credit
-    # profile_creds = request.user.profile.credit
-    # Profile.objects.filter(pk=request.user.profile.id).update(credit=offer_creds + profile_creds)
+    else:
+      pass # implement waste credit
+    
     # remove profile from offer participants
     offer.participants.remove(request.user.profile)
     # remove the offer from profile's accepted offers

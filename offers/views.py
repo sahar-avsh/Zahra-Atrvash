@@ -33,27 +33,16 @@ import math
 @login_required
 def offer_outlook_view(request, pk, *args, **kwargs):
   try:
+    # get offer object
     obj = Offer.objects.get(pk=pk)
+    # get tags - For everyone
     tag_list = obj.tags.all()
+    # get participants - For owner
     obj_participants = obj.participants.all()
+    # get number of spots left - For everyone
     num_of_spots_left = obj.capacity - obj_participants.count()
+    # get address - For everyone
     address = convert_to_address(obj.loc_ltd, obj.loc_long)
-
-    # check start date to handle cancel offer button
-    start_date = obj.start_date
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
-    if now > start_date:
-      offer_started = True
-    else:
-      offer_started = False
-
-    # check application deadline to handle apply button
-    application_deadline = obj.app_deadline
-    if now > application_deadline:
-      app_deadline_passed = True
-    else:
-      app_deadline_passed = False
 
     # check for each participant if they reviewed the offer and marked it as approved
     participant_approvals = {}
@@ -77,12 +66,11 @@ def offer_outlook_view(request, pk, *args, **kwargs):
         r = None
       owner_to_participant_rates[i] = r
 
-    # obj.update_status()
   except (Offer.DoesNotExist, ValidationError):
     raise Http404
 
   try:
-    is_reviewed = ProfileReview.objects.get(review_giver=request.user.profile, offer=pk)
+    is_reviewed = ProfileReview.objects.get(review_giver=request.user.profile, offer=obj)
   except ProfileReview.DoesNotExist:
     is_reviewed = None
 
@@ -94,8 +82,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   content = {'object': obj, 'join_request': join_offer_request, 'participants': obj_participants,
   'spots_left': num_of_spots_left, 'is_reviewed': is_reviewed, 'tag_list': tag_list,
   'address': address, 'participant_approvals': participant_approvals, 'owner_approval': owner_approval,
-  'owner_to_participant': owner_to_participant_rates, 'offer_started': offer_started, 
-  'app_deadline_passed': app_deadline_passed}
+  'owner_to_participant': owner_to_participant_rates}
   return render(request, "offers/outlook.html", content)
 
 
@@ -167,13 +154,20 @@ def cancel_offer_view(request, offerID, *args, **kwargs):
 #******************** Timeline page  ********************
 @login_required
 def timeline_view(request, *args, **kwargs):
-  current_location = Point(float(request.user.profile.loc_ltd), float(request.user.profile.loc_long), srid=4326)
+  try:
+    current_location = Point(float(request.user.profile.loc_ltd), float(request.user.profile.loc_long), srid=4326)
+  except TypeError:
+    current_location = None
+
+  utc = pytz.UTC
+  now = datetime.datetime.now().replace(tzinfo=utc)
 
   if request.method == 'POST':
     form = OfferFilterForm(request.POST)
     empty_flag = False
     if form.is_valid():
-      qs = Offer.objects.filter(offer_status='Active').annotate(distance=Distance('location', current_location))
+      if current_location:
+        qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).annotate(distance=Distance('location', current_location))
       for key, value in form.cleaned_data.items():
         if key == 'distance' and value:
           max_distance = value # distance in meter
@@ -188,7 +182,8 @@ def timeline_view(request, *args, **kwargs):
         if key == 'tags' and value != '':
           entry = [word.strip().title() for word in value.split(',') if word.strip() != '']
           qs = qs.filter(tags__name__in=entry)
-      qs = qs.order_by('distance')
+      if current_location:
+        qs = qs.order_by('distance')
       qs_dist = {}
       for o in qs:
         qs_dist[o] = round(great_circle(o.location, current_location).km, 2)
@@ -198,12 +193,16 @@ def timeline_view(request, *args, **kwargs):
         'qs': qs,
         'qs_dist': qs_dist,
         'flag': empty_flag,
+        'current_location': current_location,
       }
       return render(request, 'offers/timeline_view.html', content)
   else:
     form = OfferFilterForm()
     empty_flag = True
-    qs = Offer.objects.filter(offer_status='Active').annotate(distance=Distance('location', current_location)).order_by('distance')
+    if current_location:
+      qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).annotate(distance=Distance('location', current_location)).order_by('distance')
+    else:
+      qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).order_by('start_date')
 
     qs_dist = {}
     for o in qs:
@@ -214,6 +213,7 @@ def timeline_view(request, *args, **kwargs):
       'qs': qs,
       'qs_dist': qs_dist,
       'flag': empty_flag,
+      'current_location': current_location,
     }
   return render(request, 'offers/timeline_view.html', content)
 

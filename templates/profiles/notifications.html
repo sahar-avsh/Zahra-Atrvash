@@ -7,91 +7,117 @@
 
 
 {% block title %}
-Notifications - {{block.super}}
+  Notifications - {{block.super}}
 {% endblock title %}
 
 {% block content %}
-<body>
+
   <div class="fader">
     <div class="friend-request">
-<h2>Friend Requests</h2>
-{% if friend_list != None and friend_list.count > 0 %}
-  {% for object in friend_list %}
-    <div>
-      <h4><a href="{% url 'profile_look' pk=object.profile_id.id %}">{{object.profile_id.f_name}}</a> wants to follow you!</h4>
-      <button class="save-button" type="button">
-        <a class="save-button" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
-      </button>
-      <button class="save-button" type="button">
-        <a class="save-button" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>
-      </button>
+      <h2>Friend Requests</h2>
+      {% if friend_requests.count > 0 %}
+        {% for object in friend_requests %}
+          <div>
+            <h4><a href="{% url 'profile_look' pk=object.profile_id.id %}">{{object.profile_id.f_name}}</a> wants to follow you!</h4>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
+            </button>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+          <h4>You have no friend requests.</h4>
+      {% endif %}
     </div>
-  {% endfor %}
-{% else %}
-    <h4>You have no friend requests.</h4>
-{% endif %}
-</div>
-<div class="join-request">
-<h2>Join Requests</h2>
-{% if offer_list != None and offer_list.count > 0 %}
-  {% for object in offer_list %}
-    {% load offer_extras %}
-    {% if join_request_dict|get_item:object %}
-      <div class="join-offers">
-        <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
-        <button class="save-button" type="button">
-          <a class="save-button" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
-        </button>
-        <button class="save-button" type="button">
-          <a class="save-button" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
-        </button>
-      </div>
+
+    <div class="join-request">
+      <h2>Incoming Join Requests</h2>
+      {% if join_requests_to_profile.count > 0 %}
+        {% for object in join_requests_to_profile %}
+          <div class="join-offers">
+            <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
+            </button>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+        <h4>You have no join incoming requests.</h4>
+      {% endif %}
+    </div>
+
+    <div class="outsatnding-review">
+      <h2>Outstanding Offer Reviews</h2>
+      {% if len_outstanding_reviews > 0 %}
+        {% for offer in outstanding_offer_reviews %}
+          <div>
+            <h4> You have an outstanding review for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'rate_offer' offerID=offer.id %}">Review!</a>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+          <h4>You have no outstanding reviews.</h4>
+      {% endif %}
+    </div>
+
+    <div class="outstanding-offer">
+      <h2>Outstanding Offer Approvals</h2>
+      {% if outstanding_approvals.count > 0 %}
+        {% for offer in outstanding_approvals %}
+          <div>
+            <h4> You have an outstanding approval for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
+            <button class="save-button" type="button">
+              <a class="save-button" href="{% url 'approve_offer' offerID=offer.id %}">Go to approval!</a>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+        <h4>You have no outstanding approvals.</h4>
+      {% endif %}
+    </div>
+
+    <h2>Cancellation Notifications</h2>
+    {% if join_requests_offer_cancelled.count == 0 and joined_offers_cancelled.count == 0 %}
+      <h4>You have no cancellation notifications.</h4>
+    {% else %}
+      {% if join_requests_offer_cancelled.count > 0 %}
+        {% for obj in join_requests_offer_cancelled %}
+          <div>
+            <h4> The offer <a href="{%url 'offer_look' pk=obj.offer.id %}">{{obj.offer.title}}</a> that you sent a join request to got cancelled by <a href="{%url 'profile_look' pk=obj.offer.owner.id %}">{{obj.offer.owner.f_name}} {{obj.offer.owner.f_name}}</a>.</h4>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% if joined_offers_cancelled.count > 0 %}
+        {% for obj in joined_offers_cancelled %}
+          <div>
+            <h4>The offer <a href="{%url 'offer_look' pk=obj.pk %}"> {{obj.title}} </a> that you joined got cancelled by <a href="{%url 'profile_look' pk=obj.owner.id %}"> {{obj.owner.f_name}} {{obj.owner.l_name}} </a>.</h4>
+          </div>
+        {% endfor %}
+      {% endif %}
     {% endif %}
-  {% endfor %}
-{% else %}
-    <h4>You have no join requests.</h4>
-{% endif %}
-</div>
-<div class="outsatnding-review">
-<h2>Outstanding Offer Reviews</h2>
-{% if len_outstanding_reviews > 0 %}
-  {% for offer in outstanding_offer_reviews %}
-    <div>
-      <h4> You have an outstanding review for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
-      <button class="save-button" type="button">
-        <a class="save-button" href="{% url 'rate_offer' offerID=offer.id %}">Review!</a>
-      </button>
-    </div>
-  {% endfor %}
-{% else %}
-    <h4>You have no outstanding reviews.</h4>
-{% endif %}
 
-</div>
-<div class="outstanding-offer">
-<h2>Outstanding Offer Approvals</h2>
-{% if outstanding_approvals.count > 0 %}
-    {% for offer in outstanding_approvals %}
-    <div>
-      <h4> You have an outstanding approval for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
-      <button class="save-button" type="button">
-        <a class="save-button" href="{% url 'approve_offer' offerID=offer.id %}">Go to approval!</a>
-      </button>
-    </div>
-    {% endfor %}
-{% else %}
-    <h4>You have no outstanding approvals.</h4>
-{% endif %}
-
-{% if declined_join_requests.count > 0 %}
-  <h2>Declined Join Requests</h2>
-    <div>
-      {% for d in declined_join_requests %}
-        <h4>Unfortunately, you have not been accepted for <a href="{%url 'offer_look' pk=d.offer.id %}">{{d.offer.title}}</a></h4>
+  <h2>Outgoing Join Request Responses</h2>
+  {% if join_requests_accepted.count == 0  and join_requests_declined.count == 0 %}
+    <h4>You have no responses for outgoing offer requests.</h4>
+  {% else %}
+    {% if join_requests_accepted.count > 0 %}
+      {% for obj in join_requests_accepted %}
+        <h4>You got accepted for <a href="{%url 'offer_look' pk=obj.offer.id %}">{{obj.offer.title}}</a>.</h4>
       {% endfor %}
-    </div>
-{% endif %}
+    {% endif %}
+    {% if join_requests_declined.count > 0 %}
+      {% for obj in join_requests_declined %}
+        <h4>You got declined for <a href="{%url 'offer_look' pk=obj.offer.id %}">{{obj.offer.title}}</a>.</h4>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
 </div>
-</div>
-</body>
+
 {% endblock content %}

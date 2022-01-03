@@ -39,15 +39,16 @@ class Offer(models.Model):
 
   offer_type = models.CharField(max_length=7, choices=OfferType.choices)
 
-  class OfferStatus(models.TextChoices):
-    # offer is active and not given yet
-    active = 'Active', _('Active')
-    # offer is given
-    passive = 'Passive', _('Passive')
-    # offer is cancelled
-    cancelled = 'Cancelled', _('Cancelled')
+  # class OfferStatus(models.TextChoices):
+  #   # offer is active and not given yet
+  #   active = 'Active', _('Active')
+  #   # offer is given
+  #   passive = 'Passive', _('Passive')
+  #   # offer is cancelled
+  #   cancelled = 'Cancelled', _('Cancelled')
 
-  offer_status = models.CharField(max_length=10, choices=OfferStatus.choices, default='Active')
+  # offer_status = models.CharField(max_length=10, choices=OfferStatus.choices, default='Active')
+  is_cancelled = models.BooleanField(default=False)
 
   class ApprovalStatus(models.TextChoices):
     # approved
@@ -65,15 +66,47 @@ class Offer(models.Model):
   # participants
   participants = models.ManyToManyField('profiles.Profile', related_name='offer_participants', blank=True)
 
-  def update_status(self):
+  @property
+  def is_expired(self):
     utc = pytz.UTC
     now = datetime.datetime.now().replace(tzinfo=utc)
-    # here we check if the offer end date has passed
-    if self.end_date <= now:
-      Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
+    if now > self.end_date:
       return True
-    else:
+    return False
+
+  @property
+  def is_started(self):
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    if now > self.start_date:
+      return True
+    return False
+
+  @property
+  def can_apply(self):
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    if now > self.app_deadline:
       return False
+    return True
+
+  @property
+  def can_cancel(self):
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    if now > self.cancel_deadline:
+      return False
+    return True
+
+  # def update_status(self):
+  #   utc = pytz.UTC
+  #   now = datetime.datetime.now().replace(tzinfo=utc)
+  #   # here we check if the offer end date has passed
+  #   if self.end_date <= now:
+  #     Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
+  #     return True
+  #   else:
+  #     return False
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title

@@ -6,18 +6,18 @@
 {% endblock styles %}
 
 {% block title %}
-{{object.title}} - {{block.super}}
+  {{object.title}} - {{block.super}}
 {% endblock title %}
   
 {% block content %}
 
   <div class="container">
 
-  {% if object.offer_status == 'Cancelled' %}
-    <h1 class="announcement">This offer has been cancelled by the owner.</h1>
-  {% elif object.offer_status == 'Passive' %}
-    <h1 class="announcement">This offer has finished</h1>
-  {% endif %}
+    {% if object.is_cancelled %}
+      <h1 class="announcement">This offer has been cancelled by the owner.</h1>
+    {% elif object.is_expired %}
+      <h1 class="announcement">This offer has finished.</h1>
+    {% endif %}
 
     {% if object.image %}
       <div class="first-column">
@@ -95,55 +95,50 @@
             {% for obj in participants %}
               <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
               {% load offer_extras %}
-              {% if owner_approval == 'Approved' and participant_approvals|get_item:obj and owner_to_participant|get_item:obj == None %}
+              {% if object.is_expired and owner_approval == 'Approved' and participant_approvals|get_item:obj and owner_to_participant|get_item:obj == None %}
                 <button class="save-button" type="button">
                   <a class="button-link"  href="{%url 'rate_participant' offerID=object.id participantID=obj.id %}">Rate this participant!</a>
                 </button>
               {% endif %}
             {% endfor %}
             
-            {% if not offer_started %}
+            {% if obj.can_cancel %}
             <button class="save-button" type="button">
               <a class="button-link"  href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
             </button>
             {% endif %}
-          {% endif %}
         </div>
 
-        {% if object.owner != request.user.profile %}
-          <button class="save-button" type="button">
-            <a class="button-link" href="{%url 'profile_look' pk=object.owner.id %}">Offerer's profile!</a>
-          </button>
-        {% endif %}
-
-        {% if object.offer_status == 'Active' %}
-          {% if object.owner != request.user.profile %}
-            {% if join_request != None %}
-              <button class="save-button" type="button">
-                <a class="button-link"  href="{%url 'cancel_join_request' join_request_id=join_request.id %}">Cancel request!</a>
-              </button>
+          {% else %}
+            <button class="save-button" type="button">
+              <a class="button-link" href="{%url 'profile_look' pk=object.owner.id %}">Offerer's profile!</a>
+            </button>
+            {% if join_request %}
+              {% if object.can_cancel %}
+                <button class="save-button" type="button">
+                  <a class="button-link"  href="{%url 'cancel_join_request' join_request_id=join_request.id %}">Cancel request!</a>
+                </button>
+              {% endif %}
             {% elif request.user.profile in participants %}
+              {% if object.can_cancel %}
                 <button class="save-button" type="button">
                   <a class="button-link"  href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
                 </button>
+              {% elif object.is_expired and not is_reviewed %}
+                <button class="save-button" type="button">
+                  <a class="button-link"  href="{%url 'rate_offer' offerID=object.id %}">Rate offer!</a>
+                </button>
+              {% endif %}
             {% else %}
-              {% if object.capacity > participants.count and not app_deadline_passed %}
+              {% if object.can_apply and spots_left > 0 %}
                 <button class="save-button" type="button">
                   <a class="button-link" href="{%url 'send_join_request' offerID=object.id %}">Apply!</a>
                 </button>
               {% else %}
-                <h2>This offer is full!</h2>
+                <h2>You cannot apply at this time!</h2>
               {% endif %}
             {% endif %}
           {% endif %}
-
-        {% elif object.offer_status == 'Passive' %}
-          {% if request.user.profile in participants and is_reviewed == None %}
-          <button class="save-button" type="button">
-            <a class="button-link"  href="{%url 'rate_offer' offerID=object.id %}">Rate offer!</a>
-          </button>
-          {% endif %}
-        {% endif %}
       </div>
       </div>
       </div>

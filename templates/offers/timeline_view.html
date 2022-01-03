@@ -15,11 +15,13 @@
 <div class="container">
   <form method="POST" action="."> {% csrf_token %}
     <div class="left">
-      <div class="location">
-        <h3>If you are looking for offers from another country, city or a specific district, pick a new location from the map </h3>
-        <h3>Search within a defined kilometer radius</h3>
-          {{form.within}}
-      </div>
+      {% if current_location %}
+        <div class="location">
+          <h3>If you are looking for offers from another country, city or a specific district, pick a new location from the map </h3>
+          <h3>Search within a defined kilometer radius</h3>
+            {{form.distance}}
+        </div>
+      {% endif %}
       <div class="search"> 
         <h3>Search by keyword</h3>
           {{form.title}}
@@ -41,9 +43,11 @@
   </form>
   
   <div class="right">
-    {% if flag %}
+    {% if not current_location and flag %}
+      <h1>Displayed offers are based on offers' start date</h1>
+    {% elif current_location and flag %}
       <h1 class="offers">Displayed offers are based on your location</h1>
-    {% else %}
+    {% elif not flag %}
       <h1 class="offers">Displayed offers are based on your preferences</h1>
     {% endif %}
     <h2 class="event">Offers</h2>
