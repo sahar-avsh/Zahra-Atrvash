@@ -23,9 +23,16 @@ import datetime
 from geopy.distance import great_circle
 
 # Create your views here.
+
+
+#****************************** Sign-up functionality **************************************************
 @receiver(user_signed_up)
 def after_user_signed_up(user, **kwargs):
-  profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name, email=user.email)
+  profile = Profile.objects.create(user=user, f_name=user.first_name, l_name=user.last_name)
+
+
+
+
 
 @receiver(user_logged_in)
 def after_user_signed_in(user, **kwargs):
@@ -39,10 +46,21 @@ def after_user_signed_in(user, **kwargs):
   for r in qs_join_requests:
     unanswered_join_request(r.id)
 
+
+
+
+#****************************** Rules & Navigation page functionality **************************************************
 @login_required
 def home_view(request, *args, **kwargs):
   return render(request, 'home.html')
 
+
+
+
+
+
+
+#  ****************************** Rate & Review page functionality ****************************************************
 @login_required
 def profile_rate_reviews_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
@@ -59,9 +77,7 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
       total += i.rating
     for j in qs_participant_reviews:
       total += j.rating
-
     avg_rating = total / total_number_reviews
-
     # calc no of 5 star reviews
     five_stars = qs_reviews.filter(rating=5).count() + qs_participant_reviews.filter(rating=5).count()
     four_stars = qs_reviews.filter(rating=4).count() + qs_participant_reviews.filter(rating=4).count()
@@ -75,12 +91,16 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
     three_stars = 0
     two_stars = 0
     one_stars = 0
-
   return render(request, 'profiles/rates_reviews.html', {'object_list': qs_reviews, 
   'no_of_reviews': total_number_reviews, 'avg_rating': avg_rating, 'five_stars': five_stars, 'four_stars': four_stars,
   'three_stars': three_stars, 'two_stars': two_stars, 'one_stars': one_stars,
   'participant_reviews': qs_participant_reviews})
 
+
+
+
+
+#****************************** Profile creation and edition page functionality *****************************************
 @login_required
 def profile_edit_view(request, *args, **kwargs):
   profile = get_object_or_404(Profile, pk=request.user.profile.id)
@@ -145,6 +165,10 @@ def profile_edit_view(request, *args, **kwargs):
   {'form': form, 'object': profile, 'skill_form': form_skill, 'interest_form': form_interest, 
   'object_skills': qs_skills, 'object_interests': qs_interests})
 
+
+
+
+#****************************** Profile outlook page functionality *****************************************
 @login_required
 def profile_outlook_view(request, pk, *args, **kwargs):
   current_profile = request.user.profile
@@ -173,6 +197,10 @@ def profile_outlook_view(request, pk, *args, **kwargs):
    'user_friend_list': current_profile_friend_list, 'user_friend_request': current_profile_friend_request,
   'address_flag': address_flag, 'address': address})
 
+
+
+
+#****************************** Getting address from the map functionality *********************************
 def convert_to_address(lat, long):
   from geopy.geocoders import Nominatim
   from functools import partial
@@ -187,6 +215,11 @@ def convert_to_address(lat, long):
     address = None
   return address
 
+
+
+
+
+#****************************** Notification page functionality *********************************
 @login_required
 def profile_notifications_view(request, *args, **kwargs):
   current_profile = request.user.profile
@@ -231,6 +264,11 @@ def profile_notifications_view(request, *args, **kwargs):
   'outstanding_approvals': offers_outstanding_approvals, 'join_request_dict': join_request_dict, 'declined_join_requests': declined_join_requests}
   return render(request, "profiles/notifications.html", content)
 
+
+
+
+
+#************************** Activity background page functionality *******************************
 @login_required
 def profile_activity_background_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
@@ -255,6 +293,7 @@ def profile_activity_background_view(request, profileID, *args, **kwargs):
   'outstanding_offers': outstanding_offer_requests, 'obj': obj, 'join_request_dict': join_request_dict}
   return render(request, "profiles/activity_background.html", content)
 
+
 """ def profile_api_detail_view(request, pk, *args, **kwargs):
   try:
       obj = Profile.objects.get(pk=pk)
@@ -264,6 +303,8 @@ def profile_activity_background_view(request, profileID, *args, **kwargs):
       )  # render JSON with HTTP status code of 404
   return JsonResponse({"First name": obj.f_name}) """
 
+
+#**************************** Follow request functionality ******************************
 @login_required
 def send_follow_request(request, profileID):
   from_profile = request.user.profile
@@ -277,6 +318,9 @@ def send_follow_request(request, profileID):
   else:
     return redirect('home_page')
 
+
+  
+#****************************** Unfriend functionality *********************************
 @login_required
 def unfollow(request, profileID):
     from_profile = request.user.profile
@@ -285,6 +329,8 @@ def unfollow(request, profileID):
     to_profile.friends.remove(from_profile)
     return redirect('home_page')
 
+
+#*********************** Accepting follow request functionality ************************
 @login_required
 def accept_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
@@ -296,6 +342,7 @@ def accept_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+#*********************** Declining follow request functionality ************************
 @login_required
 def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
@@ -305,6 +352,7 @@ def decline_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+#******************** Canceling the sent follow request functionality ********************
 @login_required
 def cancel_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
@@ -314,6 +362,8 @@ def cancel_follow_request(request, follow_request_id):
   else:
     return redirect('home_page')
 
+
+#******** Profile view of other user rather than the active one functionality *************
 @login_required
 def profile_friends_view(request, profileID, *args, **kwargs):
   obj = Profile.objects.get(pk=profileID)
@@ -344,6 +394,8 @@ def profile_friends_view(request, profileID, *args, **kwargs):
   }
   return render(request, "profiles/friends.html", content)
 
+
+#******************** Applying for an offer functionality ********************
 @login_required
 def send_join_request(request, offerID, *args, **kwargs):
   from_profile = request.user.profile
@@ -370,6 +422,8 @@ def send_join_request(request, offerID, *args, **kwargs):
     messages.info(request, 'You cannot send a join request to this offer')
     return redirect('home_page')
 
+
+#******************** Accepting join requests for an offer functionality ********************
 @login_required
 def accept_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
@@ -393,6 +447,9 @@ def accept_join_request(request, join_request_id):
   else:
     return redirect('home_page')
 
+
+
+#******************** Declining join requests for an offer  ********************
 @login_required
 def decline_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
@@ -404,6 +461,9 @@ def decline_join_request(request, join_request_id):
   else:
     return redirect('home_page')
 
+
+
+#******************** Canceling a sent request for an offer  ********************
 @login_required
 def cancel_join_request(request, join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
@@ -412,6 +472,7 @@ def cancel_join_request(request, join_request_id):
     join_request.delete()
   return redirect('home_page')
 
+#******************** Handling unanswered requests for an offer  ********************
 def unanswered_join_request(join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
   utc = pytz.UTC
@@ -420,6 +481,8 @@ def unanswered_join_request(join_request_id):
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.delete()
 
+
+#******************** Leaving an offer that I had been accepted to  ********************
 @login_required
 def leave_offer(request, offerID):
   offer = Offer.objects.get(pk=offerID)
@@ -433,14 +496,14 @@ def leave_offer(request, offerID):
     # offer_creds = offer.credit
     # profile_creds = request.user.profile.credit
     # Profile.objects.filter(pk=request.user.profile.id).update(credit=offer_creds + profile_creds)
-
-
     # remove profile from offer participants
     offer.participants.remove(request.user.profile)
     # remove the offer from profile's accepted offers
     request.user.profile.accepted_offers.remove(offer)
     return redirect('home_page')
 
+
+#******************** Rating a finished offer functionality ********************
 @login_required
 def rate_finished_offer(request, offerID, *args, **kwargs):
   obj = request.user.profile
@@ -461,6 +524,8 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
 
   return render(request, 'profiles/rate_offer_form.html', {'object': obj, 'offer': o, 'form': form})
 
+
+#******************** Shaking hands from both parties for a finished offer  ********************
 @login_required
 def approve_finished_offer(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
@@ -479,6 +544,8 @@ def approve_finished_offer(request, offerID, *args, **kwargs):
     form = ApproveForm()
   return render(request, 'profiles/approve_offer.html', {'object': offer, 'form': form})
 
+
+#******************** Rating participants by the offer provider  ********************
 @login_required
 def rate_participant(request, offerID, participantID, *args, **kwargs):
   o = Offer.objects.get(pk=offerID)
@@ -496,6 +563,8 @@ def rate_participant(request, offerID, participantID, *args, **kwargs):
     form = OwnerToParticipantReviewForm()
   return render(request, 'profiles/rate_participant_form.html', {'form': form, 'offer': o, 'participant': p})
 
+
+
 def automatic_offer_review(profile, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
   day_limit = 3
@@ -508,6 +577,8 @@ def automatic_offer_review(profile, offerID, *args, **kwargs):
       return True
   return False
 
+
+#******************** Automatic offer approval for the taken offer if participant does not approve after 3 days  ********************
 def automatic_offer_approval(offerID):
   offer = Offer.objects.get(pk=offerID)
   day_limit = 3
@@ -520,11 +591,13 @@ def automatic_offer_approval(offerID):
       return True
   return False
 
+
 def spend_participant_credit(profileID, offerID):
   offer = Offer.objects.get(pk=offerID)
   profile = Profile.objects.get(pk=profileID)
   current_cred = profile.credit
   Profile.objects.filter(pk=profileID).update(credit=current_cred - offer.credit)
+
 
 def retract_participant_credit(profileID, offerID):
   offer = Offer.objects.get(pk=offerID)
@@ -532,6 +605,8 @@ def retract_participant_credit(profileID, offerID):
   current_cred = profile.credit
   Profile.objects.filter(pk=profileID).update(credit=current_cred + offer.credit)
 
+
+#******************** credit transmition functionality ********************
 def handle_credit_after_offer(offerID):
   offer = Offer.objects.get(pk=offerID)
   participants = offer.participants.all()

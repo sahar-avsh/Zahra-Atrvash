@@ -27,12 +27,14 @@
     </form>
   </div>
     <h1 class="inbox">Inbox</h1>
+    <div class="message-content">
     {% if object_list.count > 0 %}
       {% for message in object_list %}
         <h3>From: <a href="{%url 'profile_look' pk=message.message_from.id %}">{{message.message_from.f_name}} {{message.message_from.l_name}}</a></h3>
         <h3>Title: {{message.title}} </h3>
-        <h4>Body: {{message.body}} </h4>
+        <h4>{{message.body}} </h4>
         <h5>Sent at: {{message.sent_at|date:'j-M-Y, g:i A (e)'}} </h5>
+        <p>*************************************************</p>
       {% endfor %}
     {% else %}
       {% if not flag %}
@@ -41,7 +43,7 @@
         <h2>No matches.</h2>
       {% endif %}
     {% endif %}
-
+  </div>
     <div class="button">
       <button class="sent-messages" type="button">
         <a class="sent-messages" href="{% url 'sent_messages' %}">Sent messages</a>

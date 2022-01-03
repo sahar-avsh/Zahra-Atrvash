@@ -26,6 +26,10 @@ from geopy.distance import great_circle
 import math
 
 # Create your views here.
+
+
+
+#******************** Offer outlook page ********************
 @login_required
 def offer_outlook_view(request, pk, *args, **kwargs):
   try:
@@ -94,6 +98,9 @@ def offer_outlook_view(request, pk, *args, **kwargs):
   'app_deadline_passed': app_deadline_passed}
   return render(request, "offers/outlook.html", content)
 
+
+
+#******************** Offer creation page  ********************
 @login_required
 def offer_create_view(request, *args, **kwargs):
   if request.method == 'POST':
@@ -133,6 +140,8 @@ def offer_create_view(request, *args, **kwargs):
     form_offertag = OfferTagForm()
   return render(request, 'offers/forms.html', {'form': form, 'form_offertag': form_offertag})
 
+
+#******************** canceling an already created offer  ********************
 @login_required
 def cancel_offer_view(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
@@ -154,6 +163,8 @@ def cancel_offer_view(request, offerID, *args, **kwargs):
   ProfileJoinOfferRequest.objects.filter(offer=offer).delete()
   return redirect('offer_look', pk=offerID)
 
+
+#******************** Timeline page  ********************
 @login_required
 def timeline_view(request, *args, **kwargs):
   current_location = Point(float(request.user.profile.loc_ltd), float(request.user.profile.loc_long), srid=4326)
@@ -206,6 +217,9 @@ def timeline_view(request, *args, **kwargs):
     }
   return render(request, 'offers/timeline_view.html', content)
 
+
+
+#******************** Changing degree to km functionality  ********************
 def distance_to_decimal_degrees(distance, latitude):
   """
   Source of formulae information:

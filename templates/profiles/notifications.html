@@ -20,7 +20,7 @@ Notifications - {{block.super}}
     <div>
       <h4><a href="{% url 'profile_look' pk=object.profile_id.id %}">{{object.profile_id.f_name}}</a> wants to follow you!</h4>
       <button class="save-button" type="button">
-        <a class="bsave-button" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
+        <a class="save-button" href="{% url 'accept_follow_request' follow_request_id=object.id %}">Accept!</a>
       </button>
       <button class="save-button" type="button">
         <a class="save-button" href="{% url 'decline_follow_request' follow_request_id=object.id %}">Decline!</a>

@@ -10,6 +10,9 @@ from profilemessages.models import ProfileMessage
 from profiles.models import Profile
 
 # Create your views here.
+
+
+#******************** Compose a new message page  ********************
 @login_required
 def send_message_view(request, profileID, *args, **kwargs):
   to = Profile.objects.get(pk=profileID)
@@ -25,6 +28,7 @@ def send_message_view(request, profileID, *args, **kwargs):
     form = ProfileMessageForm()
   return render(request, 'messages/send_message.html', {'form': form, 'to': to})
 
+#******************** Inbox page  ********************
 @login_required
 def inbox_view(request, *args, **kwargs):
   if request.method == 'POST':
@@ -48,6 +52,7 @@ def inbox_view(request, *args, **kwargs):
   }
   return render(request, 'messages/inbox_view.html', content)
 
+#******************** Sent messages view ********************
 @login_required
 def sent_messages_view(request, *args, **kwargs):
   if request.method == 'POST':
