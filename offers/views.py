@@ -75,7 +75,7 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     is_reviewed = None
 
   try:
-    join_offer_request = ProfileJoinOfferRequest.objects.get(profile=request.user.profile, offer=obj)
+    join_offer_request = ProfileJoinOfferRequest.objects.get(profile=request.user.profile, offer=obj, is_accepted=None)
   except ProfileJoinOfferRequest.DoesNotExist:
     join_offer_request = None
 
@@ -187,6 +187,8 @@ def timeline_view(request, *args, **kwargs):
       qs_dist = {}
       for o in qs:
         qs_dist[o] = round(great_circle(o.location, current_location).km, 2)
+      
+      qs = qs.exclude(owner=request.user.profile)
 
       content = {
         'form': form,
@@ -207,6 +209,8 @@ def timeline_view(request, *args, **kwargs):
     qs_dist = {}
     for o in qs:
       qs_dist[o] = round(great_circle(o.location, current_location).km, 2)
+
+    qs = qs.exclude(owner=request.user.profile)
 
     content = {
       'form': form,

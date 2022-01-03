@@ -102,7 +102,7 @@
               {% endif %}
             {% endfor %}
             
-            {% if obj.can_cancel %}
+            {% if object.can_cancel %}
             <button class="save-button" type="button">
               <a class="button-link"  href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
             </button>
@@ -113,22 +113,20 @@
             <button class="save-button" type="button">
               <a class="button-link" href="{%url 'profile_look' pk=object.owner.id %}">Offerer's profile!</a>
             </button>
-            {% if join_request %}
+            {% if join_request and request.user.profile not in participants %}
               {% if object.can_cancel %}
                 <button class="save-button" type="button">
                   <a class="button-link"  href="{%url 'cancel_join_request' join_request_id=join_request.id %}">Cancel request!</a>
                 </button>
               {% endif %}
-            {% elif request.user.profile in participants %}
-              {% if object.can_cancel %}
+            {% elif request.user.profile in participants and not object.is_expired %}
                 <button class="save-button" type="button">
                   <a class="button-link"  href="{%url 'leave_offer' offerID=object.id %}">Leave offer!</a>
                 </button>
-              {% elif object.is_expired and not is_reviewed %}
-                <button class="save-button" type="button">
-                  <a class="button-link"  href="{%url 'rate_offer' offerID=object.id %}">Rate offer!</a>
-                </button>
-              {% endif %}
+            {% elif request.user.profile in participants and object.is_expired and not is_reviewed %}
+              <button class="save-button" type="button">
+                <a class="button-link"  href="{%url 'rate_offer' offerID=object.id %}">Rate offer!</a>
+              </button>
             {% else %}
               {% if object.can_apply and spots_left > 0 %}
                 <button class="save-button" type="button">

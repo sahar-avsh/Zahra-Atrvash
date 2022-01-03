@@ -53,8 +53,8 @@
 
     <div class="outsatnding-review">
       <h2>Outstanding Offer Reviews</h2>
-      {% if len_outstanding_reviews > 0 %}
-        {% for offer in outstanding_offer_reviews %}
+      {% if outstanding_reviews.count > 0 %}
+        {% for offer in outstanding_reviews %}
           <div>
             <h4> You have an outstanding review for <a href="{%url 'offer_look' pk=offer.id %}">{{offer.title}}</a></h4>
             <button class="save-button" type="button">

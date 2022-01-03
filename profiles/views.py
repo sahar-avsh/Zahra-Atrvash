@@ -192,13 +192,18 @@ def profile_outlook_view(request, pk, *args, **kwargs):
 
   try:
     current_profile_friend_request = ProfileFollowRequest.objects.get(profile_id=current_profile, following_profile_id=obj)
-  except:
+  except ProfileFollowRequest.DoesNotExist:
     current_profile_friend_request = None
+
+  try:
+    reverse_friend_request = ProfileFollowRequest.objects.get(profile_id=obj, following_profile_id=current_profile)
+  except ProfileFollowRequest.DoesNotExist:
+    reverse_friend_request = None
 
   return render(request, "profiles/outlook.html", {"object": obj, "user": current_profile,
    "skill_list": skill_list, "interest_list": interest_list, 'friend_list': friend_list, 
    'user_friend_list': current_profile_friend_list, 'user_friend_request': current_profile_friend_request,
-  'address_flag': address_flag, 'address': address})
+  'address_flag': address_flag, 'address': address, 'reverse_friend_request': reverse_friend_request})
 
 
 
@@ -237,8 +242,8 @@ def profile_notifications_view(request, *args, **kwargs):
   # outstanding approvals for offers finished as an offer provider
   outstanding_approvals = Offer.objects.filter(owner=current_profile, end_date__lt=now, approval_status='Outstanding', is_cancelled=False)
   # outstanding reviews for offers finished as a participant
-  reviews_done = ProfileReview.objects.filter(review_giver=current_profile).select_related('offer')
-  outstanding_reviews = Offer.objects.exclude(pk__in=[o.pk for o in reviews_done])
+  reviews_done = ProfileReview.objects.filter(review_giver=current_profile).values_list('offer', flat=True)
+  outstanding_reviews = current_profile.accepted_offers.exclude(pk__in=[o for o in reviews_done])
   # join requests that current profile has sent and that got accepted
   join_requests_accepted = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=True, offer__start_date__gt=now)
   # join requests that current profile has sent and that got declined
@@ -247,7 +252,7 @@ def profile_notifications_view(request, *args, **kwargs):
   join_requests_offer_cancelled = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=None, offer__is_cancelled=True, offer__start_date__gt=now)
   joined_offers_cancelled = current_profile.accepted_offers.filter(is_cancelled=True, start_date__gt=now)
 
-  content = {"friend_list": friend_requests, 'join_requests_to_profile': join_requests_to_profile,
+  content = {"friend_requests": friend_requests, 'join_requests_to_profile': join_requests_to_profile,
   'outstanding_approvals': outstanding_approvals,
   'outstanding_reviews': outstanding_reviews, 'join_requests_accepted': join_requests_accepted,
   'join_requests_declined': join_requests_declined, 'join_requests_offer_cancelled': join_requests_offer_cancelled,
@@ -290,9 +295,9 @@ def send_follow_request(request, profileID):
   )
   if created:
     messages.success(request, 'Your follow request is sent successfully.')
-    return redirect('home_page')
   else:
-    return redirect('home_page')
+    messages.info(request, 'There is a pending follow request.')
+  return redirect('profile_look', pk=to_profile.id)
 
 
   
@@ -303,7 +308,7 @@ def unfollow(request, profileID):
     to_profile = Profile.objects.get(pk=profileID)
     from_profile.friends.remove(to_profile)
     to_profile.friends.remove(from_profile)
-    return redirect('home_page')
+    return redirect('friends', profileID=request.user.profile.id)
 
 
 #*********************** Accepting follow request functionality ************************
@@ -314,9 +319,8 @@ def accept_follow_request(request, follow_request_id):
     follow_request.profile_id.friends.add(follow_request.following_profile_id)
     follow_request.following_profile_id.friends.add(follow_request.profile_id)
     follow_request.delete()
-    return redirect('home_page')
-  else:
-    return redirect('home_page')
+  return redirect('friends', profileID=request.user.profile.id)
+
 
 #*********************** Declining follow request functionality ************************
 @login_required
@@ -324,9 +328,8 @@ def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.following_profile_id == request.user.profile:
     follow_request.delete()
-    return redirect('home_page')
-  else:
-    return redirect('home_page')
+  return redirect('friends', profileID=request.user.profile.id)
+
 
 #******************** Canceling the sent follow request functionality ********************
 @login_required
@@ -334,9 +337,8 @@ def cancel_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.profile_id == request.user.profile:
     follow_request.delete()
-    return redirect('home_page')
-  else:
-    return redirect('home_page')
+  return redirect('friends', profileID=request.user.profile.id)
+
 
 
 #******** Profile view of other user rather than the active one functionality *************
@@ -362,12 +364,21 @@ def profile_friends_view(request, profileID, *args, **kwargs):
     all_hits = Profile.objects.none()
     search_flag = False
 
+  existing_follow_requests_profile = ProfileFollowRequest.objects.filter(profile_id=request.user.profile).values_list('following_profile_id', flat=True)
+
+  existing_follow_requests_a = ProfileFollowRequest.objects.filter(profile_id=request.user.profile)
+  existing_follow_requests_dict = {}
+  for i in existing_follow_requests_a:
+    existing_follow_requests_dict[i.following_profile_id] = i.id
+
   content = {
     'object': obj,
     'object_list': all_hits,
     'friend_list': friend_list,
     'form': form,
-    'flag': search_flag
+    'flag': search_flag,
+    'existing_follow_requests': existing_follow_requests_profile,
+    'follow_requests_dict': existing_follow_requests_dict,
   }
   return render(request, "profiles/friends.html", content)
 
@@ -386,18 +397,18 @@ def send_join_request(request, offerID, *args, **kwargs):
 
   if available_credits >= required_credits and num_of_participants < to_offer.capacity and to_offer.can_apply:
     join_request, created = ProfileJoinOfferRequest.objects.get_or_create(
-    profile=from_profile, offer=to_offer
+    profile=from_profile, offer=to_offer, is_accepted=None
   )
     if created:
       spend_participant_credit(from_profile.id, to_offer.id)
       messages.success(request, 'Your join request is sent successfully.')
-      return redirect('home_page')
+      return redirect('timeline')
     else:
       messages.info(request, 'You cannot send a join request to this offer')
-      return redirect('home_page')
+      return redirect('timeline')
   else:
     messages.info(request, 'You cannot send a join request to this offer')
-    return redirect('home_page')
+    return redirect('timeline')
 
 
 #******************** Accepting join requests for an offer functionality ********************
@@ -420,9 +431,7 @@ def accept_join_request(request, join_request_id):
     # join_request.delete()
     join_request.is_accepted = True
     join_request.save()
-    return redirect('home_page')
-  else:
-    return redirect('home_page')
+  return redirect('profile_look', pk=join_request.profile.id)
 
 
 
@@ -434,9 +443,7 @@ def decline_join_request(request, join_request_id):
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.is_accepted = False
     # join_request.delete()
-    return redirect('home_page')
-  else:
-    return redirect('home_page')
+  return redirect('profile_look', pk=join_request.profile.id)
 
 
 
@@ -447,7 +454,7 @@ def cancel_join_request(request, join_request_id):
   if join_request.profile == request.user.profile and join_request.offer.can_cancel:
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.delete()
-  return redirect('home_page')
+  return redirect('timeline')
 
 #******************** Handling unanswered requests for an offer  ********************
 def unanswered_join_request(join_request_id):
@@ -475,7 +482,7 @@ def leave_offer(request, offerID):
     offer.participants.remove(request.user.profile)
     # remove the offer from profile's accepted offers
     request.user.profile.accepted_offers.remove(offer)
-    return redirect('home_page')
+  return redirect('timeline')
 
 
 #******************** Rating a finished offer functionality ********************
