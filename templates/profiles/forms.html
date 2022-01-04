@@ -18,8 +18,10 @@
       <div class="profile-picture">
         {{test}}
         <h4 class="name-title">First name:</h4>
+        {{form.f_name.errors}}
         {% render_field form.f_name %}
         <h4 class="name-title">Last name:</h4>
+        {{form.l_name.errors}}
         {% render_field form.l_name %}
         <!-- image -->
         {% render_field form.image %}
@@ -45,6 +47,7 @@
       </button>
       <div class="birthday-general">
         <h4 class="birthday-title">Date of Birth:</h4>
+        {{form.birthday.errors}}
         {% render_field form.birthday class+="birthday-box" %}
       </div>
       <div class="description-general">

@@ -6,5 +6,17 @@ class ProfileMessageForm(forms.ModelForm):
     model = ProfileMessage
     fields = ['title', 'body']
 
+  def clean_title(self):
+    data = self.cleaned_data.get('title')
+    if len(data) < 2:
+      raise forms.ValidationError('This is not long enough.')
+
+  def clean_body(self):
+    data = self.cleaned_data.get('body')
+    if len(data) < 2:
+      raise forms.ValidationError('This is not long enough.')
+
+  
+
 class MessageSearchForm(forms.Form):
   text = forms.CharField(widget=forms.TextInput(), required=False)

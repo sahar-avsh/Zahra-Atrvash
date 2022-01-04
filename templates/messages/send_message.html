@@ -20,11 +20,13 @@ Send Message - {{block.super}}
       <h2 class="to">To: <a href="{%url 'profile_look' pk=to.id %}">{{to.f_name}} {{to.l_name}}</a> </h2>
       <div class="title">
         <h3>Title:</h3>
+        {{form.title.errors}}
         {% render_field form.title class+="title-box" %}
       </div>
     
       <div class="body">
         <h3>Body:</h3>
+        {{form.body.errors}}
         {% render_field form.body class+="body-box" %}
       </div>
 

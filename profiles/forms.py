@@ -8,6 +8,9 @@ from mapbox_location_field.forms import LocationField
 
 from profiles.models import OwnerToParticipantReview, Profile, ProfileReview
 
+import pytz
+import datetime
+
 class DateInput(forms.DateInput):
   input_type = 'date'
 
@@ -32,7 +35,21 @@ class ProfileModelForm(forms.ModelForm):
   def clean_f_name(self):
     data = self.cleaned_data.get('f_name')
     if len(data) < 2:
-      raise forms.ValidationError('This is not long enough. (That\'s what she said)')
+      raise forms.ValidationError('This is not long enough.')
+    return data
+
+  def clean_l_name(self):
+    data = self.cleaned_data.get('l_name')
+    if len(data) < 2:
+      raise forms.ValidationError('This is not long enough.')
+    return data
+
+  def clean_birthday(self):
+    data = self.cleaned_data.get('birthday')
+    utc = pytz.UTC
+    now = datetime.datetime.now().replace(tzinfo=utc)
+    if data > now:
+      raise forms.ValidationError('Your birthday cannot be later than now.')
     return data
 
 class ReviewForm(forms.ModelForm):

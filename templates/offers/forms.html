@@ -7,7 +7,7 @@
 {% endblock styles %}
 
 {% block title %}
-Create Offer - {{block.super}}
+  Create Offer - {{block.super}}
 {% endblock title %}
 
 {% load widget_tweaks %}
@@ -20,6 +20,7 @@ Create Offer - {{block.super}}
         <!-- interest --> 
       <div class="title">
         <h4 class="name-title">Add a title for your offer</h4>
+        {{form.title.errors}}
         {% render_field form.title class+="title-box" %}
       </div>
     </div>
@@ -38,18 +39,22 @@ Create Offer - {{block.super}}
     <div class="fader">
       <div class="start-date-general">
         <h4 class="date_description">Starting date:</h4>
+        {{form.start_date.errors}}
         {% render_field form.start_date class+="date_box" %}
       </div>
       <div class="start-date-general">
         <h4 class="date_description">Ending date:</h4>
+        {{form.end_date.errors}}
         {% render_field form.end_date class+="date_box" %}
       </div>
       <div class="start-date-general">
         <h4 class="date_description">Application deadline:</h4>
+        {{form.app_deadline.errors}}
         {% render_field form.app_deadline class+="date_box" %}
       </div>
       <div class="start-date-general">
         <h4 class="date_description">Cancellation deadline:</h4>
+        {{form.cancel_deadline.errors}}
         {% render_field form.cancel_deadline class+="date_box" %}
     </div>
   </div>
@@ -67,6 +72,7 @@ Create Offer - {{block.super}}
       <!-- participants -->  
       <div class="participants">
         <h4>Capacity</h4>
+        {{form.capacity.errors}}
         {% render_field form.capacity %}
       </div>
 <!-- picture -->  

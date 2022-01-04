@@ -96,32 +96,37 @@ def offer_create_view(request, *args, **kwargs):
 
     if form.is_valid():
       o = form.save(commit=False)
-      o.owner = Profile.objects.get(user_id=request.user.id)
       end = form.cleaned_data['end_date']
       start = form.cleaned_data['start_date']
-      offer_type = form.cleaned_data['offer_type']
-      if offer_type == 'Service':
-        o.credit = ((end - start).seconds) / 3600
+
+      intersecting_offers = Offer.objects.filter(Q(owner=request.user.profile) & (Q(start_date__gte=start) | Q(end_date__lte=end)))
+      if intersecting_offers:
+        messages.error(request, 'You have conflicting offers at the same time slot.')
       else:
-        o.credit = 0
+        o.owner = Profile.objects.get(user_id=request.user.id)
+        offer_type = form.cleaned_data['offer_type']
+        if offer_type == 'Service':
+          o.credit = ((end - start).seconds) / 3600
+        else:
+          o.credit = 0
 
-      loc = form.cleaned_data['location']
-      loc_elements = loc.split(',')
-      o.loc_long = loc_elements[0]
-      o.loc_ltd = loc_elements[1]
-      o.location = Point(float(o.loc_long), float(o.loc_ltd))
-      o.save()
+        loc = form.cleaned_data['location']
+        loc_elements = loc.split(',')
+        o.loc_long = loc_elements[0]
+        o.loc_ltd = loc_elements[1]
+        o.location = Point(float(o.loc_long), float(o.loc_ltd))
+        o.save()
 
-    if form_offertag.is_valid():
-      entry = [word.strip() for word in form_offertag.cleaned_data['offer_tag_name'].split(',') if word.strip() != '']
+        if form_offertag.is_valid():
+          entry = [word.strip() for word in form_offertag.cleaned_data['offer_tag_name'].split(',') if word.strip() != '']
 
-      for i in entry:
-        obj, created = OfferTag.objects.get_or_create(name=i.title())
-        if obj not in o.tags.all():
-          o.tags.add(obj)
+          for i in entry:
+            obj, created = OfferTag.objects.get_or_create(name=i.title())
+            if obj not in o.tags.all():
+              o.tags.add(obj)
 
-    messages.success(request, 'Your offer is created successfully.')
-    return redirect('offer_look', pk=o.id)
+          messages.success(request, 'Your offer is created successfully.')
+          return redirect('offer_look', pk=o.id)
   else:
     form = OfferModelForm()
     form_offertag = OfferTagForm()
@@ -182,6 +187,11 @@ def timeline_view(request, *args, **kwargs):
         if key == 'tags' and value != '':
           entry = [word.strip().title() for word in value.split(',') if word.strip() != '']
           qs = qs.filter(tags__name__in=entry)
+        if key == 'offer_type' and value:
+          if value == 'All':
+            pass
+          else:
+            qs = qs.filter(offer_type=value)
       if current_location:
         qs = qs.order_by('distance')
       qs_dist = {}

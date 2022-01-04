@@ -17,7 +17,7 @@
     <div class="left">
       {% if current_location %}
         <div class="location">
-          <h3>If you are looking for offers from another country, city or a specific district, pick a new location from the map </h3>
+          <h3>If you are looking for offers from another location, pick a new one </h3>
           <h3>Search within a defined kilometer radius</h3>
             {{form.distance}}
         </div>
@@ -31,6 +31,8 @@
           {{form.start_date}}
         <h3>Search by required credits</h3>
           {{form.credit}}
+        <h3>Search by offer type</h3>
+          {{form.offer_type}}
       </div> <br>
       {% if form.errors %}
         {{form.errors}}
