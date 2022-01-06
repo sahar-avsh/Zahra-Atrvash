@@ -46,11 +46,11 @@ class ProfileModelForm(forms.ModelForm):
 
   def clean_birthday(self):
     data = self.cleaned_data.get('birthday')
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
-    if data > now:
-      raise forms.ValidationError('Your birthday cannot be later than now.')
-    return data
+    now = datetime.date.today()
+    if data:
+      if data > now:
+        raise forms.ValidationError('Your birthday cannot be later than now.')
+      return data
 
 class ReviewForm(forms.ModelForm):
   CHOICES_RATING = [

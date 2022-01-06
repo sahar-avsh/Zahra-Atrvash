@@ -38,12 +38,16 @@
         {% for object in join_requests_to_profile %}
           <div class="join-offers">
             <h4><a href="{%url 'profile_look' pk=object.profile.id %}">{{object.profile.f_name}}</a> wants to join <a href="{%url 'offer_look' pk=object.offer.id %}">{{object.offer.title}}</a></h4>
-            <button class="save-button" type="button">
-              <a class="save-button" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
-            </button>
-            <button class="save-button" type="button">
-              <a class="save-button" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
-            </button>
+            {% if object.offer.participants.count < object.offer.capacity %}
+              <button class="save-button" type="button">
+                <a class="save-button" href="{% url 'accept_join_request' join_request_id=object.id %}">Accept!</a>
+              </button>
+              <button class="save-button" type="button">
+                <a class="save-button" href="{% url 'decline_join_request' join_request_id=object.id %}">Decline!</a>
+              </button>
+            {% else %}
+              <p>Your offer is full at this time.</p>
+            {% endif %}
           </div>
         {% endfor %}
       {% else %}

@@ -24,6 +24,7 @@ import pytz
 import datetime
 from geopy.distance import great_circle
 import math
+from decimal import Decimal
 
 # Create your views here.
 
@@ -99,34 +100,40 @@ def offer_create_view(request, *args, **kwargs):
       end = form.cleaned_data['end_date']
       start = form.cleaned_data['start_date']
 
-      intersecting_offers = Offer.objects.filter(Q(owner=request.user.profile) & (Q(start_date__gte=start) | Q(end_date__lte=end)))
+      intersecting_offers = Offer.objects.filter(Q(owner=request.user.profile) & (Q(start_date__gte=start) & Q(end_date__lte=end)))
       if intersecting_offers:
         messages.error(request, 'You have conflicting offers at the same time slot.')
       else:
         o.owner = Profile.objects.get(user_id=request.user.id)
         offer_type = form.cleaned_data['offer_type']
         if offer_type == 'Service':
-          o.credit = ((end - start).seconds) / 3600
+          o.credit = Decimal(((end - start).seconds) / 3600)
         else:
-          o.credit = 0
+          o.credit = Decimal(0)
 
-        loc = form.cleaned_data['location']
-        loc_elements = loc.split(',')
-        o.loc_long = loc_elements[0]
-        o.loc_ltd = loc_elements[1]
-        o.location = Point(float(o.loc_long), float(o.loc_ltd))
-        o.save()
+        # if the provider capped credits, cannot create an offer
+        num_of_participants = form.cleaned_data['capacity']
+        if o.credit * num_of_participants + request.user.profile.credit > 15 :
+          messages.error(request, 'You have capped your credits (15). Either lower capacity or credit requirement.')
+        else:
 
-        if form_offertag.is_valid():
-          entry = [word.strip() for word in form_offertag.cleaned_data['offer_tag_name'].split(',') if word.strip() != '']
+          loc = form.cleaned_data['location']
+          loc_elements = loc.split(',')
+          o.loc_long = loc_elements[0]
+          o.loc_ltd = loc_elements[1]
+          o.location = Point(float(o.loc_long), float(o.loc_ltd))
+          o.save()
 
-          for i in entry:
-            obj, created = OfferTag.objects.get_or_create(name=i.title())
-            if obj not in o.tags.all():
-              o.tags.add(obj)
+          if form_offertag.is_valid():
+            entry = [word.strip() for word in form_offertag.cleaned_data['offer_tag_name'].split(',') if word.strip() != '']
 
-          messages.success(request, 'Your offer is created successfully.')
-          return redirect('offer_look', pk=o.id)
+            for i in entry:
+              obj, created = OfferTag.objects.get_or_create(name=i.title())
+              if obj not in o.tags.all():
+                o.tags.add(obj)
+
+            messages.success(request, 'Your offer is created successfully.')
+            return redirect('offer_look', pk=o.id)
   else:
     form = OfferModelForm()
     form_offertag = OfferTagForm()

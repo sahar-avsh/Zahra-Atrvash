@@ -89,7 +89,6 @@
 .second-column {
   padding: 10px;
   display: flex;
-  justify-content: space-between;
   height: 300px;
   background-color: rgb(255, 241, 224);
   margin: 100px 100px;
@@ -102,6 +101,8 @@
 .second-part {
   margin-left: 20px;
   margin-top: 50px;
+  padding: 10px;
+  text-align: start;
 }
 
 .description {
@@ -118,6 +119,7 @@
   text-align: center;
   margin-left: 30px;
   margin-top: 40px;
+  margin-right: 0px;
 }
 
 .info-column {

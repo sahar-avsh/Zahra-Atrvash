@@ -19,16 +19,15 @@
 
 {% block content %}
   <div class="container">
-    {% if object.image %}
     <div class="first-column">
-      <style>
-        .first-column {
-          background-image: url('{{object.image.url}}');
-          background-repeat: no-repeat;
-        }
-      </style>
-      <!-- <img src="{{ object.image.url }}" > -->
-    {% endif %}
+      {% if object.image %}
+        <style>
+          .first-column {
+            background-image: url('{{object.image.url}}');
+            background-repeat: no-repeat;
+          }
+        </style>
+      {% endif %}
       <div class="profile-picture">
         <p class="hello">Hello,</p>
         <h1>It's {{object.f_name}} {{object.l_name}}</h1>
@@ -71,13 +70,15 @@
       <!-- Self interest and excel part -->
 
       <div class="info-column">
-        {% load static %}
-        <style>
-          .info-column {
-            background-image: url('{{object.image.url}}');
-            background-repeat: no-repeat;
-          }
-        </style>
+        {% if object.image %}
+          {% load static %}
+          <style>
+            .info-column {
+              background-image: url('{{object.image.url}}');
+              background-repeat: no-repeat;
+            }
+          </style>
+        {% endif %}
         <div class="layer">
           <h2 class="interest-big">I am good at:</h2>
             <h3 class="elements">

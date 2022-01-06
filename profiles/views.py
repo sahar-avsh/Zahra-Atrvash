@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
+from django.db.models.signals import post_save
 
 from allauth.account.signals import user_signed_up, user_logged_in
 from django.dispatch import receiver
@@ -45,6 +46,61 @@ def after_user_signed_in(user, **kwargs):
   qs_join_requests = ProfileJoinOfferRequest.objects.filter(profile=user.profile)
   for r in qs_join_requests:
     unanswered_join_request(r.id)
+
+
+
+
+
+# method for updating credit
+@receiver(post_save, sender=ProfileReview)
+@receiver(post_save, sender=Offer)
+#@receiver(post_save)
+def update_credit(sender, instance=None, created=False, **kwargs):
+  if sender.__name__ == 'ProfileReview':
+    # if profile review is saved, check if that offer was approved
+    approval = instance.offer.approval_status
+
+    # provider approved, participant accepted --> provider gets credit
+    if approval == 'Approved' and instance.done:
+      current_provider_creds = instance.offer.owner.credit
+      Profile.objects.get(pk=instance.offer.owner.id).update(credit=current_provider_creds + instance.offer.credit)
+    # provider declined, participant accepted --> waste of credit
+
+    # no matter what provider says, if participant declines, gets credit back
+    # provider declined, participant declined --> participant gets credit back
+    # provider approved, participant declined --> participant gets credit back
+    elif not instance.done:
+      retract_participant_credit(instance.review_giver.id, instance.offer.id)
+
+  else:
+    # if offer is saved, check if provider approved the offer
+    approval = instance.approval_status
+    # provider approved
+    if approval == 'Approved':
+      for i in instance.participants:
+        try:
+          review = ProfileReview.objects.get(review_giver=i, offer=instance)
+          # participant approved --> provider gets credit
+          if review.done:
+            current_provider_creds = instance.owner.credit
+            Profile.objects.get(pk=instance.owner.id).update(credit=current_provider_creds + instance.credit)
+          # participant declined --> gets credit back
+          else:
+            retract_participant_credit(i.id, instance.id)
+        except ProfileReview.DoesNotExist:
+          pass
+    # provider declined
+    elif approval == 'Declined':
+      for j in instance.participants:
+        try:
+          review = ProfileReview.objects.get(review_giver=j, offer=instance)
+          # participant accepted --> waste
+          # participant declined --> gets credit back
+          if not review.done:
+            retract_participant_credit(j.id, instance.id)
+        except ProfileReview.DoesNotExist:
+          pass
+
 
 
 
@@ -395,20 +451,28 @@ def send_join_request(request, offerID, *args, **kwargs):
   # also check if offer has enough capacity
   num_of_participants = to_offer.participants.count()
 
-  if available_credits >= required_credits and num_of_participants < to_offer.capacity and to_offer.can_apply:
-    join_request, created = ProfileJoinOfferRequest.objects.get_or_create(
-    profile=from_profile, offer=to_offer, is_accepted=None
-  )
-    if created:
-      spend_participant_credit(from_profile.id, to_offer.id)
-      messages.success(request, 'Your join request is sent successfully.')
-      return redirect('timeline')
+  if to_offer.offer_type == 'Service':
+    if available_credits >= required_credits and num_of_participants < to_offer.capacity and to_offer.can_apply:
+      join_request, created = ProfileJoinOfferRequest.objects.get_or_create(
+      profile=from_profile, offer=to_offer, is_accepted=None
+    )
+      if created:
+        spend_participant_credit(from_profile.id, to_offer.id)
+        messages.success(request, 'Your join request is sent successfully.')
+        return redirect('timeline')
+      else:
+        messages.info(request, 'You cannot send a join request to this offer')
+        return redirect('timeline')
     else:
       messages.info(request, 'You cannot send a join request to this offer')
       return redirect('timeline')
   else:
-    messages.info(request, 'You cannot send a join request to this offer')
-    return redirect('timeline')
+    if num_of_participants < to_offer.capacity and to_offer.can_apply:
+      to_offer.participants.add(from_profile)
+      from_profile.accepted_offers.add(to_offer)
+    else:
+      messages.error(request, 'You cannot join this event.')
+      return redirect('timeline')
 
 
 #******************** Accepting join requests for an offer functionality ********************
@@ -497,6 +561,8 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
       review = form.save(commit=False)
       review.review_giver = request.user.profile
       review.offer = o
+      done = form.cleaned_data['done']
+      review.done = done
       rate = form.cleaned_data['rating']
       review.rating = rate
       form.save()
@@ -556,6 +622,7 @@ def automatic_offer_review(profile, offerID, *args, **kwargs):
   if now - offer.end_date > datetime.timedelta(days=day_limit) and profile in offer.participants.all():
     review, created = ProfileReview.objects.get_or_create(review_giver=profile, offer=offer)
     if created:
+      review.done = False
       return True
   return False
 
@@ -605,6 +672,3 @@ def handle_credit_after_offer(offerID):
       # if participant did not approve it, give credits back
       else:
         retract_participant_credit(p.id, offer.id)
-
-def waste_credit():
-  pass

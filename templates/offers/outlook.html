@@ -19,15 +19,15 @@
       <h1 class="announcement">This offer has finished.</h1>
     {% endif %}
 
-    {% if object.image %}
       <div class="first-column">
-        <style>
-          .first-column {
-            background-image: url('{{object.image.url}}');
-            background-repeat: no-repeat;
-          }
-        </style>
-    {% endif %}
+        {% if object.image %}
+          <style>
+            .first-column {
+              background-image: url('{{object.image.url}}');
+              background-repeat: no-repeat;
+            }
+          </style>
+        {% endif %}
       <div class="profile-picture">
           <!-- interest --> 
         <div class="title">
@@ -43,15 +43,15 @@
         <h3> {{object.description}} </h3>
       </div>
     </div>
-    {% if object.image %}
       <div class="info-column">
-        <style>
-          .info-column {
-            background-image: url('{{object.image.url}}');
-            background-repeat: no-repeat;
-          }
-        </style>
-    {% endif %}
+        {% if object.image %}
+          <style>
+            .info-column {
+              background-image: url('{{object.image.url}}');
+              background-repeat: no-repeat;
+            }
+          </style>
+        {% endif %}
       <div class="layer">
         <div class="theContainer">
           <div class="info-part">
