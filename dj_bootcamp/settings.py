@@ -41,16 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.gis',
     'jquery',
-    #'location_field.apps.DefaultConfig',
-    #'mapbox_location_field',
     'mapwidgets',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'postman',
-    # 'django_messages',
-    # 'pinax.notifications',
-    # 'django_private_chat2.apps.DjangoPrivateChat2Config',
     'widget_tweaks',
     'django_db_constraints',
     'offers',
@@ -67,7 +61,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'django_ip_geolocation.middleware.IpGeolocationMiddleware',
 ]
 
 ROOT_URLCONF = 'dj_bootcamp.urls'
@@ -83,27 +76,20 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # 'django-starfield'
-                # 'django_messages.context_processors.inbox',
             ],
         },
     },
 ]
 
-# LOCATION_FIELD = {
-#     'provider.mapbox.access_token': 'pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ',
-#     'provider.mapbox.max_zoom': 18,
-#     'provider.mapbox.id': 'mapbox.streets',
-# }
 
-# MAPBOX_KEY = "pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ"  
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 MAP_WIDGETS = {
     "GooglePointFieldWidget": (
         ("zoom", 6),
         ("markerFitZoom", 8),
     ),
-    "GOOGLE_MAP_API_KEY": "AIzaSyBxjTOM9YLbdyh2TRgSg9JMBU7iwwCWAa8"
+    "GOOGLE_MAP_API_KEY": GOOGLE_MAPS_API_KEY
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -153,11 +139,11 @@ WSGI_APPLICATION = 'dj_bootcamp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'root',
-        'PASSWORD': '37373737scR7',
-        'HOST': 'localhost',
-        'PORT': '3306'
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT')
     }
 }
 
