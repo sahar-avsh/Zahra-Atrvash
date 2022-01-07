@@ -2,7 +2,9 @@ from django import forms
 from django.forms import widgets
 from django.forms.widgets import DateTimeInput
 
-from mapbox_location_field.forms import LocationField
+# from mapbox_location_field.forms import LocationField
+from mapwidgets.widgets import GooglePointFieldWidget
+from django.contrib.gis import forms as gis_forms
 
 from offers.models import Offer
 
@@ -13,7 +15,6 @@ class DateTimeInput(forms.DateTimeInput):
   input_type = 'datetime-local'
 
 class OfferModelForm(forms.ModelForm):
-  location = LocationField()
   class Meta:
     model = Offer
     fields = [
@@ -27,12 +28,14 @@ class OfferModelForm(forms.ModelForm):
       'offer_format',
       'offer_type',
       'description',
+      'location',
     ]
     widgets = {
       'start_date': DateTimeInput(),
       'end_date': DateTimeInput(),
       'app_deadline': DateTimeInput(),
-      'cancel_deadline': DateTimeInput()
+      'cancel_deadline': DateTimeInput(),
+      'location': GooglePointFieldWidget,
     }
 
   def clean_title(self):
@@ -43,8 +46,8 @@ class OfferModelForm(forms.ModelForm):
 
   def start_date(self):
     start_date = self.cleaned_data.get('start_date')
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
+    tz = pytz.timezone('Europe/Istanbul')
+    now = datetime.datetime.now().replace(tzinfo=tz)
     if start_date < now:
       raise forms.ValidationError('Start date must be later than now.')
     return start_date
@@ -106,9 +109,16 @@ class OfferFilterForm(forms.Form):
   distance = forms.IntegerField(required=False)
   credit = forms.IntegerField(required=False)
   tags = forms.CharField(required=False)
+  new_location = gis_forms.PointField(required=False, widget=GooglePointFieldWidget)
   CHOICES_TYPE = [
   ('All', 'All'),
   ('Service', 'Service'),
   ('Event', 'Event')
   ]
   offer_type = forms.ChoiceField(choices=CHOICES_TYPE)
+  CHOICES_FORMAT = [
+  ('All', 'All'),
+  ('Online', 'Online'),
+  ('Offline', 'Offline')
+  ]
+  offer_format = forms.ChoiceField(choices=CHOICES_FORMAT)

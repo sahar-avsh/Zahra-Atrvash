@@ -14,10 +14,12 @@
 
 <div class="container">
   <form method="POST" action="."> {% csrf_token %}
+    {{form.media}}
     <div class="left">
       {% if current_location %}
         <div class="location">
           <h3>If you are looking for offers from another location, pick a new one </h3>
+            {{form.new_location}}
           <h3>Search within a defined kilometer radius</h3>
             {{form.distance}}
         </div>
@@ -33,6 +35,8 @@
           {{form.credit}}
         <h3>Search by offer type</h3>
           {{form.offer_type}}
+        <h3>Search by offer format</h3>
+          {{form.offer_format}}
       </div> <br>
       {% if form.errors %}
         {{form.errors}}
@@ -55,8 +59,12 @@
     <h2 class="event">Offers</h2>
     {% if qs.count > 0 %}
       {% for o in qs %}
-        {% load offer_extras %}
-        <img src="{{ o.image.url }}" height="200px" width="300px"/><br>
+        {% if o.image %}
+          {% load offer_extras %}
+          <img src="{{ o.image.url }}" height="200px" width="300px"/><br>
+        {% else %}
+          <img src="{% static 'offers/offer.jpeg' %}" height="200px" width="300px"/><br>
+        {% endif %}
         <a href="{%url 'offer_look' pk=o.id %}">{{o.title}}</a> by <a href="{%url 'profile_look' pk=o.owner.id %}">{{o.owner.f_name}} {{o.owner.l_name}}</a><br>
         <h4>{{qs_dist|get_item:o}} kms away</h4>
         <h4> Starts at {{o.start_date|date:'j-M-Y, g:i A (e)'}} </h4>

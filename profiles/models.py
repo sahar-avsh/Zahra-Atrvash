@@ -3,9 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import m2m_changed
 from django.contrib.auth.models import User
+from django.contrib.gis.db import models as gis_models
 import uuid
-#from location_field.models.plain import PlainLocationField
-from mapbox_location_field.models import AddressAutoHiddenField, LocationField
 
 
 # Create your models here.
@@ -21,6 +20,7 @@ class Profile(models.Model):
 
   loc_long = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
   loc_ltd = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+  location = gis_models.PointField(null=True, blank=True, srid=4326, verbose_name='Location')
 
   class DiplomaReceived(models.TextChoices):
     other = 'Other', _('Other')

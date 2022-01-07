@@ -93,7 +93,7 @@
           {% if object.owner.id == request.user.profile.id %}
           <h3 class="participants">Participants:</h3>
             {% for obj in participants %}
-              <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a>
+              <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a><br>
               {% load offer_extras %}
               {% if object.is_expired and owner_approval == 'Approved' and participant_approvals|get_item:obj and owner_to_participant|get_item:obj == None %}
                 <button class="save-button" type="button">

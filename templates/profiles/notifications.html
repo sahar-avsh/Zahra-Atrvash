@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/notifications.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/Notifications.css' %}">
 {% endblock styles %}
 
 
@@ -87,6 +87,7 @@
       {% endif %}
     </div>
 
+    <div class="cancelation-notification">
     <h2>Cancellation Notifications</h2>
     {% if join_requests_offer_cancelled.count == 0 and joined_offers_cancelled.count == 0 %}
       <h4>You have no cancellation notifications.</h4>
@@ -106,7 +107,8 @@
         {% endfor %}
       {% endif %}
     {% endif %}
-
+  </div>
+  <div class="outgoing-joinrequest">
   <h2>Outgoing Join Request Responses</h2>
   {% if join_requests_accepted.count == 0  and join_requests_declined.count == 0 %}
     <h4>You have no responses for outgoing offer requests.</h4>
@@ -122,6 +124,7 @@
       {% endfor %}
     {% endif %}
   {% endif %}
+</div>
 </div>
 
 {% endblock content %}

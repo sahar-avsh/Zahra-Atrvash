@@ -119,8 +119,8 @@ def home_view(request, *args, **kwargs):
 #  ****************************** Rate & Review page functionality ****************************************************
 @login_required
 def profile_rate_reviews_view(request, profileID, *args, **kwargs):
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
 
   obj = Profile.objects.get(pk=profileID)
   passive_offers = Offer.objects.filter(owner=obj, is_cancelled=False, end_date__lt=now)
@@ -136,7 +136,7 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
       total += i.rating
     for j in qs_participant_reviews:
       total += j.rating
-    avg_rating = total / total_number_reviews
+    avg_rating = round(total / total_number_reviews, 1)
     # calc no of 5 star reviews
     five_stars = qs_reviews.filter(rating=5).count() + qs_participant_reviews.filter(rating=5).count()
     four_stars = qs_reviews.filter(rating=4).count() + qs_participant_reviews.filter(rating=4).count()
@@ -162,7 +162,7 @@ def profile_rate_reviews_view(request, profileID, *args, **kwargs):
 #****************************** Profile creation and edition page functionality *****************************************
 @login_required
 def profile_edit_view(request, *args, **kwargs):
-  profile = get_object_or_404(Profile, pk=request.user.profile.id)
+  profile = request.user.profile
   qs_skills = profile.skills.all()
   qs_interests = profile.interests.all()
 
@@ -175,9 +175,11 @@ def profile_edit_view(request, *args, **kwargs):
       profile = form.save(commit=False)
       if form.cleaned_data['location']:
         loc = form.cleaned_data['location']
-        loc_elements = loc.split(',')
-        profile.loc_long = loc_elements[0]
-        profile.loc_ltd = loc_elements[1]
+        # loc_elements = loc.split(',')
+        # profile.loc_long = loc_elements[0]
+        # profile.loc_ltd = loc_elements[1]
+        profile.loc_ltd = loc[1]
+        profile.loc_long = loc[0]
       profile.save()
 
     if form_skill.is_valid():
@@ -286,8 +288,8 @@ def convert_to_address(lat, long):
 #****************************** Notification page functionality *********************************
 @login_required
 def profile_notifications_view(request, *args, **kwargs):
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
   current_profile = request.user.profile
   active_offers_of_current_profile = Offer.objects.filter(owner=current_profile, is_cancelled=False, app_deadline__gt=now)
 
@@ -299,7 +301,7 @@ def profile_notifications_view(request, *args, **kwargs):
   outstanding_approvals = Offer.objects.filter(owner=current_profile, end_date__lt=now, approval_status='Outstanding', is_cancelled=False)
   # outstanding reviews for offers finished as a participant
   reviews_done = ProfileReview.objects.filter(review_giver=current_profile).values_list('offer', flat=True)
-  outstanding_reviews = current_profile.accepted_offers.exclude(pk__in=[o for o in reviews_done])
+  outstanding_reviews = current_profile.accepted_offers.filter(end_date__lt=now).exclude(pk__in=[o for o in reviews_done])
   # join requests that current profile has sent and that got accepted
   join_requests_accepted = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=True, offer__start_date__gt=now)
   # join requests that current profile has sent and that got declined
@@ -322,8 +324,8 @@ def profile_notifications_view(request, *args, **kwargs):
 #************************** Activity background page functionality *******************************
 @login_required
 def profile_activity_background_view(request, profileID, *args, **kwargs):
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
 
   obj = Profile.objects.get(pk=profileID)
   created_active_offers = Offer.objects.filter(owner=obj, start_date__gt=now)
@@ -364,6 +366,7 @@ def unfollow(request, profileID):
     to_profile = Profile.objects.get(pk=profileID)
     from_profile.friends.remove(to_profile)
     to_profile.friends.remove(from_profile)
+    messages.success(request, f'You have unfollowed {to_profile.f_name}.')
     return redirect('friends', profileID=request.user.profile.id)
 
 
@@ -375,7 +378,8 @@ def accept_follow_request(request, follow_request_id):
     follow_request.profile_id.friends.add(follow_request.following_profile_id)
     follow_request.following_profile_id.friends.add(follow_request.profile_id)
     follow_request.delete()
-  return redirect('friends', profileID=request.user.profile.id)
+    messages.success(request, f'You have accepted this follow request. You are friends with {follow_request.profile_id.f_name}')
+  return redirect('profile_look', pk=follow_request.profile_id.id)
 
 
 #*********************** Declining follow request functionality ************************
@@ -384,7 +388,8 @@ def decline_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.following_profile_id == request.user.profile:
     follow_request.delete()
-  return redirect('friends', profileID=request.user.profile.id)
+    messages.success(request, 'You have declined this follow request.')
+  return redirect('profile_look', pk=follow_request.profile_id.id)
 
 
 #******************** Canceling the sent follow request functionality ********************
@@ -393,7 +398,8 @@ def cancel_follow_request(request, follow_request_id):
   follow_request = ProfileFollowRequest.objects.get(id=follow_request_id)
   if follow_request.profile_id == request.user.profile:
     follow_request.delete()
-  return redirect('friends', profileID=request.user.profile.id)
+    messages.success(request, 'You have cancelled your follow request.')
+  return redirect('profile_look', pk=follow_request.following_profile_id.id)
 
 
 
@@ -472,7 +478,7 @@ def send_join_request(request, offerID, *args, **kwargs):
       from_profile.accepted_offers.add(to_offer)
     else:
       messages.error(request, 'You cannot join this event.')
-      return redirect('timeline')
+    return redirect('timeline')
 
 
 #******************** Accepting join requests for an offer functionality ********************
@@ -506,6 +512,7 @@ def decline_join_request(request, join_request_id):
   if join_request.offer.owner == request.user.profile:
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.is_accepted = False
+    join_request.save()
     # join_request.delete()
   return redirect('profile_look', pk=join_request.profile.id)
 
@@ -523,8 +530,8 @@ def cancel_join_request(request, join_request_id):
 #******************** Handling unanswered requests for an offer  ********************
 def unanswered_join_request(join_request_id):
   join_request = ProfileJoinOfferRequest.objects.get(id=join_request_id)
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
   if now > join_request.offer.app_deadline:
     retract_participant_credit(join_request.profile.id, join_request.offer.id)
     join_request.delete()
@@ -617,8 +624,8 @@ def automatic_offer_review(profile, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
   day_limit = 3
   # if day_limit days have passed since the end date of the offer and participant didn't review, review automatically
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
   if now - offer.end_date > datetime.timedelta(days=day_limit) and profile in offer.participants.all():
     review, created = ProfileReview.objects.get_or_create(review_giver=profile, offer=offer)
     if created:
@@ -632,8 +639,8 @@ def automatic_offer_approval(offerID):
   offer = Offer.objects.get(pk=offerID)
   day_limit = 3
   # if day_limit days have passed since the end date of the offer and owner didn't approve, decline automatically
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
   if now - offer.end_date > datetime.timedelta(days=day_limit):
     if offer.approval_status == 'Outstanding':
       Offer.objects.filter(pk=offerID, approval_status='Outstanding').update(approval_status='Declined')

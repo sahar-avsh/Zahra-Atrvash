@@ -10,12 +10,13 @@ class ProfileMessageForm(forms.ModelForm):
     data = self.cleaned_data.get('title')
     if len(data) < 2:
       raise forms.ValidationError('This is not long enough.')
+    return data
 
   def clean_body(self):
     data = self.cleaned_data.get('body')
     if len(data) < 2:
       raise forms.ValidationError('This is not long enough.')
-
+    return data
   
 
 class MessageSearchForm(forms.Form):

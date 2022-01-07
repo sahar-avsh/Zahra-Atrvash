@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 import datetime
 import pytz
-from geopy.distance import great_circle
 from django.contrib.gis.db import models as gis_models
 
 from profiles.models import Profile
@@ -15,8 +14,8 @@ class Offer(models.Model):
   title = models.CharField(max_length=220)
   image = models.ImageField(blank=True, upload_to='images/')
 
-  loc_long = models.DecimalField(max_digits=9, decimal_places=6)
-  loc_ltd = models.DecimalField(max_digits=9, decimal_places=6)
+  loc_long = models.DecimalField(null=True, max_digits=9, decimal_places=6)
+  loc_ltd = models.DecimalField(null=True, max_digits=9, decimal_places=6)
   location = gis_models.PointField(null=True, blank=True, srid=4326, verbose_name='Location')
 
   created_at = models.DateTimeField(auto_now_add=True)
@@ -68,45 +67,35 @@ class Offer(models.Model):
 
   @property
   def is_expired(self):
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
+    tz = pytz.timezone('Europe/Istanbul')
+    now = datetime.datetime.now().replace(tzinfo=tz)
     if now > self.end_date:
       return True
     return False
 
   @property
   def is_started(self):
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
+    tz = pytz.timezone('Europe/Istanbul')
+    now = datetime.datetime.now().replace(tzinfo=tz)
     if now > self.start_date:
       return True
     return False
 
   @property
   def can_apply(self):
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
+    tz = pytz.timezone('Europe/Istanbul')
+    now = datetime.datetime.now().replace(tzinfo=tz)
     if now > self.app_deadline:
       return False
     return True
 
   @property
   def can_cancel(self):
-    utc = pytz.UTC
-    now = datetime.datetime.now().replace(tzinfo=utc)
+    tz = pytz.timezone('Europe/Istanbul')
+    now = datetime.datetime.now().replace(tzinfo=tz)
     if now > self.cancel_deadline:
       return False
     return True
-
-  # def update_status(self):
-  #   utc = pytz.UTC
-  #   now = datetime.datetime.now().replace(tzinfo=utc)
-  #   # here we check if the offer end date has passed
-  #   if self.end_date <= now:
-  #     Offer.objects.filter(id=self.id, offer_status='Active').update(offer_status='Passive')
-  #     return True
-  #   else:
-  #     return False
 
   def __str__(self) -> str:
       return self.owner.f_name + '-' + self.title

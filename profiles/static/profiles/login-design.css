@@ -1,0 +1,151 @@
+body {
+  background-image: url('happy-friends.jpeg');
+ 
+  background-repeat: no-repeat, repeat;
+  background-size: cover;
+  color: rgb(73, 73, 73);
+}
+
+a {
+  color: rgb(155, 85, 20);
+  text-decoration: none;
+}
+
+a:hover{
+  color: rgb(63, 26, 0);
+  transition-duration: 0.5s;
+
+}
+
+.signup-link{
+  color: rgb(155, 85, 20);
+  font-weight: bolder;
+  text-decoration: none;
+}
+
+.signup-link:hover{
+  color: rgb(63, 26, 0);
+  transition-duration: 0.5s;
+}
+
+.intro {
+  background-color: rgb(255, 241, 224, 0.6);
+  height: 400px;
+  width: auto;
+}
+
+
+
+h1 {
+  margin-top: 100px;
+  text-align: center;
+  padding-top: 50px;
+  color: rgb(90, 82, 82);
+}
+
+h2 {
+  line-height: 30%;
+  margin-top: 10px;
+  text-align: center;
+}
+
+h3 {
+  line-height: 30%;
+  text-align: center;
+}
+
+.login-offer {
+  margin-top: 20px;
+}
+
+.information{
+  text-align: center;
+  position: relative;
+}
+
+
+/* Email  */
+.email-general {
+  margin-top: 30px;
+  text-align: center;
+  color: rgb(90, 82, 82);
+}
+.email-box {
+  width: 200px;
+  height: 20px;
+  background-color: rgb(255, 241, 224);
+}
+
+
+/* Password  */
+.password-general {
+  margin-top: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.password-box {
+  width: 200px;
+  height: 20px;
+  align-self: center;
+  background-color: rgb(255, 241, 224);
+
+}
+
+.the-login{
+  text-align: center;
+  padding-right: 220px;
+}
+
+.buttons{
+  margin-top: 20px;
+}
+
+.forgot{
+  font-size: medium;
+  position: absolute;
+  text-align: left;
+  margin-right: 90px;
+  
+}
+
+
+/* Button  */
+
+
+
+.login-button {
+  position: absolute;
+  text-align: center;
+  margin-left: 5px;
+  width: 95px;
+  height: 30px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  background-color: rgb(243, 147, 56);
+  color: rgb(63, 26, 0);
+}
+
+.login-button:hover {
+  background-color: rgb(190, 190, 190);
+  transition-duration: 0.5s;
+  color: rgb(243, 147, 56);
+}
+
+.signup-button {
+  text-align: center;
+  width: 95px;
+  height: 30px;
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: rgb(190, 190, 190);
+}
+
+.signup-button:hover {
+  background-color: rgb(63, 26, 0);
+  transition-duration: 0.5s;
+}
+
+.error {
+  text-align: center;
+}

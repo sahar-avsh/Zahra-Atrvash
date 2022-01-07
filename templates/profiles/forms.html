@@ -13,10 +13,10 @@
 {% load widget_tweaks %}
 {% block content %}
 <form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
+  {{ form.media }}
   <div class="container">
     <div class="first-column">
       <div class="profile-picture">
-        {{test}}
         <h4 class="name-title">First name:</h4>
         {{form.f_name.errors}}
         {% render_field form.f_name %}
@@ -89,12 +89,11 @@
           });
         </script>
       {% endblock js %} -->
-      {% render_field form.location %}
+      
   </div>
-
 </div>
+{{form.location}}
   </div>
 </form>
-{{ form.media }}
 
 {% endblock %}

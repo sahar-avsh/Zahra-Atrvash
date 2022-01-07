@@ -17,7 +17,7 @@ from categorytags.models import OfferTag
 from .models import Offer
 from .forms import OfferFilterForm, OfferModelForm
 from profiles.models import OwnerToParticipantReview, Profile, ProfileJoinOfferRequest, ProfileReview
-from profiles.views import convert_to_address, retract_participant_credit
+from profiles.views import retract_participant_credit
 
 from django.db.models import Q, query
 import pytz
@@ -43,7 +43,10 @@ def offer_outlook_view(request, pk, *args, **kwargs):
     # get number of spots left - For everyone
     num_of_spots_left = obj.capacity - obj_participants.count()
     # get address - For everyone
-    address = convert_to_address(obj.loc_ltd, obj.loc_long)
+    if obj.loc_ltd and obj.loc_long:
+      address = convert_to_address(obj.loc_ltd, obj.loc_long)
+    else:
+      address = None
 
     # check for each participant if they reviewed the offer and marked it as approved
     participant_approvals = {}
@@ -88,6 +91,24 @@ def offer_outlook_view(request, pk, *args, **kwargs):
 
 
 
+
+  #****************************** Getting address from the map functionality *********************************
+def convert_to_address(lat, long):
+  from geopy.geocoders import Nominatim
+  from functools import partial
+  geolocator = Nominatim(user_agent='offers')
+  reverse = partial(geolocator.reverse, language="en")
+  coords = str(lat) + ', ' + str(long)
+  location = reverse(coords)
+  #address = location.raw['address']
+  if location != None:
+    address = location.address
+  else:
+    address = None
+  return address
+
+
+
 #******************** Offer creation page  ********************
 @login_required
 def offer_create_view(request, *args, **kwargs):
@@ -117,11 +138,15 @@ def offer_create_view(request, *args, **kwargs):
           messages.error(request, 'You have capped your credits (15). Either lower capacity or credit requirement.')
         else:
 
-          loc = form.cleaned_data['location']
-          loc_elements = loc.split(',')
-          o.loc_long = loc_elements[0]
-          o.loc_ltd = loc_elements[1]
-          o.location = Point(float(o.loc_long), float(o.loc_ltd))
+          # loc = form.cleaned_data['location']
+          # loc_elements = loc.split(',')
+          # o.loc_long = loc_elements[1]
+          # o.loc_ltd = loc_elements[0]
+          # o.location = Point(float(o.loc_long), float(o.loc_ltd))
+          coords = form.cleaned_data['location']
+          if coords:
+            o.loc_ltd = coords[1]
+            o.loc_long = coords[0]
           o.save()
 
           if form_offertag.is_valid():
@@ -167,30 +192,38 @@ def cancel_offer_view(request, offerID, *args, **kwargs):
 @login_required
 def timeline_view(request, *args, **kwargs):
   try:
-    current_location = Point(float(request.user.profile.loc_ltd), float(request.user.profile.loc_long), srid=4326)
+    current_location = Point(float(request.user.profile.loc_long), float(request.user.profile.loc_ltd), srid=4326)
   except TypeError:
     current_location = None
 
-  utc = pytz.UTC
-  now = datetime.datetime.now().replace(tzinfo=utc)
+  tz = pytz.timezone('Europe/Istanbul')
+  now = datetime.datetime.now().replace(tzinfo=tz)
 
   if request.method == 'POST':
     form = OfferFilterForm(request.POST)
     empty_flag = False
     if form.is_valid():
-      if current_location:
+      if current_location and not form.cleaned_data['new_location']:
         qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).annotate(distance=Distance('location', current_location))
+      elif form.cleaned_data['new_location']:
+        new_loc = form.cleaned_data['new_location']
+        qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).annotate(distance=Distance('location', new_loc))
       for key, value in form.cleaned_data.items():
         if key == 'distance' and value:
-          max_distance = value # distance in meter
-          d = distance_to_decimal_degrees(Dist(m=max_distance), float(request.user.profile.loc_long))
-          qs = qs.annotate(distance=Distance('location', current_location)).filter(distance__lte=d)
+          max_distance = value * 1000 # distance in meter
+          d = distance_to_decimal_degrees(Dist(m=max_distance), float(request.user.profile.loc_ltd))
+          qs = qs.filter(distance__lte=d)
         if key == 'credit' and value:
           qs = qs.filter(credit__lte=value)
+        if key == 'offer_format' and value:
+          if value == 'All':
+            pass
+          else:
+            qs = qs.filter(offer_format=value)
         if key == 'title' and value:
           qs = qs.filter(Q(title__icontains=value) | Q(description__icontains=value))
         if key == 'start_date' and value:
-          qs = qs.filter(start_date__date__gte=value)
+          qs = qs.filter(start_date__gte=value)
         if key == 'tags' and value != '':
           entry = [word.strip().title() for word in value.split(',') if word.strip() != '']
           qs = qs.filter(tags__name__in=entry)
@@ -201,9 +234,19 @@ def timeline_view(request, *args, **kwargs):
             qs = qs.filter(offer_type=value)
       if current_location:
         qs = qs.order_by('distance')
+      else:
+        qs = qs.order_by('start_date')
+      
       qs_dist = {}
-      for o in qs:
-        qs_dist[o] = round(great_circle(o.location, current_location).km, 2)
+      if current_location or form.cleaned_data['new_location']:
+        for o in qs:
+          if o.loc_ltd and o.loc_long:
+            if current_location and not form.cleaned_data['new_location']:
+              qs_dist[o] = round(great_circle((o.location[1], o.location[0]), (current_location[1], current_location[0])).km, 2)
+            elif form.cleaned_data['new_location']:
+              qs_dist[o] = round(great_circle((o.location[1], o.location[0]), (new_loc[1], new_loc[0])).km, 2)
+          else:
+            qs_dist[o] = None
       
       qs = qs.exclude(owner=request.user.profile)
 
@@ -224,8 +267,12 @@ def timeline_view(request, *args, **kwargs):
       qs = Offer.objects.filter(is_cancelled=False, app_deadline__gt=now).order_by('start_date')
 
     qs_dist = {}
-    for o in qs:
-      qs_dist[o] = round(great_circle(o.location, current_location).km, 2)
+    if current_location:
+      for o in qs:
+        if o.loc_ltd and o.loc_long:
+          qs_dist[o] = round(great_circle((o.location[1], o.location[0]), (current_location[1], current_location[0])).km, 2)
+        else:
+          qs_dist[o] = None
 
     qs = qs.exclude(owner=request.user.profile)
 

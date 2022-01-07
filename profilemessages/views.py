@@ -18,12 +18,13 @@ def send_message_view(request, profileID, *args, **kwargs):
   to = Profile.objects.get(pk=profileID)
   if request.method == 'POST':
     form = ProfileMessageForm(request.POST)
-    message = form.save(commit=False)
-    message.message_to = to
-    message.message_from = request.user.profile
-    message.save()
-    messages.success(request, 'Message sent successfully.')
-    return redirect('home_page')
+    if form.is_valid():
+      message = form.save(commit=False)
+      message.message_to = to
+      message.message_from = request.user.profile
+      message.save()
+      messages.success(request, 'Message sent successfully.')
+      return redirect('home_page')
   else:
     form = ProfileMessageForm()
   return render(request, 'messages/send_message.html', {'form': form, 'to': to})

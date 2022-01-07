@@ -1,0 +1,127 @@
+/* nav-bar line  */
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: rgb(63, 26, 0);
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #ddd;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: rgb(63, 26, 0);
+  transition: 0.5s;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: rgb(150, 150, 150);
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+.topnav a:nth-of-type(11){
+  color: #ddd;
+  background-color:rgb(63, 26, 0);
+}
+
+/* 
+Rate star */
+
+.star-rating{
+  font-size: 0;
+}
+.star-rating__wrap{
+  display: inline-block;
+  font-size: 1rem;
+}
+.star-rating__wrap:after{
+  content: "";
+  display: table;
+  clear: both;
+}
+.star-rating__ico{
+  float: right;
+  padding-left: 2px;
+  cursor: pointer;
+  color: rgb(71, 11, 7);
+}
+.star-rating__ico:last-child{
+  padding-left: 0;
+}
+.star-rating__input{
+  display: none;
+}
+.star-rating__ico:hover:before,
+.star-rating__ico:hover ~ .star-rating__ico:before,
+.star-rating__input:checked ~ .star-rating__ico:before
+{
+  content: "\f005";
+}
+
+
+body{
+  text-align: center;
+  color: rgb(90, 82, 82);
+  background-color: rgb(255, 241, 224);
+}
+
+
+.heading{
+  margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+a{
+  color: rgb(129, 127, 127);
+  text-decoration: none;
+}
+
+.items{
+  margin-top: 30px;
+  width: 500px;
+  text-align: start;
+  margin-left: 540px;
+  margin-right: auto;
+  
+}
+
+
+
+.comment-title{
+  padding-top: 10px;
+}
+
+.comment{
+  width: 250px;
+  height: 100px;
+}
+
+
+.save-button {
+  margin-right: 240px;
+  margin-top: 20px;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+}
+
+.save-button:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+}

@@ -1,0 +1,176 @@
+.topnav {
+  background-color: rgb(63, 26, 0);
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #ddd;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: rgb(63, 26, 0);
+  transition: 0.5s;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: rgb(150, 150, 150);
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+.topnav a:nth-of-type(11){
+  color: #ddd;
+  background-color:rgb(63, 26, 0);
+}
+
+body{
+  background-image: url('letters.jpeg');
+  text-align: center;
+  color: rgb(90, 82, 82);
+  background-color: rgb(255, 241, 224);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+a{
+  text-decoration: none;
+}
+
+
+.container{
+  display: flex;
+
+}
+
+.title{
+  text-align: left;
+}
+
+.title-box{
+  height: 20px;
+  width: 250px;
+}
+
+.body{
+  text-align: left;
+}
+
+.body-box{
+  width: 250px;
+  height: 70px;
+}
+
+.empty{
+  width: 800px;
+}
+
+.content{
+  padding: 30px;
+  width: 400px;
+  background-color:  rgb(255, 241, 224, 0.8);
+  min-height: 800px;
+  max-height: auto;
+}
+
+
+
+.button{
+  text-align: left;
+  margin-top: 10px;
+}
+
+.save-button {
+
+  text-align: start;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+  text-decoration: none;
+
+}
+
+.save-button:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+  text-decoration: none;
+}
+
+
+.top{
+  border-bottom: dotted rgb(71, 11, 7) 3px;
+  padding: 30px;
+  margin-bottom: 50px;
+}
+
+
+a{
+  color: rgb(129, 127, 127);
+  text-decoration: none;
+  font-size: bold;
+}
+
+a:hover{
+  color:rgb(63, 26, 0);
+  transition: 0.5s;
+}
+ 
+.to{
+  text-align: start;
+  margin-top: 50px;
+}
+
+
+
+.sent-messages {
+  text-align: center;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+  text-decoration: none;
+  width: 100px;
+
+}
+
+.sent-messages:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+  text-decoration: none;
+}
+
+
+.send-button{
+  text-align: left;
+  color: rgb(255, 241, 224);
+  background-color: rgb(71, 11, 7);
+  text-decoration: none;
+  width: 50px;
+
+}
+
+
+
+.send-button:hover {
+  background-color: rgb(255, 241, 224);
+  transition: 0.5s;
+  color: rgb(71, 11, 7);
+  text-decoration: none;
+}
+
+
+.message-content{
+  text-align: left;
+}

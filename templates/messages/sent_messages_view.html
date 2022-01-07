@@ -31,7 +31,7 @@ Sent Messages - {{block.super}}
     <div class="message-content">
     {% if object_list.count > 0 %}
       {% for message in object_list %}
-        <h3>To: <a href="{%url 'profile_look' pk=message.message_from.id %}">{{message.message_to.f_name}} {{message.message_to.l_name}}</a></h3>
+        <h3>To: <a href="{%url 'profile_look' pk=message.message_to.id %}">{{message.message_to.f_name}} {{message.message_to.l_name}}</a></h3>
         <h3>Title: {{message.title}} </h3>
         <h4>Body: {{message.body}} </h4>
         <h5>Sent at: {{message.sent_at|date:'j-M-Y, g:i A (e)'}} </h5>

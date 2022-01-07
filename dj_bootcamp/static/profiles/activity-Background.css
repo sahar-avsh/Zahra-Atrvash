@@ -96,14 +96,13 @@ body{
 
 .requested-offer{
   padding-top: 20px;
-  border-bottom: 3px dotted rgb(71, 11, 7);
   text-align: left;
 }
 
 
 .passive-offer{
   padding-top: 20px;
- 
+  border-bottom: 3px dotted rgb(71, 11, 7);
   text-align: left;
 }
 

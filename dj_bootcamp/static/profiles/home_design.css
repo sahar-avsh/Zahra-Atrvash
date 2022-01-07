@@ -1,0 +1,90 @@
+/* columns  */
+
+/* columns  */
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: rgb(63, 26, 0);
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #ddd;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: rgb(63, 26, 0);
+  transition: 0.5s;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: rgb(150, 150, 150);
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+.topnav a:nth-of-type(11){
+  color: #ddd;
+  background-color:rgb(63, 26, 0);
+}
+
+
+.first{
+  line-height: 18px;
+  padding-left: 50px;
+  text-align: start;
+  color: rgb(90, 82, 82);
+  background-color: rgb(255, 241, 224);
+  padding-top: 100px;
+  padding-bottom: 100px;
+  margin: 100px;
+  margin-left: 300px;
+
+
+}
+
+.second{
+  margin-top: 30px;
+  width: 900px;
+  height: auto;
+  background-color:   rgba(231, 144, 38, 0.438);
+  margin-right: 300px;
+  padding: 20px;
+  margin-left: 100px;
+}
+
+
+.third{
+  margin-top: 30px;
+  width: 700px;
+  height: auto;
+  background-color: rgb(255, 241, 224);
+  padding-top: 100px;
+  margin-left: 450px;
+  padding: 20px;
+}
+
+.forth{
+  margin-top: 30px;
+  width: 700px;
+  height: auto;
+  background-color: rgba(231, 144, 38, 0.438);
+  padding-top: 100px;
+  margin-right: 300px;
+  margin-left: 100px;
+  padding: 20px;
+}

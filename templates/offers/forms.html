@@ -13,6 +13,7 @@
 {% load widget_tweaks %}
 {% block content %}
 <form method="POST" action="." enctype='multipart/form-data'> {% csrf_token %}
+  {{form.media}}
 <div class="container">
   <div class="first-column">
     <!-- profile-picture -->
@@ -62,10 +63,13 @@
   <div class="info-column">
       <!-- Location -->  
       <div class="location">
-        <h4>Add location:</h4>
-          {% render_field form.location %}
+
       </div>
   </div>
+
+  <h4>Add location:</h4><br>
+  <h5>For online offers, adding location is not mandatory.</h5>
+  {{form.location}}
  
   <div class="last-part">
     <div class="profile-picture-last">
@@ -105,6 +109,5 @@
   </div>
 </div>
 </form>
-{{form.media}}
 
 {% endblock content %}

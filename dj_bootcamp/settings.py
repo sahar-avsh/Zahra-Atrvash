@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'jquery',
     #'location_field.apps.DefaultConfig',
-    'mapbox_location_field',
+    #'mapbox_location_field',
+    'mapwidgets',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -66,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_ip_geolocation.middleware.IpGeolocationMiddleware',
+    #'django_ip_geolocation.middleware.IpGeolocationMiddleware',
 ]
 
 ROOT_URLCONF = 'dj_bootcamp.urls'
@@ -95,7 +96,15 @@ TEMPLATES = [
 #     'provider.mapbox.id': 'mapbox.streets',
 # }
 
-MAPBOX_KEY = "pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ"  
+# MAPBOX_KEY = "pk.eyJ1Ijoic2FoYXJhdnNoIiwiYSI6ImNreHFnZnNjdDJoaGwycnFrc2t4MDk1ZHUifQ.gYnfOJY6m0NQ1hsCSQUuAQ"  
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 6),
+        ("markerFitZoom", 8),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyBxjTOM9YLbdyh2TRgSg9JMBU7iwwCWAa8"
+}
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -177,7 +186,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 
@@ -191,6 +200,8 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -2,20 +2,20 @@ from django import forms
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth.models import User
 
-from mapbox_location_field.forms import LocationField
+# from mapbox_location_field.forms import LocationField
+from mapwidgets.widgets import GooglePointFieldWidget
+from django.contrib.gis import forms as gis_forms
 
 # from django_starfield import Stars
 
 from profiles.models import OwnerToParticipantReview, Profile, ProfileReview
 
-import pytz
 import datetime
 
 class DateInput(forms.DateInput):
   input_type = 'date'
 
 class ProfileModelForm(forms.ModelForm):
-  location = LocationField(required=False)
   class Meta:
     model = Profile
     fields = [
@@ -26,10 +26,12 @@ class ProfileModelForm(forms.ModelForm):
       'occupation',
       'education',
       'description',
+      'location',
     ]
 
     widgets = {
       'birthday': DateInput(),
+      'location': GooglePointFieldWidget,
     }
 
   def clean_f_name(self):
