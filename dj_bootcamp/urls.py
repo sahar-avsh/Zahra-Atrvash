@@ -55,6 +55,7 @@ from offers.views import (
 )
 
 urlpatterns = [
+    path('', home_view, name='home_page'),
     path('home/', home_view, name='home_page'),
     path('timeline/', timeline_view, name='timeline'),
     path('rate-reviews/<str:profileID>/', profile_rate_reviews_view, name='rate_reviews'),

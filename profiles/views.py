@@ -58,18 +58,17 @@ def after_user_signed_in(user, **kwargs):
 def update_credit(sender, instance=None, created=False, **kwargs):
   if sender.__name__ == 'ProfileReview':
     # if profile review is saved, check if that offer was approved
-    approval = instance.offer.approval_status
 
     # provider approved, participant accepted --> provider gets credit
-    if approval == 'Approved' and instance.done:
+    if instance.done == True and instance.offer.approval_status == 'Approved':
       current_provider_creds = instance.offer.owner.credit
-      Profile.objects.get(pk=instance.offer.owner.id).update(credit=current_provider_creds + instance.offer.credit)
+      Profile.objects.filter(pk=instance.offer.owner.id).update(credit=current_provider_creds + instance.offer.credit)
     # provider declined, participant accepted --> waste of credit
 
     # no matter what provider says, if participant declines, gets credit back
     # provider declined, participant declined --> participant gets credit back
     # provider approved, participant declined --> participant gets credit back
-    elif not instance.done:
+    elif not instance.done == True:
       retract_participant_credit(instance.review_giver.id, instance.offer.id)
 
   else:
@@ -83,7 +82,7 @@ def update_credit(sender, instance=None, created=False, **kwargs):
           # participant approved --> provider gets credit
           if review.done:
             current_provider_creds = instance.owner.credit
-            Profile.objects.get(pk=instance.owner.id).update(credit=current_provider_creds + instance.credit)
+            Profile.objects.filter(pk=instance.owner.id).update(credit=current_provider_creds + instance.credit)
           # participant declined --> gets credit back
           else:
             retract_participant_credit(i.id, instance.id)
@@ -91,7 +90,7 @@ def update_credit(sender, instance=None, created=False, **kwargs):
           pass
     # provider declined
     elif approval == 'Declined':
-      for j in instance.participants:
+      for j in instance.participants.all():
         try:
           review = ProfileReview.objects.get(review_giver=j, offer=instance)
           # participant accepted --> waste
@@ -294,18 +293,18 @@ def profile_notifications_view(request, *args, **kwargs):
   active_offers_of_current_profile = Offer.objects.filter(owner=current_profile, is_cancelled=False, app_deadline__gt=now)
 
   # friend requests
-  friend_requests = ProfileFollowRequest.objects.filter(following_profile_id=current_profile)
+  friend_requests = ProfileFollowRequest.objects.filter(following_profile_id=current_profile).order_by('-created_at')
   # join requests to your offers
-  join_requests_to_profile = ProfileJoinOfferRequest.objects.filter(offer__in=active_offers_of_current_profile, is_accepted=None)
+  join_requests_to_profile = ProfileJoinOfferRequest.objects.filter(offer__in=active_offers_of_current_profile, is_accepted=None).order_by('offer__app_deadline', '-created_at')
   # outstanding approvals for offers finished as an offer provider
-  outstanding_approvals = Offer.objects.filter(owner=current_profile, end_date__lt=now, approval_status='Outstanding', is_cancelled=False)
+  outstanding_approvals = Offer.objects.filter(owner=current_profile, end_date__lt=now, approval_status='Outstanding', is_cancelled=False).order_by('end_date')
   # outstanding reviews for offers finished as a participant
   reviews_done = ProfileReview.objects.filter(review_giver=current_profile).values_list('offer', flat=True)
-  outstanding_reviews = current_profile.accepted_offers.filter(end_date__lt=now).exclude(pk__in=[o for o in reviews_done])
+  outstanding_reviews = current_profile.accepted_offers.filter(end_date__lt=now).exclude(pk__in=[o for o in reviews_done]).order_by('end_date')
   # join requests that current profile has sent and that got accepted
-  join_requests_accepted = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=True, offer__start_date__gt=now)
+  join_requests_accepted = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=True, offer__start_date__gt=now).order_by('offer__start_date')
   # join requests that current profile has sent and that got declined
-  join_requests_declined = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=False, offer__start_date__gt=now)
+  join_requests_declined = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=False, offer__start_date__gt=now).order_by('offer__start_date')
   # joined or requested offers that got cancelled
   join_requests_offer_cancelled = ProfileJoinOfferRequest.objects.filter(profile=current_profile, is_accepted=None, offer__is_cancelled=True, offer__start_date__gt=now)
   joined_offers_cancelled = current_profile.accepted_offers.filter(is_cancelled=True, start_date__gt=now)
@@ -328,11 +327,11 @@ def profile_activity_background_view(request, profileID, *args, **kwargs):
   now = datetime.datetime.now().replace(tzinfo=tz)
 
   obj = Profile.objects.get(pk=profileID)
-  created_active_offers = Offer.objects.filter(owner=obj, start_date__gt=now)
-  cancelled_or_passive_offers = Offer.objects.filter(Q(owner=obj) & Q(end_date__lt=now) | Q(is_cancelled=True))
-  joined_offers = obj.accepted_offers.all()
+  created_active_offers = Offer.objects.filter(owner=obj, start_date__gt=now, is_cancelled=False).order_by('start_date')
+  cancelled_or_passive_offers = Offer.objects.filter(Q(owner=obj) & (Q(end_date__lt=now) | Q(is_cancelled=True))).order_by('start_date')
+  joined_offers = obj.accepted_offers.all().order_by('-start_date')
 
-  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj, is_accepted=None, offer__app_deadline__gt=now)
+  outstanding_offer_requests = ProfileJoinOfferRequest.objects.filter(profile=obj, is_accepted=None, offer__app_deadline__gt=now).order_by('offer__start_date')
 
   content = {'created_active_offers': created_active_offers,
   'cancelled_passive_offers': cancelled_or_passive_offers,
@@ -427,11 +426,17 @@ def profile_friends_view(request, profileID, *args, **kwargs):
     search_flag = False
 
   existing_follow_requests_profile = ProfileFollowRequest.objects.filter(profile_id=request.user.profile).values_list('following_profile_id', flat=True)
+  existing_follow_requests_to_profile = ProfileFollowRequest.objects.filter(following_profile_id=request.user.profile).values_list('profile_id', flat=True)
 
   existing_follow_requests_a = ProfileFollowRequest.objects.filter(profile_id=request.user.profile)
   existing_follow_requests_dict = {}
   for i in existing_follow_requests_a:
     existing_follow_requests_dict[i.following_profile_id] = i.id
+
+  existing_follow_requests_b = ProfileFollowRequest.objects.filter(following_profile_id=request.user.profile)
+  existing_follow_requests_to_profile_dict = {}
+  for j in existing_follow_requests_b:
+    existing_follow_requests_to_profile_dict[j.profile_id] = j.id
 
   content = {
     'object': obj,
@@ -441,6 +446,8 @@ def profile_friends_view(request, profileID, *args, **kwargs):
     'flag': search_flag,
     'existing_follow_requests': existing_follow_requests_profile,
     'follow_requests_dict': existing_follow_requests_dict,
+    'existing_follow_requests_to_profile': existing_follow_requests_to_profile,
+    'follow_requests_to_profile_dict': existing_follow_requests_to_profile_dict,
   }
   return render(request, "profiles/friends.html", content)
 
@@ -572,7 +579,7 @@ def rate_finished_offer(request, offerID, *args, **kwargs):
       review.done = done
       rate = form.cleaned_data['rating']
       review.rating = rate
-      form.save()
+      review.save()
       return redirect('home_page')
   else:
     form = ReviewForm()

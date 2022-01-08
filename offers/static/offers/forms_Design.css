@@ -141,7 +141,7 @@ body {
 
 .third-column {
   margin-top: 100px;
-  background-image: url('picnic.jpeg');
+  background-image: url('the-picnic.jpeg');
   background-repeat: no-repeat;
   background-size: cover;
   align-content: flex-end;
@@ -164,33 +164,21 @@ body {
 
 
 .info-column {
+  background-color: rgb(255, 241, 224, 0.65);
+  padding-top: 10px;
+  width: 690px;
+  height: 580px;
   padding-top: 50px;
-  /* background-image: url("photo.jpeg"); */
-  background-color: rgb(252, 243, 233);
-  background-repeat: no-repeat;
-  background-size: cover;
-  align-content: flex-end;
-  width: 500px;
-  height: 500px;
+  margin-bottom: 30px;
+  margin-left: 70px;
+  padding-left: 80px;
+
 }
 
-/* location  */
-.location {
-  margin-top: 20px;
-  text-align: center;
-}
-.location-general {
-  text-align: center;
-  color: rgb(71, 11, 7);
+.actual-map{
+  margin-left: 50px;
 }
 
-/* .layer {
-  padding: 0;
-  margin: 0;
-  background-color: rgb(255, 241, 224, 0.7);
-  width: 500px;
-  height: 500px;
-} */
 
 .offer-pic {
   margin-top: 20px;
@@ -198,6 +186,7 @@ body {
 }
 
 .last-part {
+  margin-top: 50px;
   width: 800px;
   height: inherit;
   background-image: url("pottery.jpeg");

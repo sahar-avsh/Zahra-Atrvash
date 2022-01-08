@@ -1,6 +1,7 @@
 .topnav {
   background-color: rgb(63, 26, 0);
   overflow: hidden;
+  
 }
 
 /* Style the links inside the navigation bar */
@@ -54,20 +55,42 @@ body{
 }
 
 .left{
+  margin-top: 50px;
   background-color: rgb(243, 187, 135);
-  min-height: 1500px;
-  max-height: auto;
-  width: 700px;
-  padding: 20px;
+  height: 90%;
+  width: 680px;
   text-align: center;
   position: fixed;
-  
+  top: 0;
+  bottom: 60px; /* added */
+  min-height: 0 !important; /* added */
+  overflow-y: scroll;
+  padding-bottom: 30px;
+  margin-right: 50px;
 }
+
+
+
+
+.right{
+  margin-left: 20px;
+  width: 500px;
+  padding: 10px;
+  margin-left: 800px;
+  position: relative;
+
+}
+
+
 
 .location{
   border-bottom: 3px dotted rgb(71, 11, 7);
   padding-bottom: 40px;
+  text-align: left;
+  padding-left: 29px;
 }
+
+
 
 
 .save-button {
@@ -115,11 +138,6 @@ body{
 }
 
 
-.right{
-  margin-left: 400px;
-  width: 1000px;
-  padding: 10px;
-}
 
 
 .offers{

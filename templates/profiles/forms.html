@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'profiles/edit.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'profiles/Edit.css' %}">
   <!-- <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' /> -->
 {% endblock styles %}
 
@@ -77,8 +77,9 @@
     </div>
 
 <div class="forth-column"> 
-  <div class="location-general">
-    <h4 class="description-title">Add location:</h4>
+    <h4 class="description-title">Add location:</h4><br>
+    <div class="actual-map">
+    {{form.location}}
       <!-- <div id='map' style='width: 400px; height: 300px;'></div>
       {% block js %}
         <script>
@@ -89,10 +90,9 @@
           });
         </script>
       {% endblock js %} -->
-      
-  </div>
+    </div>
+
 </div>
-{{form.location}}
   </div>
 </form>
 

@@ -20,7 +20,7 @@
             {% for object in created_active_offers %}
               <div>
                 <p><a href="{% url 'offer_look' pk=object.id %}">{{object.title}}</a></p>
-                {% if obj == request.user.profile and object.can_cancel %}
+                {% if obj == request.user.profile and object.can_cancel and not object.is_cancelled %}
                   <button class="save-button" type="button">
                     <a class="save-button" href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
                   </button>

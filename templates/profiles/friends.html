@@ -40,6 +40,13 @@
             <button class="save-button" type="button">
               <a class="button-link" href="{% url 'unfollow' profileID=obj.id %}">Unfollow!</a>
             </button>
+          {% elif object.id == request.user.profile.id and obj not in friend_list and obj.id in existing_follow_requests_to_profile %}
+            <button class="save-button" type="button">
+              <a class="button-link" href="{% url 'accept_follow_request' follow_request_id=follow_requests_to_profile_dict|get_item:obj %}">Accept!</a>
+            </button>
+            <button class="save-button" type="button">
+              <a class="button-link" href="{% url 'decline_follow_request' follow_request_id=follow_requests_to_profile_dict|get_item:obj %}">Decline!</a>
+            </button>
           {% elif object.id == request.user.profile.id and obj not in friend_list and obj.id not in existing_follow_requests %}
             <button class="save-button" type="button">
               <a class="button-link" href="{% url 'send_follow_request' profileID=obj.id %}">Follow!</a>

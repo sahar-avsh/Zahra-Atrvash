@@ -117,8 +117,8 @@ class OfferFilterForm(forms.Form):
   ]
   offer_type = forms.ChoiceField(choices=CHOICES_TYPE)
   CHOICES_FORMAT = [
-  ('All', 'All'),
+  ('Offline', 'Offline'),
   ('Online', 'Online'),
-  ('Offline', 'Offline')
+  ('All', 'All'),
   ]
   offer_format = forms.ChoiceField(choices=CHOICES_FORMAT)

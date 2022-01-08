@@ -3,7 +3,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'offers/forms_design.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/forms_Design.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -60,17 +60,14 @@
     </div>
   </div>
 </div>
-  <div class="info-column">
-      <!-- Location -->  
-      <div class="location">
 
-      </div>
+  <div class="info-column">
+        <h4>Add location:</h4>
+        <h5>For online offers, adding location is not mandatory.</h5>
+        {{form.location}}
   </div>
 
-  <h4>Add location:</h4><br>
-  <h5>For online offers, adding location is not mandatory.</h5>
-  {{form.location}}
- 
+
   <div class="last-part">
     <div class="profile-picture-last">
       <!-- participants -->  

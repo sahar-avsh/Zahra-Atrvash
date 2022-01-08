@@ -16,15 +16,19 @@
   <form method="POST" action="."> {% csrf_token %}
     {{form.media}}
     <div class="left">
+      <div class="location">
       {% if current_location %}
-        <div class="location">
           <h3>If you are looking for offers from another location, pick a new one </h3>
+          <div class="actual-map">
             {{form.new_location}}
-          <h3>Search within a defined kilometer radius</h3>
-            {{form.distance}}
+          </div>
+        
+          
         </div>
       {% endif %}
       <div class="search"> 
+        <h3>Search within a defined kilometer radius</h3>
+        {{form.distance}}
         <h3>Search by keyword</h3>
           {{form.title}}
         <h3>Search by tags</h3>
@@ -61,9 +65,9 @@
       {% for o in qs %}
         {% if o.image %}
           {% load offer_extras %}
-          <img src="{{ o.image.url }}" height="200px" width="300px"/><br>
+          <img src="{{ o.image.url }}" height="200px" width="320px"/><br>
         {% else %}
-          <img src="{% static 'offers/offer.jpeg' %}" height="200px" width="300px"/><br>
+          <img src="{% static 'offers/the-offer.jpeg' %}" height="200px" width="320px"/><br>
         {% endif %}
         <a href="{%url 'offer_look' pk=o.id %}">{{o.title}}</a> by <a href="{%url 'profile_look' pk=o.owner.id %}">{{o.owner.f_name}} {{o.owner.l_name}}</a><br>
         <h4>{{qs_dist|get_item:o}} kms away</h4>

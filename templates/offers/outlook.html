@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'offers/outlookOffer.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'offers/outlook-Offer.css' %}">
 {% endblock styles %}
 
 {% block title %}
@@ -92,17 +92,17 @@
         <div>
           {% if object.owner.id == request.user.profile.id %}
           <h3 class="participants">Participants:</h3>
-            {% for obj in participants %}
+            {% for obj in participants %} <br>
               <a href="{%url 'profile_look' pk=obj.id %}">{{obj.f_name}} {{obj.l_name}}</a><br>
               {% load offer_extras %}
               {% if object.is_expired and owner_approval == 'Approved' and participant_approvals|get_item:obj and owner_to_participant|get_item:obj == None %}
                 <button class="save-button" type="button">
-                  <a class="button-link"  href="{%url 'rate_participant' offerID=object.id participantID=obj.id %}">Rate this participant!</a>
+                  <a class="button-link"  href="{%url 'rate_participant' offerID=object.id participantID=obj.id %}">Rate this participant!</a><br>
                 </button>
               {% endif %}
             {% endfor %}
             
-            {% if object.can_cancel %}
+            {% if not object.is_cancelled and object.can_cancel %}
             <button class="save-button" type="button">
               <a class="button-link"  href="{%url 'cancel_offer' offerID=object.id %}">Cancel offer!</a>
             </button>

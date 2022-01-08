@@ -3,8 +3,36 @@
     {% if "signed" in message|safe %}
 
     {% else %}
-
-    <p class="messages alert alert-success" style="text-align: center;">{{message|safe}}</p>
+      <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+        <h2> {{message|safe}} </h2>
+      </div>
+      <style>
+        .alert {
+          padding: 20px;
+          background-color:rgb(68, 65, 65);
+          color: white;
+          text-align: end;
+          font-size: 14px;
+          height: 20px;
+          padding-bottom: 50px;
+        }
+        
+        .closebtn {
+          margin-left: 15px;
+          color: white;
+          font-weight: bold;
+          float: right;
+          font-size: 22px;
+          line-height: 20px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+        
+        .closebtn:hover {
+          color: black;
+        }
+        </style>
     {% endif %}
   {% endfor %}
 {% endif %}

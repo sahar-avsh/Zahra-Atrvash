@@ -1,0 +1,10 @@
+Django==2.2.24
+django-allauth==0.46.0
+django-environ==0.8.1
+Pillow==8.4.0
+pytz==2021.3
+django-widget-tweaks==
+django-db-constraints==
+django-map-widgets==
+django-jquery==
+geopy==

@@ -169,7 +169,7 @@ def offer_create_view(request, *args, **kwargs):
 @login_required
 def cancel_offer_view(request, offerID, *args, **kwargs):
   offer = Offer.objects.get(pk=offerID)
-  offer.offer_status = 'Cancelled'
+  offer.is_cancelled = True
   offer.save()
 
   # give all participants their credits back

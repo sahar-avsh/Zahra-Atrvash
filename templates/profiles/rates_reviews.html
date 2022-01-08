@@ -44,6 +44,7 @@ Rate & Reviews - {{block.super}}
       <a href="{%url 'profile_look' pk=o.review_giver.id %}"> {{o.review_giver}}</a> rated {{o.rating}} star for <a href="{%url 'offer_look' pk=o.offer.id %}"> {{o.offer.title}}</a> at {{o.created_at}}<br/>
     </h4>
     <p class="actualReview"> {{o.text}} </p>
+    <p>*************************************</p>
 
       {% endif %}
     {% endfor %}
@@ -58,6 +59,8 @@ Rate & Reviews - {{block.super}}
       <a href="{%url 'profile_look' pk=p.offer.owner.id %}"> {{p.offer.owner.f_name}} {{p.offer.owner.l_name}} </a> rated {{p.rating}} star as the offer provider for <a href="{%url 'offer_look' pk=p.offer.id %}">{{p.offer.title}}</a> at {{p.created_at}}<br/>
     </h4>
     <p class="actualReview"> {{p.text}} </p>
+    <p>*************************************</p>
+
     {% endfor %}
   {% else %}
     <p>There are no reviews of this kind.</p>
