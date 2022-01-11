@@ -46,6 +46,8 @@ def inbox_view(request, *args, **kwargs):
     qs = ProfileMessage.objects.filter(message_to=request.user.profile)
     search_flag = False
 
+  qs = qs.order_by('-sent_at')
+
   content = {
     'object_list': qs,
     'form': form,
@@ -69,6 +71,8 @@ def sent_messages_view(request, *args, **kwargs):
     form = MessageSearchForm()
     qs = ProfileMessage.objects.filter(message_from=request.user.profile)
     search_flag = False
+
+  qs = qs.order_by('-sent_at')
 
   content = {
     'object_list': qs,

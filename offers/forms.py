@@ -3,7 +3,7 @@ from django.forms import widgets
 from django.forms.widgets import DateTimeInput
 
 # from mapbox_location_field.forms import LocationField
-from mapwidgets.widgets import GooglePointFieldWidget
+#from mapwidgets.widgets import GooglePointFieldWidget
 from django.contrib.gis import forms as gis_forms
 
 from offers.models import Offer
@@ -35,7 +35,7 @@ class OfferModelForm(forms.ModelForm):
       'end_date': DateTimeInput(),
       'app_deadline': DateTimeInput(),
       'cancel_deadline': DateTimeInput(),
-      'location': GooglePointFieldWidget,
+      #'location': GooglePointFieldWidget,
     }
 
   def clean_title(self):
@@ -44,7 +44,7 @@ class OfferModelForm(forms.ModelForm):
       raise forms.ValidationError('This is not long enough.')
     return data
 
-  def start_date(self):
+  def clean_start_date(self):
     start_date = self.cleaned_data.get('start_date')
     tz = pytz.timezone('Europe/Istanbul')
     now = datetime.datetime.now().replace(tzinfo=tz)
@@ -109,7 +109,7 @@ class OfferFilterForm(forms.Form):
   distance = forms.IntegerField(required=False)
   credit = forms.IntegerField(required=False)
   tags = forms.CharField(required=False)
-  new_location = gis_forms.PointField(required=False, widget=GooglePointFieldWidget)
+  new_location = gis_forms.PointField(required=False)
   CHOICES_TYPE = [
   ('All', 'All'),
   ('Service', 'Service'),

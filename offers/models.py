@@ -1,3 +1,4 @@
+from django.contrib.gis.geos.point import Point
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -5,7 +6,7 @@ import datetime
 import pytz
 from django.contrib.gis.db import models as gis_models
 
-from profiles.models import Profile
+from profiles.models import Profile, ProfileReview
 
 # Create your models here.
 class Offer(models.Model):
@@ -64,6 +65,14 @@ class Offer(models.Model):
   tags = models.ManyToManyField('categorytags.OfferTag', related_name='offers', blank=True)
   # participants
   participants = models.ManyToManyField('profiles.Profile', related_name='offer_participants', blank=True)
+  # owner earned credit
+  is_credit_earned = models.BooleanField(default=False)
+
+  def update_owner_credit(self):
+      current_creds = self.owner.credit
+      Profile.objects.filter(pk=self.owner.id).update(credit=current_creds + self.credit)
+      self.is_credit_earned = True
+      self.save()
 
   @property
   def is_expired(self):
@@ -85,7 +94,7 @@ class Offer(models.Model):
   def can_apply(self):
     tz = pytz.timezone('Europe/Istanbul')
     now = datetime.datetime.now().replace(tzinfo=tz)
-    if now > self.app_deadline:
+    if now > self.app_deadline or self.is_cancelled:
       return False
     return True
 
