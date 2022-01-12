@@ -39,6 +39,7 @@ py -3 -m venv .venv
 .venv\scripts\activate
 
 4. And after they shall run this command in the terminal
+
 pip install -r requirements.txt
 
 5. You should have GDAL library installed on your computer and specify the path to your GDAL library in settings.py file.
