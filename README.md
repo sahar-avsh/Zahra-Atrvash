@@ -12,14 +12,22 @@
 1.  As it is not dockerized and deployed yet, in order to run the project, users shall pull the project from the repository
 
 2. Then they shall create .env file under dj_bootcamp and put these commands into it:
+3. 
 (My Google Maps Key is AIzaSyDhGALDy3szFc4iKRYQ9Jl7zhKMnGpY78Y)
+
 If you use your own Google Map Api key, Geocoding API, Maps Javascript API and Places API need to be connected.
 ​​GOOGLE_MAPS_API_KEY=your-google-maps-key
+
 SECRET_KEY=django-insecure-dcl7ece))r^2w_cz01%%ot_@64lsp)*&tz!))s(md!*5@i1x
+
 DATABASE_NAME=your-desire-data
+
 DATABASE_USER=root
+
 DATABASE_PASSWORD=37373737scR7
+
 DATABASE_HOST=localhost
+
 DATABASE_PORT=3306
 
 3. For the third step they need to open the terminal and navigate to the project directory and create a virtual environment
