@@ -48,6 +48,7 @@ GDAL_LIBRARY_PATH = ‘path/to/gdal/on/your/computer’
 6. Some dependencies we use have not been updated by the library developers and use the import command below
  “from django.utils.translation import ugettext_lazy as _”
 In Django version > 2.0, this command is deprecated.
+
 Thus, you should go to the source code of those libraries in the virtual environment folder and change the corresponding command to:
 “from django.utils.translation import gettext_lazy as _”
 
