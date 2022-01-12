@@ -9,7 +9,7 @@
 
 ## How to run our code
 
-1.  As it is not dockerized and deployed yet, in order to run the project, users shall pull the project from the repository
+1. As it is not dockerized and deployed yet, in order to run the project, users shall pull the project from the repository
 
 2. Then they shall create .env file under dj_bootcamp and put these commands into it:
  
